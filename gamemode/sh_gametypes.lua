@@ -1142,9 +1142,10 @@ function ghettoDrugBust:playerSpawn(ply)
 		
 		ply:Give(GAMEMODE.MedkitClass)
 		
-		if math.random(1, 100) <= GetConVar("gc_ghetto_cum_chance"):GetInt() then
+		--[[if math.random(1, 100) <= GetConVar("gc_ghetto_cum_chance"):GetInt() then
 			ply:Give("gc_bukkake")
 		end
+		--]]
 	end
 end
 

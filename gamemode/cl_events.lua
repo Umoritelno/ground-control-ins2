@@ -45,8 +45,9 @@ function GM:AddTextToEvent(eventData, text)
 	eventData.bottomColor = self.HUDColors.green
 end
 
-net.Receive("GC_EVENT", function(a, b)
+--[[net.Receive("GC_EVENT", function(a, b)
 	local ply = LocalPlayer()
 	local data = net.ReadTable()
 	GAMEMODE:DisplayEvent(ply, data)
 end)
+--]]

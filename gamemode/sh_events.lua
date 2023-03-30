@@ -40,9 +40,10 @@ GM:registerEvent("BLEED_OUT_KILL", "Enemy bled out")
 GM:registerEvent("TEAMMATE_UNCRIPPLED", "Teammate uncrippled")
 GM:registerEvent("TEAMMATE_HEALED", "Teammate healed")
 
-if SERVER then
+--[[if SERVER then
 	util.AddNetworkString("GC_EVENT")
 end
+--]]
 
 GM.EventData = {}
 
