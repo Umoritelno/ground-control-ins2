@@ -183,6 +183,21 @@ function GM:PlayerSpawn(ply)
 		ply:KillSilent()
 		return false
 	end
+
+	AbilityDebug(ply)
+    net.Start("HUDRemove")
+    net.Send(ply)
+    ply.Cooldown = 0
+    ply.Ability = nil 
+    timer.Simple(0.1,function()
+		if ply:GetNWString("Role","Soldier") == "Commander" then
+			ply:GiveAbility(1)
+		elseif ply:GetNWString("Role","Soldier") == "Specialist" then 
+			ply:GiveAbility(math.random(2,table.Count(abilities)))
+		else 
+			return
+		end
+	end)
 	
 	ply:SetViewPunchAngles(ZeroAng)
 	ply.currentTraits = ply.currentTraits and table.Empty(ply.currentTraits) or {}
@@ -293,13 +308,18 @@ function GM:DoPlayerDeath(ply, attacker, dmgInfo)
 	if IsValid(wep) and wep.liveGrenade then
 		nadeCntOffset = -1
 	end
-		
-	ply:dropWeaponNicely(nil, VectorRand() * 20, VectorRand() * 200, true) -- drop the main weapon
+	if wep.CW20Weapon then 
+		ply:dropWeaponNicely(nil, VectorRand() * 20, VectorRand() * 200, true)
+	end  -- drop the main weapon
 	
 	--  drop any matching weapons also
 	for k, wep in ipairs(ply:GetWeapons()) do
+		--[[if !wep.CW20Weapon then 
+			ply:DropWeapon(wep)
+		end 
+		--]]
 		if self.alwaysDropWeapons[wep:GetClass()] then
-			ply:dropWeaponNicely(wep, VectorRand() * 20, VectorRand() * 200, true) -- drop the main weapon
+			ply:dropWeaponNicely(wep, VectorRand() * 20, VectorRand() * 200, true)-- drop the main weapon
 		end
 	end
 	
@@ -612,7 +632,7 @@ function GM:PlayerDeathThink(ply)
 		return self.curGametype:canSpawn(ply)
 	else
 		if #self.currentPlayerList < 2 then
-			if ply:KeyPressed(IN_ATTACK) or ply:KeyPressed(IN_JUMP) then
+			if ply:KeyPressed(IN_ATTACK) or ply:KeyPressed(IN_JUMP) and self.curGametype.name != "ghettodrugbust" then
 				ply:Spawn()
 				return true
 			end	
@@ -669,7 +689,7 @@ function PLAYER:crippleArm()
 	
 	-- iterate through all the weapons and make the person drop his primary wep when he gets creyoppled
 	for key, wep in ipairs(self:GetWeapons()) do
-		if IsValid(wep) and wep.CW20Weapon and wep.isPrimaryWeapon and not wep.dropsDisabled then
+		if IsValid(wep) and wep.CW20Weapon and wep.isPrimaryWeapon and not wep.dropsDisabled  then
 			self:dropWeaponNicely(wep, VectorRand() * 20, VectorRand() * 200)
 			wepDropped = true
 		end
@@ -897,3 +917,8 @@ end)
 hook.Add("CW20_PreventCWWeaponPickup", "GC_CW20_PreventCWWeaponPickup", function(wepObj, ply)
 	return not ply.canPickupWeapon or (ply.crippledArm and weapons.GetStored(wepObj:GetWepClass()).isPrimaryWeapon)
 end)
+
+--[[hook.Add("PlayerCanPickupWeapon","CW20 Different",function(ply,weapon)
+	return false 
+end)
+--]]

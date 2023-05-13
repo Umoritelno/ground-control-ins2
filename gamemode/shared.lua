@@ -32,6 +32,45 @@ GM.VoteTime = GM.VotePrepTime + 30
 GM.HeavyLandingVelocity = 500
 GM.HeavyLandingVelocityToWeight = 0.03 -- multiply velocity by this much, if the final value exceeds our weight, then it is considered a heavy landing and will make extra noise
 GM.CurMap = string.lower(game.GetMap())
+GM.DefBase = 4
+GM.SpecRounds = {}
+GM.WepBases = {
+	[1] = {
+		class = "cw_base",
+		name = "CW 2.0 Default",
+	  },
+  [2] = {
+	class = "cw_kk",
+	name = "CW 2.0 Insurgency",
+  },
+  [3] = {
+	class = "tfa",
+	name = "TFA",
+  },
+  [4] = {
+	    class = "arc9_base",
+	    name = "ARC9",
+  },
+}
+
+function GM:GetBaseClassByID(id)
+   return self.WepBases[id].class
+end 
+
+function GM:GetIDByName(name)
+	for k,v in pairs(self.WepBases) do
+		if v.name == name then
+			local id = k 
+			break 
+		end
+	end
+	return id
+end 
+
+function GM:SetWeaponBaseID(id)
+	local wepvar = GetConVar("gc_wepbase")
+    wepvar:SetInt(id)
+end 
 
 GM.RoundOverAction = {
 	NEW_ROUND = 1,
@@ -109,6 +148,10 @@ CreateConVar("gc_walkspeed", GM.BaseWalkSpeed, sharedCVar, "player walk speed (a
 CreateConVar("gc_runspeed", GM.BaseRunSpeed, sharedCVar, "player walk speed (immediately)")
 CreateConVar("gc_damagemult", GM.DamageMultiplier, sharedCVar, "multiplier for dealt weapon damage")
 CreateConVar("gc_damage_scale", GM.defaultDamageScale, sharedCVar, "multiplier for all weapon damage")
+CreateConVar("gc_wepbase",GM.DefBase,sharedCVar,"What weapon base we will use?")
+--CreateConVar("gc_roles_enable",1,sharedCVar,"Will roles and skills work?")
+
+GM.CurWepBase = GetConVar("gc_wepbase"):GetInt() or 1
 
 local function getCvarNumber(new, old)
 	return tonumber(new) and new or old
@@ -182,6 +225,18 @@ end)
 CustomizableWeaponry.callbacks:addNew("forceFreeAim", "GroundControl_forceFreeAim", function(self)
 	return GAMEMODE.FORCE_FREE_AIM
 end)
+
+--[[CustomizableWeaponry.callbacks:addNew("preDetachAttachment","hui",function(self,att,attcategory)
+	print("Zalupa")
+end)
+--]]
+
+--[[CustomizableWeaponry.callbacks:addNew("preAttachAttachment","pizda",function(self,att,attcategory)
+	print("hui")
+	return false 
+	--return GAMEMODE:isPreparationPeriod()
+end)
+--]]
 
 CustomizableWeaponry.callbacks:addNew("forceComplexTelescopics", "GroundControl_forceComplexTelescopics", function(self)
 	return GAMEMODE.FORCE_COMPLEX_TELESCOPICS
@@ -484,3 +539,4 @@ function PLAYER:setSpectateTarget(target)
 		umsg.End()
 	end
 end
+

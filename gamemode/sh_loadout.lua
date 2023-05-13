@@ -110,6 +110,9 @@ function GM:applyWeaponDataToWeaponClass(weaponData, primaryWeapon, slot)
 	wepClass.Slot = slot
 	wepClass.penetrationValue = weaponData.penetration
 	wepClass.selectSortWeight = weaponData.selectSortWeight
+	wepClass.stun = weaponData.stun 
+	wepClass.Damage = weaponData.damage or wepClass.Damage
+	wepClass.Primary.ClipSize_Orig = wepClass.Primary.ClipSize or wepClass.ClipSize
 
 	weaponData.weaponObject = wepClass
 	weaponData.processedWeaponObject = weapons.Get(weaponData.weaponClass)
@@ -134,9 +137,13 @@ function GM:registerPrimaryWeapon(weaponData)
 	if not weaponData.maxAmmo then
 		weaponData.maxAmmo = math.huge
 	end
+	if not string.find(weapons.Get(weaponData.weaponClass).Base,self:GetBaseClassByID(GetConVar("gc_wepbase"):GetInt())) then -- weapons.Get(weaponData.weaponClass).Base != self:GetBaseClassByID(GetConVar("gc_wepbase"):GetInt())
+		return 
+	end
 	
 	self:applyWeaponDataToWeaponClass(weaponData, true, 0)
 	self.PrimaryWeapons[#self.PrimaryWeapons + 1] = weaponData
+	--print(weapons.Get(weaponData.weaponClass).Base)
 end
 
 function GM:registerSecondaryWeapon(weaponData)
@@ -147,6 +154,9 @@ function GM:registerSecondaryWeapon(weaponData)
 	
 	if not weaponData.maxAmmo then
 		weaponData.maxAmmo = math.huge
+	end
+	if not string.find(weapons.Get(weaponData.weaponClass).Base,self:GetBaseClassByID(GetConVar("gc_wepbase"):GetInt())) then -- weapons.Get(weaponData.weaponClass).Base != self:GetBaseClassByID(GetConVar("gc_wepbase"):GetInt())
+		return 
 	end
 	
 	self:applyWeaponDataToWeaponClass(weaponData, false, 1)
@@ -175,10 +185,18 @@ end
 
 function GM:findBestWeapons(lookInto, output)
 	for key, weaponData in ipairs(lookInto) do
+
 		local wepObj = weaponData.weaponObject
+		if string.find(wepObj.Base,"tfa") then --wepObj.Base == "tfa_devl_base" or wepObj.Base == "tfa_gun_base" or
+            wepObj = table.Merge(wepObj, self:parseTFAWeapon(wepObj))
+			--PrintTable(wepObj)
+		elseif string.find(wepObj.Base,"arc9") then
+			wepObj = table.Merge(wepObj, self:parseARC9Weapon(wepObj))
+			--PrintTable(self:parseARC9Weapon(wepObj))
+		end 
 		
-		output.damage = math.max(output.damage, wepObj.Damage * wepObj.Shots)
-		output.recoil = math.max(output.recoil, wepObj.Recoil)
+		output.damage = math.max(output.damage, wepObj.Damage * wepObj.Shots )
+		output.recoil = math.max(output.recoil, wepObj.GCRecoil or wepObj.Recoil)
 		output.aimSpread = math.min(output.aimSpread, wepObj.AimSpread)
 		output.firerate = math.min(output.firerate, wepObj.FireDelay)
 		output.hipSpread = math.min(output.hipSpread, wepObj.HipSpread)
@@ -203,11 +221,13 @@ end
 
 -- this function gets called in InitPostEntity for both the client and server, this is where we register a bunch of stuff
 function GM:postInitEntity()
-	-- battle rifles
+	-- cw 2.0 orig start 
+
 	local g3a3 = {}
 	g3a3.weaponClass = "cw_g3a3"
 	g3a3.weight = 4.1
 	g3a3.penetration = 18
+	g3a3.stun = 1.7
 
 	self:registerPrimaryWeapon(g3a3)
 
@@ -215,6 +235,7 @@ function GM:postInitEntity()
 	scarH.weaponClass = "cw_scarh"
 	scarH.weight = 3.72
 	scarH.penetration = 18
+	scarH.stun = 1.35
 	
 	self:registerPrimaryWeapon(scarH)
 	
@@ -222,21 +243,16 @@ function GM:postInitEntity()
 	m14.weaponClass = "cw_m14"
 	m14.weight = 5.1
 	m14.penetration = 18
+	m14.stun = 1 
 	
 	self:registerPrimaryWeapon(m14)
 	
 	-- assault rifles
-	local akm = {}
-	akm.weaponClass = "cw_akm_official"
-	akm.weight = 3.3
-	akm.penetration = 17
-	
-	self:registerPrimaryWeapon(akm)
-	
 	local ak74 = {}
 	ak74.weaponClass = "cw_ak74"
 	ak74.weight = 3.07
-	ak74.penetration = 16
+	ak74.penetration = 17
+	ak74.stun = 1.35
 	
 	self:registerPrimaryWeapon(ak74)
 
@@ -245,6 +261,7 @@ function GM:postInitEntity()
 	ar15.weight = 2.88
 	ar15.penetration = 16
 	ar15.maxAmmo = 100
+	ar15.stun = 1.25
 	
 	self:registerPrimaryWeapon(ar15)
 	
@@ -252,6 +269,7 @@ function GM:postInitEntity()
 	g36c.weaponClass = "cw_g36c"
 	g36c.weight = 2.82
 	g36c.penetration = 16
+	g36c.stun = 1.4
 	
 	self:registerPrimaryWeapon(g36c)
 	
@@ -259,6 +277,7 @@ function GM:postInitEntity()
 	famas.weaponClass = "cw_famasg2_official"
 	famas.weight = 2.82
 	famas.penetration = 16
+	famas.stun = 0.9
 	
 	self:registerPrimaryWeapon(famas)
 	
@@ -266,6 +285,7 @@ function GM:postInitEntity()
 	l852a2.weaponClass = "cw_l85a2"
 	l852a2.weight = 3.82
 	l852a2.penetration = 16
+	l852a2.stun = 1.5
 	
 	self:registerPrimaryWeapon(l852a2)
 	
@@ -273,6 +293,7 @@ function GM:postInitEntity()
 	vss.weaponClass = "cw_vss"
 	vss.weight = 2.6
 	vss.penetration = 15
+	vss.stun = 0.5
 	
 	self:registerPrimaryWeapon(vss)
 	
@@ -281,6 +302,7 @@ function GM:postInitEntity()
 	mp5.weaponClass = "cw_mp5"
 	mp5.weight = 2.5
 	mp5.penetration = 9
+	mp5.stun = 0.75
 	
 	self:registerPrimaryWeapon(mp5)
 	
@@ -288,13 +310,15 @@ function GM:postInitEntity()
 	mp9.weaponClass = "cw_mp9_official"
 	mp9.weight = 1.4
 	mp9.penetration = 9
+	mp9.stun = 0.5
 	
 	self:registerPrimaryWeapon(mp9)
 	
 	local mp7 = {}
 	mp7.weaponClass = "cw_mp7_official"
 	mp7.weight = 1.7
-	mp7.penetration = 16
+	mp7.penetration = 12
+	mp7.stun = 1.2
 	
 	self:registerPrimaryWeapon(mp7)
 	
@@ -302,6 +326,7 @@ function GM:postInitEntity()
 	mac11.weaponClass = "cw_mac11"
 	mac11.weight = 1.59
 	mac11.penetration = 6
+	mac11.stun = 1.8
 	
 	self:registerPrimaryWeapon(mac11)
 	
@@ -309,6 +334,7 @@ function GM:postInitEntity()
 	ump45.weaponClass = "cw_ump45"
 	ump45.weight = 2.5
 	ump45.penetration = 9
+	ump45.stun = 2.25
 	
 	self:registerPrimaryWeapon(ump45)
 	
@@ -318,6 +344,7 @@ function GM:postInitEntity()
 	m249.penetration = 16
 	m249.maxMags = 2
 	m249.maxAmmo = 200
+	m249.stun = 2.5
 	
 	self:registerPrimaryWeapon(m249)
 	
@@ -326,6 +353,7 @@ function GM:postInitEntity()
 	m3super90.weaponClass = "cw_m3super90"
 	m3super90.weight = 3.27
 	m3super90.penetration = 5
+	m3super90.stun = 0.1
 	
 	self:registerPrimaryWeapon(m3super90)
 	
@@ -333,6 +361,7 @@ function GM:postInitEntity()
 	m1014.weaponClass = "cw_xm1014_official"
 	m1014.weight = 3.84
 	m1014.penetration = 5
+	m1014.stun = 0.1
 	
 	self:registerPrimaryWeapon(m1014)
 	
@@ -342,6 +371,7 @@ function GM:postInitEntity()
 	saiga.penetration = 5
 	saiga.maxMags = 4
 	saiga.startAmmo = 20
+	saiga.stun = 0.1
 	
 	self:registerPrimaryWeapon(saiga)
 	
@@ -350,6 +380,7 @@ function GM:postInitEntity()
 	serbushorty.weight = 1.8
 	serbushorty.penetration = 5
 	serbushorty.startAmmo = 16
+	serbushorty.stun = 0.1
 	
 	self:registerPrimaryWeapon(serbushorty)
 	
@@ -358,6 +389,7 @@ function GM:postInitEntity()
 	svd.weaponClass = "cw_svd_official"
 	svd.weight = 4.30
 	svd.penetration = 25
+	svd.stun = 3.5
 	
 	self:registerPrimaryWeapon(svd)
 	
@@ -365,6 +397,7 @@ function GM:postInitEntity()
 	l115.weaponClass = "cw_l115"
 	l115.weight = 6.5
 	l115.penetration = 30
+	l115.stun = 5
 	
 	self:registerPrimaryWeapon(l115)
 	
@@ -373,6 +406,7 @@ function GM:postInitEntity()
 	deagle.weaponClass = "cw_deagle"
 	deagle.weight = 1.998
 	deagle.penetration = 17
+	deagle.stun = 0.35
 	
 	self:registerSecondaryWeapon(deagle)
 	
@@ -380,6 +414,7 @@ function GM:postInitEntity()
 	mr96.weaponClass = "cw_mr96"
 	mr96.weight = 1.22
 	mr96.penetration = 14
+	mr96.stun = 0.4
 	
 	self:registerSecondaryWeapon(mr96)
 	
@@ -387,6 +422,7 @@ function GM:postInitEntity()
 	m1911.weaponClass = "cw_m1911"
 	m1911.weight = 1.105
 	m1911.penetration = 7
+	m1911.stun = 0.175
 	
 	self:registerSecondaryWeapon(m1911)
 	
@@ -394,6 +430,7 @@ function GM:postInitEntity()
 	fiveseven.weaponClass = "cw_fiveseven"
 	fiveseven.weight = 0.61
 	fiveseven.penetration = 11
+	fiveseven.stun = 0.25
 	
 	self:registerSecondaryWeapon(fiveseven)
 	
@@ -401,6 +438,7 @@ function GM:postInitEntity()
 	p99.weaponClass = "cw_p99"
 	p99.weight = 0.63
 	p99.penetration = 7
+	p99.stun = 0.3
 	
 	self:registerSecondaryWeapon(p99)
 	
@@ -408,11 +446,680 @@ function GM:postInitEntity()
 	makarov.weaponClass = "cw_makarov"
 	makarov.weight = 0.63
 	makarov.penetration = 6
+	makarov.stun = 0.1
+
+	self:registerSecondaryWeapon(makarov)
+
+
+	-- cw 2.0 orig end
+	local ebr = {}
+	ebr.weaponClass = "cw_kk_ins2_m14"
+	ebr.weight = 5
+	ebr.penetration = 18
+	ebr.stun = 2.1
+
+	self:registerPrimaryWeapon(ebr)
+	-- arc9 start 
+
+
+	local darsuAK = {}
+	darsuAK.weaponClass = "arc9_eft_ak74m"
+	darsuAK.weight = 6
+	darsuAK.penetration = 19
+	darsuAK.stun = 0.5
+	--darsuAK.maxammo = 120
+	--darsuAK.startammo = 30
+
+	self:registerPrimaryWeapon(darsuAK)
+
+
+	local darsuAK = {}
+	darsuAK.weaponClass = "arc9_eft_ak101"
+	darsuAK.weight = 5.5
+	darsuAK.penetration = 18.25
+	darsuAK.stun = 0.25
+	--darsuAK.maxammo = 120
+	--darsuAK.startammo = 30
+
+	self:registerPrimaryWeapon(darsuAK)
+
+	local darsuAK = {}
+	darsuAK.weaponClass = "arc9_eft_ak102"
+	darsuAK.weight = 5.75
+	darsuAK.penetration = 17.1
+	darsuAK.stun = 0.125
+	--darsuAK.maxammo = 120
+	--darsuAK.startammo = 30
+
+	self:registerPrimaryWeapon(darsuAK)
+
+	local darsuAK = {}
+	darsuAK.weaponClass = "arc9_eft_ak103"
+	darsuAK.weight = 5.25
+	darsuAK.penetration = 16.9
+	darsuAK.stun = 0.15
+	--darsuAK.maxammo = 120
+	--darsuAK.startammo = 30
+
+	self:registerPrimaryWeapon(darsuAK)
+
+	local darsuAK = {}
+	darsuAK.weaponClass = "arc9_eft_ak104"
+	darsuAK.weight = 5
+	darsuAK.penetration = 17
+	darsuAK.stun = 0.3
+	--darsuAK.maxammo = 120
+	--darsuAK.startammo = 30
+
+	self:registerPrimaryWeapon(darsuAK)
+
+	local darsuAK = {}
+	darsuAK.weaponClass = "arc9_eft_ak105"
+	darsuAK.weight = 5.3
+	darsuAK.penetration = 17.5
+	darsuAK.stun = 0.4
+	--darsuAK.maxammo = 120
+	--darsuAK.startammo = 30
+
+	self:registerPrimaryWeapon(darsuAK)
+
+	local darsuAK = {}
+	darsuAK.weaponClass = "arc9_eft_ak74"
+	darsuAK.weight = 4.75
+	darsuAK.penetration = 16.8
+	darsuAK.stun = 0.12
+	--darsuAK.maxammo = 120
+	--darsuAK.startammo = 30
+
+	self:registerPrimaryWeapon(darsuAK)
+
+	local darsuAK = {}
+	darsuAK.weaponClass = "arc9_eft_akm"
+	darsuAK.weight = 4.5
+	darsuAK.penetration = 16.5
+	darsuAK.stun = 0.15
+	--darsuAK.maxammo = 120
+	--darsuAK.startammo = 30
+
+	self:registerPrimaryWeapon(darsuAK)
+
+	local darsuAK = {}
+	darsuAK.weaponClass = "arc9_eft_aks74u"
+	darsuAK.weight = 3.5
+	darsuAK.penetration = 16
+	darsuAK.stun = 0.1
+	--darsuAK.maxammo = 120
+	--darsuAK.startammo = 30
+
+	self:registerPrimaryWeapon(darsuAK)
+
+	local darsuAK = {}
+	darsuAK.weaponClass = "arc9_eft_rd704"
+	darsuAK.weight = 6
+	darsuAK.penetration = 17.7
+	darsuAK.stun = 0.5
+	--darsuAK.maxammo = 120
+	--darsuAK.startammo = 30
+
+	self:registerPrimaryWeapon(darsuAK)
+
+	local darsuAK = {}
+	darsuAK.weaponClass = "arc9_eft_rpk16"
+	darsuAK.weight = 6.5
+	darsuAK.penetration = 17.9
+	darsuAK.stun = 0.4
+	--darsuAK.maxammo = 120
+	--darsuAK.startammo = 30
+
+	self:registerPrimaryWeapon(darsuAK)
+
+	local darsusaiga = {}
+	darsusaiga.weaponClass = "arc9_eft_saiga12k"
+	darsusaiga.weight = 3.5
+	darsusaiga.penetration = 16
+	darsusaiga.stun = 0.1
+	darsusaiga.maxammo = 80
+	--darsusaiga.startammo = 20 
+
+	self:registerPrimaryWeapon(darsusaiga)
+
+
+    local vityaz = {}
+	vityaz.weaponClass = "arc9_eft_pp1901"
+	vityaz.weight = 2.75
+	vityaz.penetration = 15
+	vityaz.stun = 0.2
+	--vityaz.maxammo = 80
+	--darsusaiga.startammo = 20 
+
+	self:registerPrimaryWeapon(vityaz)
+
+	local s9 = {}
+	s9.weaponClass = "arc9_eft_saiga9"
+	s9.weight = 2.9
+	s9.penetration = 15.25
+	s9.stun = 0.15
+	--vityaz.maxammo = 80
+	--darsusaiga.startammo = 20 
+
+	self:registerPrimaryWeapon(s9)
+
+	local ak54 = {}
+	ak54.weaponClass = "arc9_eft_sag_ak545"
+	ak54.weight = 5
+	ak54.penetration = 17
+	ak54.stun = 0.3
+	--vityaz.maxammo = 80
+	--darsusaiga.startammo = 20 
+
+	self:registerPrimaryWeapon(ak54)
+
+	local akshort = {}
+	akshort.weaponClass = "arc9_eft_sag_ak545short"
+	akshort.weight = 4.25
+	akshort.penetration = 16.5
+	akshort.stun = 0.25
+	--vityaz.maxammo = 80
+	--darsusaiga.startammo = 20 
+
+	self:registerPrimaryWeapon(akshort)
+
+	local vepr = {}
+	vepr.weaponClass = "arc9_eft_vpo136"
+	vepr.weight = 3.9
+	vepr.penetration = 17.2
+	vepr.stun = 0.4
+	--vityaz.maxammo = 80
+	--darsusaiga.startammo = 20 
+
+	self:registerPrimaryWeapon(vepr)
+
+	local vpo = {}
+	vpo.weaponClass = "arc9_eft_vpo209"
+	vpo.weight = 4.2
+	vpo.penetration = 17.5
+	vpo.stun = 0.75
+	--vityaz.maxammo = 80
+	--darsusaiga.startammo = 20 
+
+	self:registerPrimaryWeapon(vpo)
+
+	local glk = {}
+	glk.weaponClass = "arc9_eft_glock17"
+	glk.weight = 0.6
+	glk.penetration = 17
+	glk.stun = 2.5
+	glk.maxammo = 90
+	--glk.startammo = 17
+
+	self:registerSecondaryWeapon(glk)
+
+	local glk18 = {}
+	glk18.weaponClass = "arc9_eft_glock18c"
+	glk18.weight = 0.7
+	glk18.penetration = 17.3
+	glk18.stun = 2.6
+	glk18.maxammo = 95
+	--glk18.startammo = 17
+	
+	self:registerSecondaryWeapon(glk18)
+
+	local glk19 = {}
+	glk19.weaponClass = "arc9_eft_glock19x"
+	glk19.weight = 0.9
+	glk19.penetration = 17.7
+	glk19.stun = 2.7
+	glk19.maxammo = 90
+	--glk19.startammo = 17 
+	
+	self:registerSecondaryWeapon(glk19)
+
+
+	-- arc9 end 
+
+	-- TFA Start
+
+	--[[local asval = {}
+	asval.weaponClass = "devl_as_val"
+	asval.weight = 3
+	asval.penetration = 17.5
+	asval.stun = 0.1
+
+	self:registerPrimaryWeapon(asval)]]
+
+	local dvl = {}
+	dvl.weaponClass = "tfa_eft_dvl10"
+	dvl.weight = 7.5
+	dvl.penetration = 21
+	dvl.stun = 2.5
+
+	self:registerPrimaryWeapon(dvl)
+
+	local ump = {}
+	ump.weaponClass = "tfa_hkump45"
+	ump.weight = 2
+	ump.penetration = 15
+	ump.stun = 0.2
+
+	self:registerPrimaryWeapon(ump)
+
+	local m5 = {}
+	m5.weaponClass = "tfa_eft_mp5"
+	m5.weight = 2.75
+	m5.penetration = 15.5
+	m5.stun = 0.2
+
+	self:registerPrimaryWeapon(m5)
+
+	local m7 = {}
+	m7.weaponClass = "tfa_eft_mp7a1"
+	m7.weight = 2.75
+	m7.penetration = 15.5
+	m7.stun = 0.2
+
+	self:registerPrimaryWeapon(m7)
+
+	local mpx = {}
+	mpx.weaponClass = "tfa_eft_mpx"
+	mpx.weight = 3.75
+	mpx.penetration = 17
+	mpx.stun = 0.3
+
+	self:registerPrimaryWeapon(mpx)
+
+	local Sig = {}
+	Sig.weaponClass = "tfa_eft_mcx"
+	Sig.weight = 3.75
+	Sig.penetration = 17
+	Sig.stun = 0.5
+
+	self:registerPrimaryWeapon(Sig)
+
+	local t5 = {}
+	t5.weaponClass = "devl_t5000"
+	t5.weight = 6
+	t5.penetration = 22
+	t5.stun = 2.5
+
+	self:registerPrimaryWeapon(t5)
+
+	local snapa = {}
+	snapa.weaponClass = "devl_mjolnir"
+	snapa.weight = 5
+	snapa.penetration = 20
+	snapa.stun = 2.5
+
+	--self:registerPrimaryWeapon(snapa)
+
+	local geroin = {}
+	geroin.weaponClass = "tfa_rtx_hk416d"
+	geroin.weight = 4.5
+	geroin.penetration = 18
+	geroin.stun = 3
+
+	self:registerPrimaryWeapon(geroin)
+
+	local alpha = {}
+	alpha.weaponClass = "devl_kalashnikov_alpha"
+	alpha.weight = 5
+	alpha.penetration = 18
+	alpha.stun = 0.25
+
+	self:registerPrimaryWeapon(alpha)
+
+	local m4 = {}
+	m4.weaponClass = "tfa_eft_m4a1"
+	m4.weight = 4.25
+	m4.penetration = 15.5
+	m4.stun = 0.3
+
+	self:registerPrimaryWeapon(m4)
+
+	local m9 = {}
+	m9.weaponClass = "eft_m9a3"
+	m9.weight = 1.105
+	m9.penetration = 12
+	m9.stun = 1.1
+    self:registerSecondaryWeapon(m9)
+
+	local rook = {}
+	rook.weaponClass = "devl_rook"
+	rook.weight = 1.5
+	rook.penetration = 14
+	rook.stun = 1
+    self:registerSecondaryWeapon(rook)
+
+	local sr = {}
+	sr.weaponClass = "devl_sr1mp"
+	sr.weight = 1.25
+	sr.penetration = 13
+	sr.stun = 0.9
+    self:registerSecondaryWeapon(sr)
+
+	-- TFA End
+
+	local mini14 = {}
+	mini14.weaponClass = "cw_kk_ins2_mini14"
+	mini14.weight = 3.5
+	mini14.penetration = 16.5
+	mini14.stun = 1.65
+
+	self:registerPrimaryWeapon(mini14)
+
+
+	local ak74 = {}
+	ak74.weaponClass = "cw_kk_ins2_ak74"
+	ak74.weight = 4.17
+	ak74.penetration = 16
+	ak74.stun = 1.75
+
+	self:registerPrimaryWeapon(ak74)
+
+	local akm = {}
+	akm.weaponClass = "cw_kk_ins2_akm"
+	akm.weight = 4
+	akm.penetration = 16.25
+	akm.stun = 1.85
+
+	self:registerPrimaryWeapon(akm)
+
+	local fnfal = {}
+	fnfal.weaponClass = "cw_kk_ins2_fnfal"
+	fnfal.weight = 4.5
+	fnfal.penetration = 17.5
+	fnfal.stun = 2
+
+	self:registerPrimaryWeapon(fnfal)
+
+	local galil = {}
+	galil.weaponClass = "cw_kk_ins2_galil"
+	galil.weight = 5.5
+	galil.penetration = 17
+	galil.stun = 0.9
+
+	self:registerPrimaryWeapon(galil)
+
+	local mp40 = {}
+	mp40.weaponClass = "cw_kk_ins2_mp40"
+	mp40.weight = 3.25
+	mp40.penetration = 16.5
+	mp40.stun = 1.1
+
+	self:registerPrimaryWeapon(mp40)
+
+	local l1 = {}
+	l1.weaponClass = "cw_kk_ins2_l1a1"
+	l1.weight = 4.75
+	l1.penetration = 17.75
+	l1.stun = 3
+
+	self:registerPrimaryWeapon(l1)
+
+	local m1 = {}
+	m1.weaponClass = "cw_kk_ins2_m1a1"
+	m1.weight = 3.5
+	m1.penetration = 19
+	m1.stun = 2
+
+	self:registerPrimaryWeapon(m1)
+
+	local m16 = {}
+	m16.weaponClass = "cw_kk_ins2_m16a4"
+	m16.weight = 5.5
+	m16.penetration = 18
+	m16.stun = 1.35
+
+	self:registerPrimaryWeapon(m16)
+
+	local m249 = {}
+	m249.weaponClass = "cw_kk_ins2_m249"
+	m249.weight = 8.5
+	m249.penetration = 16.5
+	m249.stun = 1.75
+
+	self:registerPrimaryWeapon(m249)
+
+	local m40 = {}
+	m40.weaponClass = "cw_kk_ins2_m40a1"
+	m40.weight = 4.5
+	m40.penetration = 20
+	m40.stun = 1.25
+
+	self:registerPrimaryWeapon(m40)
+
+	local m4 = {}
+	m4.weaponClass = "cw_kk_ins2_m4a1"
+	m4.weight = 5.25
+	m4.penetration = 17.25
+	m4.stun = 1.5
+
+	self:registerPrimaryWeapon(m4)
+
+	local m590 = {}
+	m590.weaponClass = "cw_kk_ins2_m590"
+	m590.weight = 4.25
+	m590.penetration = 18.1
+	m590.stun = 0.1
+
+	self:registerPrimaryWeapon(m590)
+
+	local mk18 = {}
+	mk18.weaponClass = "cw_kk_ins2_mk18"
+	mk18.weight = 6
+	mk18.penetration = 16.9
+	mk18.stun = 1.75
+
+	self:registerPrimaryWeapon(mk18)
+
+	local nagant = {}
+	nagant.weaponClass = "cw_kk_ins2_mosin"
+	nagant.weight = 5.5
+	nagant.penetration = 19.25
+	nagant.stun = 15
+
+	self:registerPrimaryWeapon(nagant)
+
+	local rpk = {}
+	rpk.weaponClass = "cw_kk_ins2_rpk"
+	rpk.weight = 7.75
+	rpk.penetration = 17.35
+	rpk.stun = 2.1
+
+	self:registerPrimaryWeapon(rpk)
+
+	local sks = {}
+	sks.weaponClass = "cw_kk_ins2_sks"
+	sks.weight = 4.75
+	sks.penetration = 18
+	sks.stun = 3
+
+	self:registerPrimaryWeapon(sks)
+
+	--[[local sterling = {}
+	sks.weaponClass = "cw_kk_ins2_sterling"
+	sks.weight = 3.5
+	sks.penetration = 16.1
+
+	self:registerPrimaryWeapon(sterling)
+	--]]
+
+	local toz = {}
+	toz.weaponClass = "cw_kk_ins2_toz"
+	toz.weight = 5
+	toz.penetration = 18
+	toz.stun = 0.1
+
+	self:registerPrimaryWeapon(toz)
+
+	local scarH = {}
+	scarH.weaponClass = "cw_kk_ins2_cstm_scar"
+	scarH.weight = 3.72
+	scarH.penetration = 18
+	scarH.stun = 2.05
+	
+	self:registerPrimaryWeapon(scarH)
+	
+	-- assault rifles
+	local famas = {}
+	famas.weaponClass = "cw_kk_ins2_cstm_famas"
+	famas.weight = 4.2
+	famas.penetration = 17.25
+	famas.stun = 2.5
+	
+	self:registerPrimaryWeapon(famas)
+
+	local colt = {}
+	colt.weaponClass = "cw_kk_ins2_cstm_colt"
+	colt.weight = 4.1
+	colt.penetration = 17.5
+	colt.stun = 2.15
+
+	self:registerPrimaryWeapon(colt)
+
+	local kriss = {}
+	kriss.weaponClass = "cw_kk_ins2_cstm_kriss"
+	kriss.weight = 3
+	kriss.penetration = 14.5
+	kriss.stun = 1.5
+
+	self:registerPrimaryWeapon(kriss)
+
+	local g36 = {}
+	g36.weaponClass = "cw_kk_ins2_cstm_g36c"
+	g36.weight = 2.97
+	g36.penetration = 16.5
+	g36.stun = 1.35
+
+	self:registerPrimaryWeapon(g36)
+
+	local mp7 = {}
+	mp7.weaponClass = "cw_kk_ins2_cstm_mp7"
+	mp7.weight = 3.25
+	mp7.penetration = 15
+	mp7.stun = 0.75
+
+	self:registerPrimaryWeapon(mp7)
+
+	local mp5 = {}
+	mp5.weaponClass = "cw_kk_ins2_cstm_mp5a4"
+	mp5.weight = 2.5
+	mp5.penetration = 14
+	mp5.stun = 0.5
+
+	self:registerPrimaryWeapon(mp5)
+
+	local ksg = {}
+	ksg.weaponClass = "cw_kk_ins2_cstm_ksg"
+	ksg.weight = 5
+	ksg.penetration = 16
+	ksg.stun = 0.15
+
+	self:registerPrimaryWeapon(ksg)
+
+	local m14 = {}
+	m14.weaponClass = "cw_kk_ins2_cstm_m14"
+	m14.weight = 3.5
+	m14.penetration = 15.5
+	m14.stun = 2.2
+
+	self:registerPrimaryWeapon(m14)
+
+	local m500 = {}
+	m500.weaponClass = "cw_kk_ins2_cstm_m500"
+	m500.weight = 3.45
+	m500.penetration = 16
+	m500.stun = 0.12
+
+	self:registerPrimaryWeapon(m500)
+
+	local spas = {}
+	spas.weaponClass = "cw_kk_ins2_cstm_spas12"
+	spas.weight = 3.65
+	spas.penetration = 16
+	spas.stun = 0.17
+
+	self:registerPrimaryWeapon(spas)
+
+
+	local aug = {}
+	aug.weaponClass = "cw_kk_ins2_cstm_aug"
+	aug.weight = 5
+	aug.penetration = 17
+	aug.stun = 2.25
+
+	self:registerPrimaryWeapon(aug)
+	
+	-- handguns
+	
+	local mr96 = {}
+	mr96.weaponClass = "cw_kk_ins2_revolver"
+	mr96.weight = 1.22
+	mr96.penetration = 18
+	mr96.stun = 7.5
+	
+	self:registerSecondaryWeapon(mr96)
+	
+	local m1911 = {}
+	m1911.weaponClass = "cw_kk_ins2_m1911"
+	m1911.weight = 1.105
+	m1911.penetration = 12
+	m1911.stun = 3.5
+	
+	self:registerSecondaryWeapon(m1911)
+
+	local m45 = {}
+	m45.weaponClass = "cw_kk_ins2_m45"
+	m45.weight = 1.105
+	m45.penetration = 10
+	m45.stun = 3.6
+	self:registerSecondaryWeapon(m45)
+--
+--
+	
+
+	local g19 = {}
+	g19.weaponClass = "cw_kk_ins2_cstm_g19"
+	g19.weight = 1.105
+	g19.penetration = 11
+	g19.stun = 4.1
+	
+	self:registerSecondaryWeapon(g19)
+	
+	local mp5k = {}
+	mp5k.weaponClass = "cw_kk_ins2_mp5k"
+	mp5k.weight = 2.5
+	mp5k.penetration = 10
+	mp5k.stun = 0.9
+	
+	self:registerSecondaryWeapon(mp5k)
+
+	local uzi = {}
+	uzi.weaponClass = "cw_kk_ins2_cstm_uzi"
+	uzi.weight = 3.25
+	uzi.penetration = 12
+	uzi.stan = 0.75
+	
+	self:registerSecondaryWeapon(uzi)
+	
+	local m9 = {}
+	m9.weaponClass = "cw_kk_ins2_m9"
+	m9.weight = 0.63
+	m9.penetration = 9.5
+	m9.stun = 3.1
+	
+	self:registerSecondaryWeapon(m9)
+	
+	local makarov = {}
+	makarov.weaponClass = "cw_kk_ins2_makarov"
+	makarov.weight = 0.63
+	makarov.penetration = 8
+	makarov.stun = 1.6
 	
 	self:registerSecondaryWeapon(makarov)
 	
+
 	local flash = {}
-	flash.weaponClass = "cw_flash_grenade"
+	flash.weaponClass = "cw_kk_ins2_nade_m84"
 	flash.weight = 0.5
 	flash.startAmmo = 2
 	flash.hideMagIcon = true -- whether the mag icon and text should be hidden in the UI for this weapon
@@ -425,7 +1132,7 @@ function GM:postInitEntity()
 	self:registerTertiaryWeapon(flash)
 	
 	local smoke = {}
-	smoke.weaponClass = "cw_smoke_grenade"
+	smoke.weaponClass = "cw_kk_ins2_nade_m18"
 	smoke.weight = 0.5
 	smoke.startAmmo = 2
 	smoke.hideMagIcon = true
@@ -435,22 +1142,36 @@ function GM:postInitEntity()
 	}
 	
 	self:registerTertiaryWeapon(smoke)
-	
-	local spareGrenade = {}
-	spareGrenade.weaponClass = "cw_frag_grenade"
-	spareGrenade.weight = 0.5
-	spareGrenade.amountToGive = 1
-	spareGrenade.skipWeaponGive = true
-	spareGrenade.hideMagIcon = true
-	spareGrenade.description = {{t = "Spare frag grenade", font = "CW_HUD24", c = Color(255, 255, 255, 255)},
-		{t = "Allows for a second frag grenade to be thrown.", font = "CW_HUD20", c = Color(255, 255, 255, 255)}
+
+	local f1gren = {}
+	f1gren.weaponClass = "cw_kk_ins2_nade_m67"
+	f1gren.weight = 0.5
+	f1gren.amountToGive = 2
+	f1gren.hideMagIcon = true
+	f1gren.skipWeaponGive = true
+	f1gren.description = {{t = "Spare Grenade", font = "CW_HUD24", c = Color(255, 255, 255, 255)},
+		{t = "2x grenades.", font = "CW_HUD20", c = Color(255, 255, 255, 255)}
 	}
-	
-	function spareGrenade:postGive(ply)
+
+	function f1gren:postGive(ply)
 		ply:GiveAmmo(self.amountToGive, "Frag Grenades")
-	end
+	end 
+
+
+	self:registerTertiaryWeapon(f1gren)
 	
-	self:registerTertiaryWeapon(spareGrenade)
+
+    local incendiary = {}
+	incendiary.weaponClass = "cw_kk_ins2_nade_anm14"
+	incendiary.weight = 0.5
+	incendiary.startAmmo = 2
+	incendiary.hideMagIcon = true
+	incendiary.description = {{t = "Incendiary Grenade", font = "CW_HUD24", c = Color(255, 255, 255, 255)},
+		{t = "Incendiary", font = "CW_HUD20", c = Color(255, 255, 255, 255)},
+		{t = "2x grenades.", font = "CW_HUD20", c = Color(255, 255, 255, 255)}
+	}
+
+    self:registerTertiaryWeapon(incendiary)
 	
 	--[[local medkit = {}
 	medkit.weaponClass = "gc_medkit"
@@ -515,6 +1236,12 @@ function GM:postInitEntity()
 	
 	local wepObj = weapons.GetStored("cw_kk_ins2_rpg")
 	wepObj.weight = 0.5
+	wepObj.dropsDisabled = true
+	wepObj.isKnife = false
+	wepObj.selectSortWeight = 6
+    
+	local wepObj = weapons.GetStored(self.MedkitClass)
+	wepObj.weight = 10
 	wepObj.dropsDisabled = true
 	wepObj.isKnife = false
 	wepObj.selectSortWeight = 5

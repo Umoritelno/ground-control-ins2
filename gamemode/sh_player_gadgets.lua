@@ -91,6 +91,7 @@ end
 
 function spareAmmo:canUse(ply, gadgetData)
 	local wep = ply:GetActiveWeapon()
+	if !wep.CW20Weapon then return end 
 	
 	if IsValid(wep) and CurTime() < wep.GlobalDelay then
 		return false
@@ -148,7 +149,10 @@ function spareAmmo:resupply(resuppliedBy, target, availableAmmo, gadgetData)
 		end
 		
 		resuppliedBy:sendGadgets()
-		resuppliedBy:GetActiveWeapon():setGlobalDelay(self.resupplyTime + 0.3, true, CW_ACTION, self.resupplyTime)
+		--resuppliedBy:GetActiveWeapon().GlobalDelay = self.resupplyTime + 0.3
+		if resuppliedBy:GetActiveWeapon().CW20Weapon then
+			resuppliedBy:GetActiveWeapon():setGlobalDelay(self.resupplyTime + 0.3, true, CW_ACTION, self.resupplyTime)
+		end
 		--resuppliedBy:calculateWeight()
 	end
 end

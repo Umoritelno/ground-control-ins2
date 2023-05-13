@@ -521,13 +521,13 @@ function gcWeaponPanel:PaintOver()
 	end
 	
 	ammo = wepObject and wepObject.Primary.Ammo or "None selected"
-	magSize = wepObject and ("x" .. wepObject.Primary.ClipSize) or ""
+	--magSize = wepObject and ("x" .. wepObject.Primary.ClipSize) or ""
 	
 	draw.ShadowText(name, "CW_HUD16", 5, 10, White, Black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	
 	if wepData and not wepData.hideMagIcon then
 		draw.ShadowText(ammo, "CW_HUD16", 5, h - 10, White, Black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-		draw.ShadowText(magSize, "CW_HUD16", w - 16, h - 10, White, Black, 1, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+		--draw.ShadowText(magSize, "CW_HUD16", w - 16, h - 10, White, Black, 1, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 	end
 end
 
@@ -570,11 +570,13 @@ function curWeaponPanel:UpdateAvailableAttachments()
 		local ply = LocalPlayer()
 		local ownedAttachments = ply.ownedAttachments
 		local cash = ply.cash or 0
+		if weaponObject.CW20Weapon then
+			
 		
 		if weaponObject.Attachments then
 			for categoryID, data in pairs(weaponObject.Attachments) do
 				for key, attachmentID in ipairs(data.atts) do
-					local price = CustomizableWeaponry.registeredAttachmentsSKey[attachmentID].price
+					--local price = CustomizableWeaponry.registeredAttachmentsSKey[attachmentID].price
 					
 					if not ownedAttachments[attachmentID] and price and cash >= price then
 						self.availableAttachments[#self.availableAttachments + 1] = attachmentID
@@ -582,6 +584,7 @@ function curWeaponPanel:UpdateAvailableAttachments()
 				end
 			end
 		end
+	end
 	end
 end
 
@@ -747,6 +750,9 @@ end
 function curWeaponPanel:OnMousePressed(bind)
 	if self.weaponData then
 		local wepClass = self.weaponData.weaponObject
+		if not  wepClass.CW20Weapon then
+           return 
+		end 
 		
 		if wepClass and table.Count(wepClass.Attachments) > 0 then
 			GAMEMODE:setCurrentWeaponLoadout(self.weaponData.weaponObject)
@@ -767,7 +773,7 @@ function curWeaponPanel:OnMousePressed(bind)
 			local elementXGap = 5
 			local elementYGap = 30
 			local maxWidth = 350
-			
+
 			for category, data in pairs(wepClass.Attachments) do
 				if #data.atts > 0 then
 					curXPos = 5
@@ -836,7 +842,7 @@ function weaponStats:SetWeapon(weaponData, id)
 		targetTable = BestSecondaryWeapons
 	end
 	
-	self.displayRecoil = self.weaponObject.Recoil
+	self.displayRecoil = self.weaponObject.Recoil or self.weaponObject.GCRecoil
 	self.displaySpread = self.weaponObject.AimSpread
 	self.displayFireDelay = self.weaponObject.FireDelay
 	self.displayDamage = self.weaponObject.Damage
@@ -887,21 +893,21 @@ end
 
 function weaponStats:Paint()
 	local w, h = self:GetSize()
-	surface.SetDrawColor(0, 0, 0, 255)
-	surface.DrawOutlinedRect(0, 0, w, h)
+	local wepClass = self.weaponObject
+	local targetTable = self.bestWeaponTable
+		surface.SetDrawColor(0, 0, 0, 255)
+	    surface.DrawOutlinedRect(0, 0, w, h)
 	
-	surface.SetDrawColor(0, 0, 0, 210)
-	surface.DrawRect(1, 1, w - 2, h - 2)
+	    surface.SetDrawColor(0, 0, 0, 210)
+	    surface.DrawRect(1, 1, w - 2, h - 2) 
 	
 	local White, Black = GAMEMODE.HUDColors.white, GAMEMODE.HUDColors.black
 	
-	local wepClass = self.weaponObject
-	local targetTable = self.bestWeaponTable
 	
 	if wepClass then
-		self:DrawStatBar("Damage", math.Round(self.displayDamage * GAMEMODE.DamageMultiplier) .. "x" .. self.displayShots, self.displayDamage * self.displayShots, targetTable.damage, 10, w)
+		self:DrawStatBar("Damage", math.Round(self.displayDamage or 25 * GAMEMODE.DamageMultiplier) .. "x" .. self.displayShots, self.displayDamage * self.displayShots, targetTable.damage, 10, w)
 		self:DrawStatBar("Recoil", "x" .. math.Round(self.displayRecoil, 1), self.displayRecoil, targetTable.recoil, 25, w)
-		self:DrawStatBar("Accuracy", math.Round((100 - self.displaySpread * 1000)) .. "%", targetTable.aimSpread, self.displaySpread, 40, w)
+	    self:DrawStatBar("Accuracy", math.Round((100 - self.displaySpread * 1000)) .. "%", targetTable.aimSpread, self.displaySpread, 40, w)
 		self:DrawStatBar("Firerate", math.Round(60 / self.displayFireDelay), targetTable.firerate, self.displayFireDelay, 55, w)
 	end
 	
@@ -910,7 +916,7 @@ function weaponStats:Paint()
 		self:DrawStatBar("Mobility", math.Round(100 - wepClass.VelocitySensitivity / 3 * 100) .. "%", targetTable.velocitySensitivity, wepClass.VelocitySensitivity, 85, w)
 		self:DrawStatBar("Spread per shot", math.Round(wepClass.SpreadPerShot * 1000, 1) .. "%", wepClass.SpreadPerShot, targetTable.spreadPerShot, 100, w)
 		self:DrawStatBar("Max spread", math.Round(wepClass.MaxSpreadInc * 1000, 1) .. "%", wepClass.MaxSpreadInc, targetTable.maxSpreadInc, 115, w)
-		--self:DrawStatBar("Movement speed", GAMEMODE.BaseRunSpeed - wepClass.SpeedDec, targetTable.speedDec, wepClass.SpeedDec, 130, w)
+		--[[self:DrawStatBar("Movement speed", GAMEMODE.BaseRunSpeed - wepClass.SpeedDec, targetTable.speedDec, wepClass.SpeedDec, 130, w) ]]--
 		self:DrawStatBar("Weapon weight", math.Round(wepClass.weight, 2) .. "KG", wepClass.weight, targetTable.weight, 145, w)
 		self:DrawStatBar("Mag weight", math.Round(wepClass.magWeight, 2) .. "KG", wepClass.magWeight, targetTable.magWeight, 160, w)
 		self:DrawStatBar("Penetration", wepClass.penetrationValue, wepClass.penetrationValue, targetTable.penetrationValue, 175, w)

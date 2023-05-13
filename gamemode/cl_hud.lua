@@ -114,9 +114,9 @@ function GM:HUDPaint()
 		local overallTextHeight = ySize - _S(7) + bandageOff
 		surface.SetDrawColor(0, 0, 0, 150)
 		local underW = xSize + _S(10)
-		surface.DrawRect(scrW - _S(self.BaseHUDX) - underW, scrH - _S(100) - overallTextHeight, xSize + _S(10), overallTextHeight)
+		--surface.DrawRect(scrW - _S(self.BaseHUDX) - underW, scrH - _S(100) - overallTextHeight, xSize + _S(10), overallTextHeight)
 		
-		draw.ShadowText(healthText, self.HealthDisplayFont, scrW - textX, scrH - baseOffset - overallTextHeight, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+		--draw.ShadowText(healthText, self.HealthDisplayFont, scrW - textX, scrH - baseOffset - overallTextHeight, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 		draw.ShadowText(bandageText, self.BandageDisplayFont, scrW - textX, scrH - baseOffset + bandageOff - overallTextHeight, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 		--draw.ShadowText(ply.stamina, self.BandageDisplayFont, 55, scrH - 200, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 		
@@ -316,7 +316,7 @@ function GM:HUDPaint()
 	-- instead of blasting team.GetPlayers every frame, just use the table that gets filled in cl_render.lua
 	for key, obj in ipairs(self.teamPlayers) do
 		--if obj.withinPVS then -- only draw the player if we can see him, GMod has no clientside ways of checking whether the player is in PVS, check cl_render.lua for the second part of this
-		if obj ~= ply and obj:Alive() then
+		if obj ~= ply and obj:Alive() and ply:GetNWString("Role","Soldier") == "Commander" then
 			local pos = obj:GetBonePosition(obj:LookupBone("ValveBiped.Bip01_Head1"))
 			
 			if pos:Distance(ourShootPos) <= teamMateMarkerDisplayDistance then

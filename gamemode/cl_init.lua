@@ -399,3 +399,34 @@ hook.Add("player_spawn", "GroundControl.player_spawn", function(data)
 end)
 
 gameevent.Listen("player_spawn")
+
+net.Receive("ShowRole",function()
+	local desc = net.ReadTable()
+	if text then text:Remove() text = nil end 
+	--if label then label:Remove() label = nil end 
+	--local label = vgui.Create("DPanel")
+	--label:SetPos(ScrW() * 0.35,ScrH() * 0.1)
+	--label:SetSize(ScrW() * 0.25,ScrH() * 0.15)
+	--label:SetText(desc.Description)
+	--label:SetFont("DermaLarge")
+
+	local text = vgui.Create("RichText")
+	text:SetPos(ScrW() * 0.35,ScrH() * 0.1)
+	text:SetSize(ScrW() * 0.25,ScrH() * 0.15)
+	--text:Dock(FILL)
+	text:AppendText(desc.Description)
+	text:InsertColorChange(0,0,0,255)
+	text:SetVerticalScrollbarEnabled(false)
+	--text:SetToFullHeight()
+	--text:SetFontInternal( "DermaLarge" )
+	function text:PerformLayout()
+		--self:SetBGColor(Color(0, 0, 255))
+		self:SetFontInternal( "DermaLarge" )
+	end
+	timer.Simple(10,function()
+		if text:IsValid() then
+			text:Remove()
+			text = nil 
+		end
+	end)
+end)

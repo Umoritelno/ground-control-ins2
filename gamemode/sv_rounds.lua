@@ -1,4 +1,21 @@
 util.AddNetworkString("GC_ROUND_OVER")
+util.AddNetworkString("ShowRole")
+
+--[[GM.Roles = {
+	["Soldier"] = {
+		Description = "You are soldier. Stay close to the squad and follow the orders of the commander."
+	},
+	["Specialist"] = {
+		Description = "You are specialist. Use your gear to complete the task."
+	},
+	["Commander"] = {
+      Description = "You are commander of your squad. Lead your squad."
+	},
+	["Demoman"] = {
+		Description = "You are demoman. Use your weapons to wipe enemies off the face of the earth"
+	},
+}
+--]]
 
 GM.RoundWonCash = 200
 GM.RoundWonExp = 150
@@ -7,6 +24,7 @@ GM.RoundsPerMap = GM.defaultRounds
 GM.RoundsPlayed = 0
 GM.MaxMapsPerPick = 9
 GM.MaxGameTypesPerPick = 9
+GM.MaxWeaponBasesPerPick = 5 -- why did we need more?
 
 GM.TrashDealingMethods = { -- how to deal with trash props (small props with a small weight that the player collides with and then everything goes to fuck)
 	REMOVE = 1, -- will remove them
@@ -18,6 +36,7 @@ GM.TrashPropMaxWeight = 2 -- max weight of a prop to be considered trash
 
 GM.VoteMapVoteID = "votemap"
 GM.VoteGametypeVoteId = "votegametype"
+GM.VoteBaseID = "votebase"
 
 util.AddNetworkString("GC_ROUND_PREPARATION")
 
@@ -171,6 +190,9 @@ function GM:endRound(winningTeam)
 			self:startVoteMap()
 		end
 	else
+		if self.RoundsPlayed == self.RoundsPerMap - 2 then
+			self:StartWeaponBaseVote()
+		end
 		if self.RoundsPlayed == self.RoundsPerMap - 1 and self:gametypeVotesEnabled() and not canPickRandomMapAndGametype then -- start a vote for next gametype if we're on the second last round
 			self:startGameTypeVote()
 		end
@@ -254,6 +276,39 @@ function GM:startGameTypeVote()
 	end, self.VoteGametypeVoteID)
 	
 	hook.Call("GroundControlGametypeVoteStarted", nil, possibilities, self.VoteID)
+end 
+
+function GM:StartWeaponBaseVote()
+    local bases = {}
+	for num,base in pairs(GAMEMODE.WepBases) do
+		table.insert(bases,base.name)
+	end
+	self:setupCurrentVote("Vote for weapon base in the next game", bases, player.GetAll(), self.MaxWeaponBasesPerPick, false, nil, function()
+		local highestOption, highestKey = self:getHighestVote()
+		local key = self:GetIDByName(highestOption.option)
+		--self:SetWeaponBaseID(self:GetIDByName(highestOption.option))
+		game.ConsoleCommand("gc_wepbase " .. key .. "\n")
+	end, self.VoteBaseID)
+
+end 
+
+function GM:specCount(num) 
+	local Amount = 0
+	local players = num - 1 -- commander is special unit
+    if players < 2 then
+		Amount = 0
+	elseif players > 1 and players <= 4 then 
+		Amount = 1
+	elseif players > 4 and players <= 6 then 
+		Amount = 2
+	elseif players > 6 and players <= 10 then 
+		Amount = 3 
+	elseif players > 10 and players <= 12 then 
+		Amount = 4
+	else 
+		Amount = 5 
+	end 
+	return Amount 
 end
 
 function GM:restartRound()
@@ -271,14 +326,55 @@ function GM:restartRound()
 	if self.curGametype.roundStart then
 		self.curGametype:roundStart()
 	end
+	RunConsoleCommand("arc9_atts_nocustomize", "0")
+
 	
 	self:setupRoundPreparation()
-	
+
+	self.CurSpecRound = self.SpecRounds[math.random(1,table.Count(self.SpecRounds))]
+	--print(self:GetSpecRound())
+
 	for key, obj in pairs(player.GetAll()) do
 		obj:Spawn()
 	end
-	
-	self.canSpawn = false
+
+	self.canSpawn = false 
+	--self:StartNewVote()
+
+
+	for i = 1,2 do
+		local maxcommander = 1
+		local maxspec = self:specCount(team.NumPlayers(i))
+		local maxdemo = 1 
+		local demoamount = 0
+		local specAmount = 0
+		local commanderamount = 0
+		for k,v in RandomPairs(team.GetPlayers(i)) do
+			local randomdemo = math.random(1,7)
+			if maxcommander > commanderamount  then
+				v:SetNWString("Role","Commander")
+				commanderamount = commanderamount + 1
+			elseif maxcommander <= commanderamount then 
+				if maxspec > specAmount then
+					if randomdemo == 1 and demoamount < maxdemo then 
+						v:SetNWString("Role","Demoman")
+						specAmount = specAmount + 1
+						demoamount = demoamount + 1
+					else 
+						v:SetNWString("Role","Specialist")
+				        specAmount = specAmount + 1
+					end 
+				else 
+					v:SetNWString("Role","Soldier")
+				end
+			end
+			net.Start("ShowRole")
+			net.WriteTable(self.Roles[v:GetNWString("Role","Soldier")])
+			net.Send(v)
+			--print(v:GetNWString("Role"))
+		end
+		--print(self:specCount(team.NumPlayers(i)))
+	end
 	self.RoundOver = false
 	self:updateServerName()
 	SendUserMessage("GC_NEW_ROUND")
@@ -295,7 +391,8 @@ function GM:setupRoundPreparation()
 	self:setupLoadoutSelectionTime()
 	
 	timer.Simple(self.RoundPreparationTime, function()
-		self:disableCustomizationMenu()
+		self:disableCustomizationMenu() -- customize
+		RunConsoleCommand("arc9_atts_nocustomize", "1")
 	end)
 
 	net.Start("GC_ROUND_PREPARATION")

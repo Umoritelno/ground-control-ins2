@@ -878,20 +878,58 @@ ghettoDrugBust.grenadeChance = 20 -- chance that a ghetto team player will recei
 ghettoDrugBust.invertedSpawnpoints = {
 	de_chateau = true
 }
-ghettoDrugBust.redTeamWeapons = {
-	{weapon = "cw_ak74", chance = 4, mags = 1},
-	{weapon = "cw_akm_official", chance = 4, mags = 1},
-	{weapon = "cw_m3super90", chance = 4, mags = 3},
-	{weapon = "cw_mp5", chance = 6, mags = 1},
-	{weapon = "cw_shorty", chance = 8, mags = 12},
-	{weapon = "cw_mac11", chance = 9, mags = 1},
-	{weapon = "cw_deagle", chance = 14, mags = 2},
-	{weapon = "cw_mr96", chance = 17, mags = 3},
-	{weapon = "cw_fiveseven", chance = 25, mags = 2},
-	{weapon = "cw_m1911", chance = 35, mags = 4},
-	{weapon = "cw_p99", chance = 50, mags = 3},
-	{weapon = "cw_makarov", chance = 65, mags = 7}
+
+ghettoDrugBust.redteamweaponslist = {
+	[1] = {
+		[1] = {weapon = "cw_ak74", chance = 3, mags = 1},
+		[2] = {weapon = "cw_shorty", chance = 8, mags = 12},
+		[3] = {weapon = "cw_mac11", chance = 10, mags = 1},
+        [4] = {weapon = "cw_deagle", chance = 15, mags = 2},
+		[5] = {weapon = "cw_mr96", chance = 17, mags = 3},
+		[6] = {weapon = "cw_fiveseven", chance = 35, mags = 2},
+		[7] = {weapon = "cw_m1911", chance = 40, mags = 4},
+		[8] = {weapon = "cw_p99", chance = 66, mags = 3},
+		[9] = {weapon = "cw_makarov", chance = 100, mags = 7},
+		},
+	[2] = {
+		[1] = {weapon = "cw_kk_ins2_mosin",chance = 5,mags = 2},
+		[2] = {weapon = "cw_kk_ins2_sks",chance = 7,mags = 2},
+		[3] = {weapon = "cw_kk_ins2_rpk",chance = 2.5,mags = 1},
+		[4] = {weapon = "cw_kk_ins2_revolver",chance = 31,mags = 3},
+		[5] = {weapon = "cw_kk_ins2_m1911",chance = 50,mags = 3},
+		[6] = {weapon = "cw_kk_ins2_m45",chance = 45,mags = 3},
+		[7] = {weapon = "cw_kk_ins2_mp5k",chance = 25,mags = 2},
+
+	},
+	[3] = {
+		[1] = {weapon = "devl_kalashnikov_alpha",chance = 5,mags = 2,},
+		[2] = {weapon = "devl_sr1mp",chance = 50,mags = 2,},
+		[3] = {weapon = "devl_rook",chance = 45,mags = 2,},
+		[4] = {weapon = "eft_m9a3",chance = 42.5,mags = 3,},
+		[5] = {weapon = "tfa_eft_mp7a1",chance = 25,mags = 2,},
+		[6] = {weapon = "tfa_eft_mp5",chance = 27.5,mags = 2,},
+	},
+	[4] = {
+		[1] = {weapon = "arc9_eft_saiga12k",chance = 3.5,mags = 1,},
+		[2] = {weapon = "arc9_eft_glock18c",chance = 35,mags = 3,},
+		[3] = {weapon = "arc9_eft_ak74m",chance = 2.5,mags = 2,},
+		[4] = {weapon = "arc9_eft_glock17",chance = 70,mags = 3,},
+		[5] = {weapon = "arc9_eft_glock19x",chance = 42.5,mags = 3,},
+	},
+
+		     
+	--[[weapon = "cw_kk_ins2_toz", chance = 8, mags = 1,
+	weapon = "cw_kk_ins2_cstm_mp7", chance = 10, mags = 1,
+	weapon = "cw_kk_ins2_mosin", chance = 5, mags = 2,
+	weapon = "cw_kk_ins2_revolver", chance = 25, mags = 2,
+	weapon = "cw_kk_ins2_m45", chance = 30, mags = 3,
+	weapon = "cw_kk_ins2_cstm_g19", chance = 35, mags = 2,
+	weapon = "cw_kk_ins2_m1911", chance = 40, mags = 4},
+	weapon = "cw_kk_ins2_m9", chance = 66, mags = 3,
+	weapon = "cw_kk_ins2_makarov", chance = 100, mags = 7,
+	--]]
 }
+ghettoDrugBust.redTeamWeapons = ghettoDrugBust.redteamweaponslist[GetConVar("gc_wepbase"):GetInt()]
 
 ghettoDrugBust.redTeamWeaponsWeight = 1
 
@@ -1122,12 +1160,17 @@ function ghettoDrugBust:playerSpawn(ply)
 			
 			-- if for some reason the chance roll failed and no weapon was chosen, we pick one at random
 			pickedWeapon = pickedWeapon or self.redTeamWeapons[math.random(1, #self.redTeamWeapons)]
+			--print(pickedWeapon)
 			
 			local randIndex = self.redTeamWeapons[math.random(1, #self.redTeamWeapons)]
 			local givenWeapon = ply:Give(pickedWeapon.weapon)
 			
-			ply:GiveAmmo(pickedWeapon.mags * givenWeapon.Primary.ClipSize_Orig, givenWeapon.Primary.Ammo)
+			ply:GiveAmmo(pickedWeapon.mags * givenWeapon:GetMaxClip1(), givenWeapon.Primary.Ammo) -- givenWeapon.Primary.ClipSize_Orig
+			--print(givenWeapon.Primary.ClipSize_Orig)
+			--[[if string.find(pickedWeapon.weapon.Base,"cw2") then 
 			givenWeapon:maxOutWeaponAmmo(givenWeapon.Primary.ClipSize_Orig)
+			end 
+			--]]
 			
 			if math.random(1, 100) <= ghettoDrugBust.grenadeChance then
 				ply:GiveAmmo(1, "Frag Grenades")
