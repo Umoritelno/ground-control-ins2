@@ -149,7 +149,7 @@ CreateConVar("gc_runspeed", GM.BaseRunSpeed, sharedCVar, "player walk speed (imm
 CreateConVar("gc_damagemult", GM.DamageMultiplier, sharedCVar, "multiplier for dealt weapon damage")
 CreateConVar("gc_damage_scale", GM.defaultDamageScale, sharedCVar, "multiplier for all weapon damage")
 CreateConVar("gc_wepbase",GM.DefBase,sharedCVar,"What weapon base we will use?")
---CreateConVar("gc_roles_enable",1,sharedCVar,"Will roles and skills work?")
+CreateConVar("gc_roles_enable",1,sharedCVar,"Will roles and skills work?")
 
 GM.CurWepBase = GetConVar("gc_wepbase"):GetInt() or 1
 
@@ -159,6 +159,10 @@ end
 
 GM:registerAutoUpdateConVar("gc_crippling", function(name, old, new)
 	GAMEMODE.cripplingEnabled = tonumber(new) and tonumber(new) > 0
+end)
+
+GM:registerAutoUpdateConVar("gc_roles_enable", function(name, old, new)
+	GAMEMODE.rolesenable = tonumber(new) and tonumber(new) > 0
 end)
 
 GM:registerAutoUpdateConVar("gc_round_prep_time", function(name, old, new)

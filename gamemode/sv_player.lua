@@ -189,15 +189,17 @@ function GM:PlayerSpawn(ply)
     net.Send(ply)
     ply.Cooldown = 0
     ply.Ability = nil 
-    timer.Simple(0.1,function()
-		if ply:GetNWString("Role","Soldier") == "Commander" then
-			ply:GiveAbility(1)
-		elseif ply:GetNWString("Role","Soldier") == "Specialist" then 
-			ply:GiveAbility(math.random(2,table.Count(abilities)))
-		else 
-			return
-		end
-	end)
+	if self.rolesenable then
+		timer.Simple(0.1,function()
+			if ply:GetNWString("Role","Soldier") == "Commander" then
+				ply:GiveAbility(1)
+			elseif ply:GetNWString("Role","Soldier") == "Specialist" then 
+				ply:GiveAbility(math.random(2,table.Count(abilities)))
+			else 
+				return
+			end
+		end)
+	end
 	
 	ply:SetViewPunchAngles(ZeroAng)
 	ply.currentTraits = ply.currentTraits and table.Empty(ply.currentTraits) or {}
