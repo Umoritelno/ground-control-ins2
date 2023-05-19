@@ -179,6 +179,13 @@ function OpenMainMenu()
                     MainMenu.settings.BlueFilter:DockMargin(0,0,0,scrh * 0.01)
                     MainMenu.settings.BlueFilter:SetText("Включить синий фильтр?")
                     MainMenu.settings.BlueFilter:SetConVar("BlueFilter")
+                    MainMenu.settings.ARC9Settings = vgui.Create("DButton",MainMenu.settings)
+                    MainMenu.settings.ARC9Settings:Dock(TOP)
+                    MainMenu.settings.ARC9Settings:DockMargin(0,0,0,scrh * 0.01)
+                    MainMenu.settings.ARC9Settings:SetText("Открыть меню настроек ARC9")
+                    MainMenu.settings.ARC9Settings.DoClick = function()
+                        ARC9_OpenSettings()
+                    end
                     MainMenu.settings:MoveTo(scrw * 0.7,0,0.5,0,-1,function()
                     MainMenu.settings.InAnim = false 
                 end)
