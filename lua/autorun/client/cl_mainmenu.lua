@@ -66,7 +66,7 @@ end )
 
 net.Receive("Golova",function()
     if GetConVar("VGOLOVU"):GetBool() == true then
-        print("belike")
+        --print("belike")
         surface.PlaySound("golova.mp3")
     end
 end)
