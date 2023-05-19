@@ -1,3 +1,0 @@
-function GM:createScrambleTeamsVote()
-	
-end
