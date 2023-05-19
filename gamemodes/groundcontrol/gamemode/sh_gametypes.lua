@@ -273,6 +273,7 @@ function oneSideRush:playerDisconnected(ply)
 end
 
 function oneSideRush:playerJoinTeam(ply, teamId)
+	--print(ply)
 	GAMEMODE:checkRoundOverPossibility(nil, true)
 	GAMEMODE:sendTimeLimit(ply)
 	ply:reSpectate()
