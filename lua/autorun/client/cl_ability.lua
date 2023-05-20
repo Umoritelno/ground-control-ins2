@@ -10,13 +10,6 @@ function AbilityDebug()
     end
 end 
 
-hook.Add("HUDPaint","AbilityTime",function()
-    if abilityPanel == nil then return end 
-    if LocalPlayer().cooldown == nil then return end 
-    if LocalPlayer().cooldown <= CurTime() then return end 
-    --draw.SimpleText(math.Round(LocalPlayer().cooldown - CurTime()),"ChatFont",scrw * 0.49,scrh * 0.775,Color(255,255,255))
-end)
-
 net.Receive("AbilityUse",function()
     LocalPlayer().cooldown = net.ReadInt(32)
     local icon = net.ReadString()
