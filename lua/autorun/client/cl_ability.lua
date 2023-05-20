@@ -1,6 +1,5 @@
 local scrw,scrh = ScrW(),ScrH()
 local abilityPanel = nil  
---local lply = LocalPlayer()
 
 function AbilityDebug()
     for k,v in pairs(debugtable) do
