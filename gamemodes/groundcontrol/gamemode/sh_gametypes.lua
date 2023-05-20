@@ -910,13 +910,13 @@ ghettoDrugBust.redteamweaponslist = {
 		[5] = {weapon = "tfa_eft_mp7a1",chance = 25,mags = 2,},
 		[6] = {weapon = "tfa_eft_mp5",chance = 27.5,mags = 2,},
 	},
-	[4] = {
+	--[[[4] = {
 		[1] = {weapon = "arc9_eft_saiga12k",chance = 3.5,mags = 1,},
 		[2] = {weapon = "arc9_eft_glock18c",chance = 35,mags = 3,},
 		[3] = {weapon = "arc9_eft_ak74m",chance = 2.5,mags = 2,},
 		[4] = {weapon = "arc9_eft_glock17",chance = 70,mags = 3,},
 		[5] = {weapon = "arc9_eft_glock19x",chance = 42.5,mags = 3,},
-	},
+	},]]
 
 		     
 	--[[weapon = "cw_kk_ins2_toz", chance = 8, mags = 1,
@@ -930,7 +930,8 @@ ghettoDrugBust.redteamweaponslist = {
 	weapon = "cw_kk_ins2_makarov", chance = 100, mags = 7,
 	--]]
 }
-ghettoDrugBust.redTeamWeapons = ghettoDrugBust.redteamweaponslist[GetConVar("gc_wepbase"):GetInt()]
+ghettoDrugBust.redTeamWeapons = ghettoDrugBust.redteamweaponslist[GM.CurWepBase]
+print(GM.CurWepBase)
 
 ghettoDrugBust.redTeamWeaponsWeight = 1
 

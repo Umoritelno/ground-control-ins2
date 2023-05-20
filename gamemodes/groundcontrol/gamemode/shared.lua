@@ -32,7 +32,7 @@ GM.VoteTime = GM.VotePrepTime + 30
 GM.HeavyLandingVelocity = 500
 GM.HeavyLandingVelocityToWeight = 0.03 -- multiply velocity by this much, if the final value exceeds our weight, then it is considered a heavy landing and will make extra noise
 GM.CurMap = string.lower(game.GetMap())
-GM.DefBase = 4
+GM.DefBase = 2
 GM.SpecRounds = {}
 GM.WepBases = {
 	[1] = {
@@ -46,10 +46,6 @@ GM.WepBases = {
   [3] = {
 	class = "tfa",
 	name = "TFA",
-  },
-  [4] = {
-	    class = "arc9_base",
-	    name = "ARC9",
   },
 }
 
@@ -151,7 +147,16 @@ CreateConVar("gc_damage_scale", GM.defaultDamageScale, sharedCVar, "multiplier f
 CreateConVar("gc_wepbase",GM.DefBase,sharedCVar,"What weapon base we will use?")
 CreateConVar("gc_roles_enable",1,sharedCVar,"Will roles and skills work?")
 
-GM.CurWepBase = GetConVar("gc_wepbase"):GetInt() or 1
+--GM.CurWepBase = GetConVar("gc_wepbase"):GetInt() or 1
+if GM.WepBases[GetConVar("gc_wepbase"):GetInt()] then
+	GM.CurWepBase = GetConVar("gc_wepbase"):GetInt()
+else
+	print("invalid weapon base. Using default")
+	if SERVER then
+		game.ConsoleCommand("gc_wepbase 2\n")
+	end
+	GM.CurWepBase = 2
+end
 
 local function getCvarNumber(new, old)
 	return tonumber(new) and new or old
