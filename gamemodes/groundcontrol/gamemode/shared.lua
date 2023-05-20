@@ -54,9 +54,10 @@ function GM:GetBaseClassByID(id)
 end 
 
 function GM:GetIDByName(name)
+	local id = 1
 	for k,v in pairs(self.WepBases) do
 		if v.name == name then
-			local id = k 
+			id = k 
 			break 
 		end
 	end
