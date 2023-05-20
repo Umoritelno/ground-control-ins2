@@ -326,7 +326,6 @@ function GM:restartRound()
 	if self.curGametype.roundStart then
 		self.curGametype:roundStart()
 	end
-	RunConsoleCommand("arc9_atts_nocustomize", "0")
 
 	
 	self:setupRoundPreparation()
@@ -392,7 +391,6 @@ function GM:setupRoundPreparation()
 	
 	timer.Simple(self.RoundPreparationTime, function()
 		self:disableCustomizationMenu() -- customize
-		RunConsoleCommand("arc9_atts_nocustomize", "1")
 	end)
 
 	net.Start("GC_ROUND_PREPARATION")
