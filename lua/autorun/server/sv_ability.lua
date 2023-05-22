@@ -112,7 +112,7 @@ end)
 end)
 --]]
 
-concommand.Add("Ability_use",function(ply)
+concommand.Add("ability_use",function(ply)
     if not ply.Ability then return end 
     if not ply:Alive() then return end 
 if not ply.Ability.customUse then 
