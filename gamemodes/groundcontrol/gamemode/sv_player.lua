@@ -184,11 +184,10 @@ function GM:PlayerSpawn(ply)
 		return false
 	end
 
-	AbilityDebug(ply)
-    net.Start("HUDRemove")
-    net.Send(ply)
-    ply.Cooldown = 0
-    ply.Ability = nil 
+    --net.Start("HUDRemove")
+    --net.Send(ply)
+    --ply.Cooldown = 0
+    --ply.Ability = nil 
 	if self.rolesenable then
 		timer.Simple(0.1,function()
 			if ply:GetNWString("Role","Soldier") == "Commander" then
@@ -304,6 +303,7 @@ function GM:PlayerSetHandsModel( ply, ent )
 end
 
 function GM:DoPlayerDeath(ply, attacker, dmgInfo)
+	ply:DeathAbility()
 	local wep = ply:GetActiveWeapon()
 	local nadeCntOffset = 0
 	

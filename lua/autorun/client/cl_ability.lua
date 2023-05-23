@@ -22,13 +22,14 @@ end)
 
 function HudAbility(name,desc,icon)
     abilityPanel = vgui.Create("DPanel")
+    abilityPanel.mat = Material(icon)
     abilityPanel:SetPos(scrw * 0.475,scrh * 0.8)
     abilityPanel:SetSize(75,75)
     abilityPanel:SetTooltip(desc)
 	
     function abilityPanel:Paint( w, h )
         surface.SetDrawColor( 255, 255, 255, 255 ) -- Set the drawing color
-	    surface.SetMaterial( Material(icon) ) -- Use our cached material
+	    surface.SetMaterial( self.mat ) -- Use our cached material
 	    surface.DrawTexturedRect( 0, 0, w, h ) -- Actually draw the rectangle
         if LocalPlayer().cooldown and LocalPlayer().cooldown > CurTime() then
             draw.RoundedBox(0,0,0,w,h,Color(0,0,0,227))
@@ -55,11 +56,13 @@ net.Receive("AbilityHUD",function()
     local desc = net.ReadString()
     local name = net.ReadString()
     local icon = net.ReadString()
-    timer.Simple(0.5,function()
+    HudAbility(name,desc,icon)
+    --[[timer.Simple(0.5,function()
         if LocalPlayer():IsValid() and LocalPlayer():Alive() then
             HudAbility(name,desc,icon)
         end
-    end)   
+    end) 
+    --]]  
 end)
 
 net.Receive("HUDRemove",function()

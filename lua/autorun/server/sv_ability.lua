@@ -31,6 +31,17 @@ function plym:GiveAbility(int)
     end 
 end 
 
+function plym:DeathAbility(silentbool)
+    if not silentbool and self.Ability != nil then
+        self.Ability.death(self)
+    end
+    AbilityDebug(self)
+    self.Ability = nil 
+    self.Cooldown = 0
+    net.Start("HUDRemove")
+    net.Send(self)
+end 
+
 
 
 hook.Add("PlayerSpawn","Ability",function(ply)
@@ -54,7 +65,7 @@ hook.Add("PlayerSpawn","Ability",function(ply)
     --ply:GiveAbility(randomability)
 end)
 
-hook.Add("PlayerDeath","AbilityDelete",function(victim,inflictor,attacker)
+--[[hook.Add("PlayerDeath","AbilityDelete",function(victim,inflictor,attacker)
     if victim.Ability != nil then
         victim.Ability.death(victim)
     end
@@ -63,6 +74,12 @@ hook.Add("PlayerDeath","AbilityDelete",function(victim,inflictor,attacker)
     victim.Cooldown = 0
     net.Start("HUDRemove")
     net.Send(victim)
+
+end)
+--]]
+
+hook.Add("PlayerSilentDeath","AbilitySilent",function(ply)
+    ply:DeathAbility(true)
 end)
 
 hook.Add("PlayerButtonDown","AbilityActivate",function(ply,button)
