@@ -1,4 +1,12 @@
 AddCSLuaFile()
+util.AddNetworkString("classinfo")
+local pl = FindMetaTable("Player")
+function pl:ResetClassInfo()
+   self.plclass = player_manager.GetPlayerClasses()[player_manager.GetPlayerClass(self)]
+   net.Start("classinfo")
+   net.WriteTable(self.plclass)
+   net.Send(self)
+end 
 --[[util.AddNetworkString("NewVote_Get")
 util.AddNetworkString("NewVote_Start")
 
@@ -38,6 +46,7 @@ net.Receive("NewVote_Get",function(ply,len)
 	end
 end)
 --]]
+
 
 --[[
 	if you wish to setup specific things for the gamemode ON THE SERVER, you should do it here

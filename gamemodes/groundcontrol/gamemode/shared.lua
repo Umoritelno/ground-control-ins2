@@ -498,7 +498,7 @@ function GM:Move(ply, moveData)
 	local adrenalineModifier = 1 + ply:getRunSpeedAdrenalineModifier() -- for some reason the value returned by GetMaxSpeed is equivalent to player's run speed - 30
 	local weightVal = CLIENT and ply:calculateWeight(0, 0) or ply.weight -- clients recalculate each frame, server recalculates on change
 		
-	local runSpeed = (self.BaseRunSpeed - math.max(0, weightVal - self.RunSpeedLossWeightCutoff) * self.RunSpeedLossPerKG - ply:getStaminaRunSpeedModifier()) * adrenalineModifier * ply:GetDTFloat(0)
+	local runSpeed = (ply.plclass.RunSpeed - math.max(0, weightVal - self.RunSpeedLossWeightCutoff) * self.RunSpeedLossPerKG - ply:getStaminaRunSpeedModifier()) * adrenalineModifier * ply:GetDTFloat(0)
 	
 	ply:SetRunSpeed(runSpeed)
 	--ply:attemptClimb(moveData)
@@ -518,7 +518,7 @@ function GM:Move(ply, moveData)
 			finalMult = finalMult - self.BackwardsSprintSpeedAffector
 		end
 		
-		local finalRunSpeed = math.max(math.min(moveData:GetMaxSpeed(), runSpeed) * finalMult, self.BaseWalkSpeed)
+		local finalRunSpeed = math.max(math.min(moveData:GetMaxSpeed(), runSpeed) * finalMult, ply.plclass.WalkSpeed) --self.BaseWalkSpeed
 		
 		moveData:SetMaxSpeed(finalRunSpeed)
 		moveData:SetMaxClientSpeed(finalRunSpeed)

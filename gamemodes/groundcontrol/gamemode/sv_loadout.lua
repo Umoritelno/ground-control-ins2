@@ -160,9 +160,10 @@ function PLAYER:giveLoadout(forceGive)
 	self:giveArmor()
 	self:Give(GAMEMODE.KnifeWeaponClass)
 	self:Give(GAMEMODE.MedkitClass)
-	if self:GetNWString("Role","Soldier") == "Demoman" then
+	--[[if self:GetNWString("Role","Soldier") == "Demoman" then
 	   self:Give("cw_kk_ins2_rpg")
 	end 
+	--]]
 	--[[if GAMEMODE.CurSpecRound then
 		if GAMEMODE.CurSpecRound.postloadout then
 			GAMEMODE.CurSpecRound.postloadout(self)

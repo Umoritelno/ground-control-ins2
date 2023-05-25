@@ -6,6 +6,11 @@
 	this is also the best place for the "GroundControlPostInitEntity" hook (added with hook.Add as usual)
 ]]--
 
+net.Receive("classinfo",function()
+	local classtable = net.ReadTable()
+	LocalPlayer().plclass = classtable
+end)
+
 hook.Add("TFA_InspectVGUI_Start", "Kill TFA customization", function()
     return CurTime() < GAMEMODE.PreparationTime
 end)
