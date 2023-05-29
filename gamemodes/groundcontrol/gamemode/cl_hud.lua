@@ -316,24 +316,50 @@ function GM:HUDPaint()
 	-- instead of blasting team.GetPlayers every frame, just use the table that gets filled in cl_render.lua
 	for key, obj in ipairs(self.teamPlayers) do
 		--if obj.withinPVS then -- only draw the player if we can see him, GMod has no clientside ways of checking whether the player is in PVS, check cl_render.lua for the second part of this
-		if obj ~= ply and obj:Alive() and ply:GetNWString("Role","Soldier") == "Commander" then
-			local pos = obj:GetBonePosition(obj:LookupBone("ValveBiped.Bip01_Head1"))
-			
-			if pos:Distance(ourShootPos) <= teamMateMarkerDisplayDistance then
-				self:drawPlayerMarker(pos, obj, midX, midY)
-			else
-				local direction = (pos - ourShootPos):GetNormal()
-				local dotToGeneralDirection = ourAimVec:DotProduct(direction)
+		if self.rolesenable then
+			if obj ~= ply and obj:Alive() and ply:GetNWString("Role","Soldier") == "Commander" then
+				local pos = obj:GetBonePosition(obj:LookupBone("ValveBiped.Bip01_Head1"))
 				
-				if dotToGeneralDirection >= 0.9 then
-					traceData.endpos = traceData.start + direction * 4096
+				if pos:Distance(ourShootPos) <= teamMateMarkerDisplayDistance then
+					self:drawPlayerMarker(pos, obj, midX, midY)
+				else
+					local direction = (pos - ourShootPos):GetNormal()
+					local dotToGeneralDirection = ourAimVec:DotProduct(direction)
 					
-					local trace = util.TraceLine(traceData)
-					local ent = trace.Entity
+					if dotToGeneralDirection >= 0.9 then
+						traceData.endpos = traceData.start + direction * 4096
+						
+						local trace = util.TraceLine(traceData)
+						local ent = trace.Entity
+						
+						if IsValid(ent) then
+							if ent == obj then
+								self:drawPlayerMarker(pos, obj, midX, midY)
+							end
+						end
+					end
+				end
+			end
+		else 
+            if obj ~= ply and obj:Alive() then
+				local pos = obj:GetBonePosition(obj:LookupBone("ValveBiped.Bip01_Head1"))
+				
+				if pos:Distance(ourShootPos) <= teamMateMarkerDisplayDistance then
+					self:drawPlayerMarker(pos, obj, midX, midY)
+				else
+					local direction = (pos - ourShootPos):GetNormal()
+					local dotToGeneralDirection = ourAimVec:DotProduct(direction)
 					
-					if IsValid(ent) then
-						if ent == obj then
-							self:drawPlayerMarker(pos, obj, midX, midY)
+					if dotToGeneralDirection >= 0.9 then
+						traceData.endpos = traceData.start + direction * 4096
+						
+						local trace = util.TraceLine(traceData)
+						local ent = trace.Entity
+						
+						if IsValid(ent) then
+							if ent == obj then
+								self:drawPlayerMarker(pos, obj, midX, midY)
+							end
 						end
 					end
 				end

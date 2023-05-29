@@ -55,6 +55,7 @@ GM:initFonts()
 
 include('shared.lua')
 include("sh_mixins.lua")
+include("player_classes/classes.lua")
 include("cl_hud.lua")
 include("cl_util.lua")
 include("cl_weapon_selection_hud.lua")

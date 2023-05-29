@@ -6,6 +6,7 @@ debugtable = {
     "DisquiseKD",
     "AbilityCD",
     "SilentStepTimer",
+    "AbilityUse",
 }
 
 function AddSkill(data) 
@@ -125,10 +126,11 @@ AddSkill(
          nets = {"SilentStep",
                  "SilentStepDeath"},
          use = function(ply)
-            ply.Ability.active = true 
+            --ply.Ability.active = true 
             net.Start("SilentStep")
             net.Send(ply)
             timer.Create("SilentStepTimer"..ply:EntIndex(),15,1,function()
+                --ply.Ability.active = false 
                 net.Start("SilentStepDeath")
                 net.Send(ply)
             end)
@@ -137,7 +139,7 @@ AddSkill(
             if timer.Exists("SilentStepTimer"..ply:EntIndex()) then
                 timer.Remove("SilentStepTimer"..ply:EntIndex())
             end
-            ply.Ability.active = false 
+            --ply.Ability.active = false 
             net.Start("SilentStepDeath")
             net.Send(ply)
          end,
@@ -156,7 +158,6 @@ AddSkill(
          active = false,
          use = function(ply)
             ply:ScreenFade( SCREENFADE.IN, Color( 255, 0, 0, 120), 15, 0 )
-            ply.Ability.active = true
             --[[net.Start("Berserk")
             net.Send(ply)
             --]]
@@ -167,11 +168,6 @@ AddSkill(
          death = function(ply)
             if timer.Exists("BerserkKD"..ply:EntIndex()) then
                 timer.Remove("BerserkKD"..ply:EntIndex())
-            end
-         end,
-         hookuse = function(ply,dmg)
-            if ply.Ability.active == true then
-                dmg:SetDamage(dmg:GetDamage() * 0.2)
             end
          end,
          customUse = false,
@@ -228,6 +224,7 @@ end )
 
 hook.Add("PlayerFootstep","SilentStep",function(ply,pos,foot,sound,volume,filter)
     if ply.Ability and ply.Ability.name == "SilentStep" and ply.Ability.active then
+        --print("Toyka cheater")
         return true 
     end
 end)

@@ -1,6 +1,6 @@
 
 
-local MainMenu,settings
+--local MainMenu,settings
 local creditslabels = {
     ["Spy"] = "Ground Control and CW 2.0 Creator",
     ["Knife Kitty"] = "KK Ins2 base creator",
@@ -222,10 +222,15 @@ function OpenMainMenu()
     end
 end
 
-hook.Add("PlayerBindPress","MainMenuClose",function(ply,bind,pr,cd)
+--[[hook.Add("PlayerBindPress","MainMenuClose",function(ply,bind,pr,cd)
     if bind == "gm_showhelp" then
         OpenMainMenu()
     end
+end)
+--]]
+
+hook.Add("ShowSpare2","MainMenu",function(ply)
+    OpenMainMenu()
 end)
 
 net.Receive( "SpawnMainMenu", function()

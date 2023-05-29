@@ -112,7 +112,8 @@ local PLAYER = FindMetaTable("Player")
 
 function GM:PlayerInitialSpawn(ply)
 	ply:resetSpawnData()
-	
+
+	player_manager.SetPlayerClass(ply,"soldier")
 	ply:SetTeam(TEAM_SPECTATOR)
 	ply:KillSilent()
 	ply:resetSpectateData()
@@ -178,38 +179,41 @@ local ZeroAng = Angle(0, 0, 0)
 
 function GM:PlayerSpawn(ply)
 	local team = ply:Team()
+	ply:ResetClassInfo()
+	--ply.plclass = player_manager.GetPlayerClasses()[player_manager.GetPlayerClass(ply)]
+	--print(ply.plclass.StartHealth)
+	--PrintTable(player_manager.GetPlayerClasses())
 	
 	if team == TEAM_SPECTATOR then
 		ply:KillSilent()
 		return false
 	end
 
-	AbilityDebug(ply)
-    net.Start("HUDRemove")
-    net.Send(ply)
-    ply.Cooldown = 0
-    ply.Ability = nil 
+    --net.Start("HUDRemove")
+    --net.Send(ply)
+    --ply.Cooldown = 0
+    --ply.Ability = nil 
 	if self.rolesenable then
-		timer.Simple(0.1,function()
-			if ply:GetNWString("Role","Soldier") == "Commander" then
-				ply:GiveAbility(1)
-			elseif ply:GetNWString("Role","Soldier") == "Specialist" then 
-				ply:GiveAbility(math.random(2,table.Count(abilities)))
-			else 
-				return
-			end
-		end)
+		timer.Simple(0,function()
+		if ply.plclass.DisplayName == "Commander" then
+			ply:GiveAbility(3)
+		elseif ply.plclass.DisplayName == "Specialist" then 
+			ply:GiveAbility(math.random(2,table.Count(abilities)))
+		else 
+			return
+		end
+	  end)
 	end
 	
 	ply:SetViewPunchAngles(ZeroAng)
 	ply.currentTraits = ply.currentTraits and table.Empty(ply.currentTraits) or {}
 	ply:UnSpectate()
 	ply:sendAttachments()
-	ply:SetHealth(100)
-	ply:SetMaxHealth(100)
+	ply:SetHealth(ply.plclass.StartHealth)
+	ply:SetMaxHealth(ply.plclass.MaxHealth)
 	ply:AddEFlags(EFL_NO_DAMAGE_FORCES)
-	ply:SetWalkSpeed(self.BaseWalkSpeed)
-	ply:SetRunSpeed(self.BaseRunSpeed)
+	ply:SetWalkSpeed(ply.plclass.WalkSpeed) --self.BaseWalkSpeed
+	ply:SetRunSpeed(ply.plclass.RunSpeed) --self.BaseRunSpeed
 	ply:resetSpectateData()
 	ply:resetSpawnData()
 	ply:resetBleedData()
@@ -304,6 +308,7 @@ function GM:PlayerSetHandsModel( ply, ent )
 end
 
 function GM:DoPlayerDeath(ply, attacker, dmgInfo)
+	ply:DeathAbility()
 	local wep = ply:GetActiveWeapon()
 	local nadeCntOffset = 0
 	
@@ -802,7 +807,8 @@ end
 
 function PLAYER:updateJumpPower()
 	if self.weight then
-		self:SetJumpPower(math.max(GAMEMODE.jumpPowerMin, math.min(GAMEMODE.jumpPower, GAMEMODE.jumpPower - GAMEMODE.jumpPowerReductionPerKG * math.max(0, (self.weight - GAMEMODE.jumpPowerWeightCutoff)))))
+		--self:SetJumpPower(math.max(GAMEMODE.jumpPowerMin, math.min(GAMEMODE.jumpPower, GAMEMODE.jumpPower - GAMEMODE.jumpPowerReductionPerKG * math.max(0, (self.weight - GAMEMODE.jumpPowerWeightCutoff)))))
+		self:SetJumpPower(math.max(GAMEMODE.jumpPowerMin, math.min(self.plclass.JumpPower, self.plclass.JumpPower - GAMEMODE.jumpPowerReductionPerKG * math.max(0, (self.weight - GAMEMODE.jumpPowerWeightCutoff)))))
 	end
 end
 

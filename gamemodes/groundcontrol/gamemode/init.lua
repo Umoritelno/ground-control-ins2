@@ -55,6 +55,7 @@ end)
 
 include("sv_player.lua")
 include("sv_loop.lua")
+include("player_classes/classes.lua")
 include("sh_keybind.lua")
 include("sh_action_to_key.lua")
 include("sh_events.lua")
