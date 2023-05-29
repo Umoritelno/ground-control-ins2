@@ -196,7 +196,7 @@ function GM:PlayerSpawn(ply)
 	if self.rolesenable then
 		timer.Simple(0,function()
 		if ply.plclass.DisplayName == "Commander" then
-			ply:GiveAbility(1)
+			ply:GiveAbility(3)
 		elseif ply.plclass.DisplayName == "Specialist" then 
 			ply:GiveAbility(math.random(2,table.Count(abilities)))
 		else 

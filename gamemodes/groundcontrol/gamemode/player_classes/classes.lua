@@ -41,7 +41,7 @@ player_manager.RegisterClass("soldier",PLAYER,"gc_base")
 local PLAYER = {}
 PLAYER.DisplayName = "Specialist"
 PLAYER.Desc = "You are specialist. Use your gear to complete the task."
-PLAYER.SlowWalkSpeed		= 130		-- How fast to move when slow-walking (+WALK)
+PLAYER.SlowWalkSpeed		= 100		-- How fast to move when slow-walking (+WALK)
 PLAYER.WalkSpeed			= 145		-- How fast to move when not running
 PLAYER.RunSpeed				= 315	-- How fast to move when running
 PLAYER.CrouchedWalkSpeed	= 0.6		-- Multiply move speed by this when crouching
@@ -57,7 +57,7 @@ player_manager.RegisterClass("spec",PLAYER,"gc_base")
 local PLAYER = {}
 PLAYER.DisplayName = "Commander"
 PLAYER.Desc = "You are commander of your squad. Lead your squad."
-PLAYER.SlowWalkSpeed		= 115		-- How fast to move when slow-walking (+WALK)
+PLAYER.SlowWalkSpeed		= 100		-- How fast to move when slow-walking (+WALK)
 PLAYER.WalkSpeed			= 140		-- How fast to move when not running
 PLAYER.RunSpeed				= 300	-- How fast to move when running
 PLAYER.CrouchedWalkSpeed	= 0.6		-- Multiply move speed by this when crouching
