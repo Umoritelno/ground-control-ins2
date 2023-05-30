@@ -64,10 +64,10 @@ function GM:GetIDByName(name)
 	return id
 end 
 
-function GM:SetWeaponBaseID(id)
+--[[function GM:SetWeaponBaseID(id)
 	local wepvar = GetConVar("gc_wepbase")
     wepvar:SetInt(id)
-end 
+end]]
 
 GM.RoundOverAction = {
 	NEW_ROUND = 1,
@@ -146,7 +146,8 @@ CreateConVar("gc_runspeed", GM.BaseRunSpeed, sharedCVar, "player walk speed (imm
 CreateConVar("gc_damagemult", GM.DamageMultiplier, sharedCVar, "multiplier for dealt weapon damage")
 CreateConVar("gc_damage_scale", GM.defaultDamageScale, sharedCVar, "multiplier for all weapon damage")
 CreateConVar("gc_wepbase",GM.DefBase,sharedCVar,"What weapon base we will use?")
-CreateConVar("gc_roles_enable",1,sharedCVar,"Will roles and skills work?")
+CreateConVar("gc_roles_enable",1,sharedCVar,"Will roles and work?")
+CreateConVar("gc_abil_enable",1,sharedCVar,"Will abilities work&")
 
 --GM.CurWepBase = GetConVar("gc_wepbase"):GetInt() or 1
 if GM.WepBases[GetConVar("gc_wepbase"):GetInt()] then
@@ -162,6 +163,10 @@ end
 local function getCvarNumber(new, old)
 	return tonumber(new) and new or old
 end
+
+GM:registerAutoUpdateConVar("gc_abil_enable", function(name, old, new)
+	GAMEMODE.abilityEnabled = tonumber(new) and tonumber(new) > 0
+end)
 
 GM:registerAutoUpdateConVar("gc_crippling", function(name, old, new)
 	GAMEMODE.cripplingEnabled = tonumber(new) and tonumber(new) > 0
@@ -236,17 +241,6 @@ CustomizableWeaponry.callbacks:addNew("forceFreeAim", "GroundControl_forceFreeAi
 	return GAMEMODE.FORCE_FREE_AIM
 end)
 
---[[CustomizableWeaponry.callbacks:addNew("preDetachAttachment","hui",function(self,att,attcategory)
-	print("Zalupa")
-end)
---]]
-
---[[CustomizableWeaponry.callbacks:addNew("preAttachAttachment","pizda",function(self,att,attcategory)
-	print("hui")
-	return false 
-	--return GAMEMODE:isPreparationPeriod()
-end)
---]]
 
 CustomizableWeaponry.callbacks:addNew("forceComplexTelescopics", "GroundControl_forceComplexTelescopics", function(self)
 	return GAMEMODE.FORCE_COMPLEX_TELESCOPICS

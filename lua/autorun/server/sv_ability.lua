@@ -119,10 +119,6 @@ end)
 end)
 --]]
 
-hook.Add("PlayerSilentDeath","AbilitySilent",function(ply)
-    ply:DeathAbility(true)
-end)
-
 hook.Add("PlayerButtonDown","AbilityActivate",function(ply,button)
     if button != KEY_H then return end
     ply:UseAbilityServer()

@@ -222,16 +222,18 @@ function OpenMainMenu()
     end
 end
 
---[[hook.Add("PlayerBindPress","MainMenuClose",function(ply,bind,pr,cd)
-    if bind == "gm_showhelp" then
+hook.Add("PlayerBindPress","MainMenuClose",function(ply,bind,pr,cd)
+    if bind == "gm_showspare2" then
         OpenMainMenu()
     end
 end)
---]]
 
-hook.Add("ShowSpare2","MainMenu",function(ply)
+
+--[[hook.Add("ShowSpare2","MainMenu",function(ply)
+    print("hehe")
     OpenMainMenu()
 end)
+--]]
 
 net.Receive( "SpawnMainMenu", function()
 	OpenMainMenu()

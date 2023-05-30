@@ -126,11 +126,9 @@ AddSkill(
          nets = {"SilentStep",
                  "SilentStepDeath"},
          use = function(ply)
-            --ply.Ability.active = true 
             net.Start("SilentStep")
             net.Send(ply)
             timer.Create("SilentStepTimer"..ply:EntIndex(),15,1,function()
-                --ply.Ability.active = false 
                 net.Start("SilentStepDeath")
                 net.Send(ply)
             end)
@@ -139,7 +137,6 @@ AddSkill(
             if timer.Exists("SilentStepTimer"..ply:EntIndex()) then
                 timer.Remove("SilentStepTimer"..ply:EntIndex())
             end
-            --ply.Ability.active = false 
             net.Start("SilentStepDeath")
             net.Send(ply)
          end,

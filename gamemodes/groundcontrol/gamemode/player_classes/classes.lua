@@ -70,3 +70,19 @@ PLAYER.StartHealth			= 110		-- How much health we start with
 --]]
 player_manager.RegisterClass("cmd",PLAYER,"gc_base")	
 
+local PLAYER = {}
+PLAYER.DisplayName = "Demoman"
+PLAYER.Desc = "You are demoman. Use your weapon to wipe enemies off the face of the earth"
+PLAYER.SlowWalkSpeed		= 100		-- How fast to move when slow-walking (+WALK)
+PLAYER.WalkSpeed			= 120		-- How fast to move when not running
+PLAYER.RunSpeed				= 250	-- How fast to move when running
+PLAYER.CrouchedWalkSpeed	= 0.6		-- Multiply move speed by this when crouching
+PLAYER.DuckSpeed			= 0.3		-- How fast to go from not ducking, to duckingPLAYER.UnDuckSpeed			= 0.3		-- How fast to go from ducking, to not ducking
+PLAYER.JumpPower			= 215		-- How powerful our jump should be
+PLAYER.MaxHealth			= 105		-- Max health we can have
+--PLAYER.MaxArmor				= 100		-- Max armor we can have
+PLAYER.StartHealth			= 105		-- How much health we start with
+--PLAYER.StartArmor			= 0			-- How much armour we start with
+--]]
+player_manager.RegisterClass("demo",PLAYER,"gc_base")	
+

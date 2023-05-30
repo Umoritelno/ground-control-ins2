@@ -334,44 +334,50 @@ function GM:restartRound()
 	--print(self:GetSpecRound())
 
 --end
-for k,v in pairs(team.GetPlayers(1002)) do
-	player_manager.SetPlayerClass( v, "soldier" )
-end
-for i = 1,2 do
-	local maxcommander = 1
-	local maxspec = self:specCount(team.NumPlayers(i))
-	local maxdemo = 1 
-	local demoamount = 0
-	local specamount = 0
-	local commanderamount = 0
-	for k,v in RandomPairs(team.GetPlayers(i)) do
-		local randomdemo = math.random(1,7)
-		if maxcommander > commanderamount  then
-			--v:SetNWString("Role","Commander")
-			player_manager.SetPlayerClass( v, "cmd" )
-			commanderamount = commanderamount + 1
-		elseif maxcommander <= commanderamount then 
-			if maxspec > specamount then
-				if randomdemo == 1 and demoamount < maxdemo then 
-					--v:SetNWString("Role","Demoman")
-					specamount = specamount + 1
-					demoamount = demoamount + 1
-				else 
-					--v:SetNWString("Role","Specialist")
-					player_manager.SetPlayerClass( v, "spec" )
-					specAmount = specamount + 1
-				end 
-			else 
-				--v:SetNWString("Role","Soldier")
-				player_manager.SetPlayerClass( v, "soldier" )
-			end
-		end
-		--[[net.Start("ShowRole")
-		net.WriteTable(self.Roles[v:GetNWString("Role","Soldier")])
-		net.Send(v)]]
-		--print(v:GetNWString("Role"))
+if self.rolesenable then
+	for k,v in pairs(team.GetPlayers(1002)) do
+		player_manager.SetPlayerClass( v, "soldier" )
 	end
-	--print(self:specCount(team.NumPlayers(i)))
+	for i = 1,2 do
+		local maxcommander = 1
+		local maxspec = self:specCount(team.NumPlayers(i))
+		local maxdemo = 1 
+		local demoamount = 0
+		local specamount = 0
+		local commanderamount = 0
+		for k,v in RandomPairs(team.GetPlayers(i)) do
+			local randomdemo = math.random(1,7)
+			if maxcommander > commanderamount  then
+				--v:SetNWString("Role","Commander")
+				player_manager.SetPlayerClass( v, "cmd" )
+				commanderamount = commanderamount + 1
+			elseif maxcommander <= commanderamount then 
+				if maxspec > specamount then
+					if randomdemo == 1 and demoamount < maxdemo then
+						player_manager.SetPlayerClass( v, "demo" )
+						specamount = specamount + 1
+						demoamount = demoamount + 1
+					else 
+						--v:SetNWString("Role","Specialist")
+						player_manager.SetPlayerClass( v, "spec" )
+						specAmount = specamount + 1
+					end 
+				else 
+					--v:SetNWString("Role","Soldier")
+					player_manager.SetPlayerClass( v, "soldier" )
+				end
+			end
+			--[[net.Start("ShowRole")
+			net.WriteTable(self.Roles[v:GetNWString("Role","Soldier")])
+			net.Send(v)]]
+			--print(v:GetNWString("Role"))
+		end
+		--print(self:specCount(team.NumPlayers(i)))
+	end
+else
+	for k,v in pairs(player.GetAll()) do
+		player_manager.SetPlayerClass( v, "soldier" )
+	end
 end
 --self.RoundOver = false
 --self:updateServerName()
@@ -389,46 +395,6 @@ end
 	
 	self:resetKillcountData()
 	--self:StartNewVote()
-
-
-	--[[for i = 1,2 do
-		local maxcommander = 1
-		local maxspec = self:specCount(team.NumPlayers(i))
-		local maxdemo = 1 
-		local demoamount = 0
-		local specamount = 0
-		local commanderamount = 0
-		for k,v in RandomPairs(team.GetPlayers(i)) do
-			local randomdemo = math.random(1,7)
-			if maxcommander > commanderamount  then
-				v:SetNWString("Role","Commander")
-				commanderamount = commanderamount + 1
-			elseif maxcommander <= commanderamount then 
-				if maxspec > specamount then
-					if randomdemo == 1 and demoamount < maxdemo then 
-						v:SetNWString("Role","Demoman")
-						specamount = specamount + 1
-						demoamount = demoamount + 1
-					else 
-						v:SetNWString("Role","Specialist")
-				        specAmount = specamount + 1
-					end 
-				else 
-					v:SetNWString("Role","Soldier")
-				end
-			end
-			net.Start("ShowRole")
-			net.WriteTable(self.Roles[v:GetNWString("Role","Soldier")])
-			net.Send(v)
-			--print(v:GetNWString("Role"))
-		end
-		--print(self:specCount(team.NumPlayers(i)))
-	end
-	self.RoundOver = false
-	self:updateServerName()
-	SendUserMessage("GC_NEW_ROUND")
-	
-	self:resetKillcountData()]]
 end
 
 

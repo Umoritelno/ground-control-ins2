@@ -7,7 +7,7 @@
 ]]--
 
 net.Receive("classinfo",function()
-	local classtable = net.ReadTable()
+	local classtable = player_manager.GetPlayerClasses()[player_manager.GetPlayerClass(LocalPlayer())]
 	LocalPlayer().plclass = classtable
 end)
 
