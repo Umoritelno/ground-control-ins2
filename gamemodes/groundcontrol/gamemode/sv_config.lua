@@ -9,13 +9,17 @@ function pl:ResetClassInfo()
 		self:GiveAbility(1)
 	   elseif self.plclass.DisplayName == "Specialist" then 
 		self:GiveAbility(math.random(2,table.Count(abilities)))
+	   else 
+		self:DeathAbility()
 	 end
 	else
-		self:DeathAbility(true)
+		self:DeathAbility()
    end
    net.Start("classinfo")
    net.Send(self)
 end 
+
+
 --[[util.AddNetworkString("NewVote_Get")
 util.AddNetworkString("NewVote_Start")
 

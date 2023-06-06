@@ -750,7 +750,7 @@ end
 function curWeaponPanel:OnMousePressed(bind)
 	if self.weaponData then
 		local wepClass = self.weaponData.weaponObject
-		if not  wepClass.CW20Weapon then
+		if not string.find(wepClass.Base,"cw") then
            return 
 		end 
 		

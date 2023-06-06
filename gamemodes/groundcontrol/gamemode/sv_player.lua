@@ -113,9 +113,9 @@ local PLAYER = FindMetaTable("Player")
 function GM:PlayerInitialSpawn(ply)
 	ply:resetSpawnData()
 
-	player_manager.SetPlayerClass(ply,"soldier")
 	ply:SetTeam(TEAM_SPECTATOR)
 	ply:KillSilent()
+	player_manager.SetPlayerClass(ply,"soldier")
 	ply:resetSpectateData()
 
 	ply:loadAttachments()
@@ -185,11 +185,6 @@ function GM:PlayerSpawn(ply)
 		return false
 	end
 	ply:ResetClassInfo()
-
-    --net.Start("HUDRemove")
-    --net.Send(ply)
-    --ply.Cooldown = 0
-    --ply.Ability = nil 
 	
 	ply:SetViewPunchAngles(ZeroAng)
 	ply.currentTraits = ply.currentTraits and table.Empty(ply.currentTraits) or {}

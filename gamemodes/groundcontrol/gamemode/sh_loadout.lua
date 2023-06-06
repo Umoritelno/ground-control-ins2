@@ -105,6 +105,9 @@ end
 
 function GM:applyWeaponDataToWeaponClass(weaponData, primaryWeapon, slot)
 	local wepClass = weapons.GetStored(weaponData.weaponClass)
+	if not wepClass then
+		return
+	end
 	wepClass.weight = weaponData.weight -- apply weight to the weapon class
 	wepClass.isPrimaryWeapon = primaryWeapon
 	wepClass.Slot = slot

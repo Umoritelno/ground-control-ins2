@@ -13,7 +13,7 @@ end
 function plym:UseAbilityClient()
     if not self.Ability then return end 
     if not self:Alive() then return end
-    if self.Cooldown <= CurTime() then
+    if self.Ability.PlyCooldown <= CurTime() then
         net.Start("ClientUse")
         net.SendToServer()
     end
@@ -21,12 +21,9 @@ end
 
 net.Receive("AbilityUse",function()
     if abilityPanel == nil  then return end
-    LocalPlayer().Cooldown = net.ReadInt(32)
-    --local icon = net.ReadString()
-    --local desc = net.ReadString()
-    --local name = net.ReadString()
-    --local cd = net.ReadInt(16)
-
+    if not LocalPlayer().Ability then return end 
+    LocalPlayer().Ability.PlyCooldown = net.ReadFloat()
+    LocalPlayer().Ability.PlyUseCD = net.ReadInt(16)
     
 end)
 
@@ -50,9 +47,14 @@ function HudAbility(name,desc,icon)
         surface.SetDrawColor( 255, 255, 255, 255 ) -- Set the drawing color
 	    surface.SetMaterial( self.mat ) -- Use our cached material
 	    surface.DrawTexturedRect( 0, 0, w, h ) -- Actually draw the rectangle
-        if LocalPlayer().Cooldown and LocalPlayer().Cooldown > CurTime() then
-            draw.RoundedBox(0,0,0,w,h,Color(0,0,0,227))
-            draw.SimpleText(math.Round(LocalPlayer().Cooldown - CurTime()),"DermaLarge",w / 2,h / 2,Color(255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+        if LocalPlayer().Ability then
+            if LocalPlayer().Ability.PlyCooldown and LocalPlayer().Ability.PlyCooldown > CurTime() then
+                draw.RoundedBox(0,0,0,w,h,Color(0,0,0,227))
+                draw.SimpleText(math.Round(LocalPlayer().Ability.PlyCooldown - CurTime()),"DermaLarge",w / 2,h / 2,Color(255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+            end
+            if LocalPlayer().Ability.PlyUseCD and LocalPlayer().Ability.PlyUseCD > CurTime() then
+                draw.SimpleText(math.Round(LocalPlayer().Ability.PlyUseCD - CurTime()),"CloseCaption_Bold",w / 2,h / 5,Color(0,204,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+            end
         end
     end
     
@@ -63,23 +65,18 @@ net.Receive("AbilityHUD",function()
     local name = net.ReadString()
     local icon = net.ReadString()
 
-    LocalPlayer().Cooldown = 0
     LocalPlayer().Ability = {}
     LocalPlayer().Ability.name = name 
+    LocalPlayer().Ability.PlyCooldown = 0
+    LocalPlayer().Ability.PlyUseCD = 0
     if abilityPanel != nil then abilityPanel:Remove() abilityPanel = nil end 
     HudAbility(name,desc,icon)
-    --[[timer.Simple(0.5,function()
-        if LocalPlayer():IsValid() and LocalPlayer():Alive() then
-            HudAbility(name,desc,icon)
-        end
-    end) 
-    --]]  
 end)
 
 net.Receive("HUDRemove",function()
     AbilityDebug()
     if abilityPanel != nil then abilityPanel:Remove() abilityPanel = nil end 
-    LocalPlayer().Cooldown = 0
+    --LocalPlayer().Cooldown = 0
     LocalPlayer().Ability = nil 
 end)
 
@@ -118,39 +115,16 @@ end)
 --]]
 
 net.Receive("doorblock",function()
-    local dooricon = Material("doorblock/dooricon.png")
-    local ent = net.ReadEntity()
-    hook.Add("HUDPaint","BlockedDoorHUD",function()
-        local doorvect = ent:GetPos():ToScreen()
-        surface.SetMaterial(dooricon)
-        surface.DrawTexturedRect(doorvect.x,doorvect.y,25,25)
-        --draw.SimpleText("Дверь заблокирована","ChatFont",doorvect.x,doorvect.y,Color(255,255,255),TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
-    end)
-    timer.Simple(10,function()
-        hook.Remove("HUDPaint","BlockedDoorHUD")
-    end)
 end)
 
 net.Receive("doorblockdeath",function()
-    hook.Remove("HUDPaint","BlockedDoorHUD")
 end)
 
 net.Receive("SilentStep",function()
   
-    --LocalPlayer().Ability.active = true 
 end)
 
 net.Receive("SilentStepDeath",function()
-    --LocalPlayer().Ability.active = false 
-    --hook.Remove("PlayerFootstep","SilentStepHook")
 end)
-
---[[net.Receive("Disquise",function()
-    timer.Create("DisquiseKD",30,1,function()
-        net.Start("DisquiseClient")
-        net.SendToServer()
-    end)
-end)
---]]
 
 
