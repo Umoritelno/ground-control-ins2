@@ -22,14 +22,18 @@ function AbilityDebug(ply)
 end
 
 function plym:GiveAbility(int) 
+    AbilityDebug(self)
     if abilities[int] != nil then
        self.Cooldown = 0
        self.Ability = abilities[int]
+       self.Ability.PlyCooldown = 0
+       self.Ability.PlyUseCD = 0
        self.Ability.FirstUsed = false
        net.Start("AbilityHUD")
        net.WriteString(self.Ability.description)
        net.WriteString(self.Ability.name)
        net.WriteString(self.Ability.icon)
+       net.WriteFloat(self.Ability.usetime)
        net.Send(self)
     end 
 end 
@@ -40,7 +44,7 @@ function plym:DeathAbility(silentbool)
     end
     AbilityDebug(self)
     self.Ability = nil 
-    self.Cooldown = 0
+    --self.Cooldown = 0
     net.Start("HUDRemove")
     net.Send(self)
 end
@@ -48,8 +52,9 @@ end
 function plym:UseAbilityServer()
     if not self.Ability then return end 
     if not self:Alive() then return end 
+    if self.Ability.passive then return end 
  if not self.Ability.customUse then 
-    if self.Cooldown <= CurTime() then
+    if self.Ability.PlyCooldown <= CurTime() then
         print("Ability Activated")
         self.Ability.use(self)
         self.Ability.active = true
@@ -63,13 +68,11 @@ function plym:UseAbilityServer()
             net.Send(self)
         end)
         self.Ability.FirstUsed = true 
-        self.Cooldown = CurTime() + self.Ability.cooldown
+        self.Ability.PlyCooldown = CurTime() + self.Ability.cooldown
+        self.Ability.PlyUseCD = CurTime() + self.Ability.usetime
         net.Start("AbilityUse")
-        net.WriteInt(self.Cooldown,32)
-        --[[net.WriteString(self.Ability.icon)
-        net.WriteString(self.Ability.description)
-        net.WriteString(self.Ability.name)]]
-        net.WriteInt(self.Ability.cooldown,16)
+        net.WriteFloat(self.Ability.PlyCooldown,32)
+        net.WriteInt(self.Ability.PlyUseCD,16)
         net.Send(self)
     else
         print("Ability is reloading")
@@ -85,74 +88,44 @@ end)
 
 
 
-hook.Add("PlayerSpawn","Ability",function(ply)
-    --[[AbilityDebug(ply)
-    net.Start("HUDRemove")
-    net.Send(ply)
-    ply.Cooldown = 0
-    ply.Ability = nil 
-    local randomability = math.random(1,8)
-    --]]
-    --[[if abilities[randomability] != nil then
-       ply.Ability = abilities[randomability]
-       ply.Ability.FirstUsed = false
-       net.Start("AbilityHUD")
-       net.WriteString(ply.Ability.description)
-       net.WriteString(ply.Ability.name)
-       net.WriteString(ply.Ability.icon)
-       net.Send(ply)
-    end 
-    --]]
-    --ply:GiveAbility(randomability)
-end)
-
---[[hook.Add("PlayerDeath","AbilityDelete",function(victim,inflictor,attacker)
-    if victim.Ability != nil then
-        victim.Ability.death(victim)
-    end
-    AbilityDebug(victim)
-    victim.Ability = nil 
-    victim.Cooldown = 0
-    net.Start("HUDRemove")
-    net.Send(victim)
-
-end)
---]]
-
-hook.Add("PlayerSilentDeath","AbilitySilent",function(ply)
-    ply:DeathAbility(true)
-end)
-
 hook.Add("PlayerButtonDown","AbilityActivate",function(ply,button)
     if button != KEY_H then return end
     ply:UseAbilityServer()
-    --[[if not ply.Ability then return end 
-    if not ply:Alive() then return end 
-if not ply.Ability.customUse then 
-    if ply.Cooldown <= CurTime() then
-        print("Ability Activated")
-        ply.Ability.use(ply)
-        ply.Ability.FirstUsed = true 
-        ply.Cooldown = CurTime() + ply.Ability.cooldown
-        net.Start("AbilityUse")
-        net.WriteInt(ply.Cooldown,32)
-        net.WriteString(ply.Ability.icon)
-        net.WriteString(ply.Ability.description)
-        net.WriteString(ply.Ability.name)
-        net.WriteInt(ply.Ability.cooldown,16)
-        net.Send(ply)
-    else
-        print("Ability is reloading")
-    end
-else 
-    ply.Ability.use(ply)
-end ]]
 end)
 
 hook.Add("EntityTakeDamage","AbilityDamage",function(target,dmg)
     if target:IsPlayer() then
         if target.Ability and target.Ability.name == "Berserk" and target.Ability.active then
-            dmg:SetDamage(dmg:GetDamage() * 0.4)
+            dmg:ScaleDamage(0.65)
+        end
+    end
+end)
+
+hook.Add("PlayerHurt","PlayerHurtAbility",function(victim,attacker,healthRemaining,damageTaken)
+    if victim.Ability then
+        if victim.Ability.name == "Swan Song" and not victim.Ability.SwanCD and healthRemaining <= 0 and not victim:IsBot() then
+            victim:SetHealth(victim.plclass.MaxHealth or 100)
+            victim.Ability.use(victim)
+        end
+    end
+end)
+
+hook.Add("FinishMove","AbilityFinishMove",function(ply,mv)
+    --[[if ply.Ability then
+        if ply.Ability.name == "Berserk" and ply.Ability.PlyUseCD and ply.Ability.PlyUseCD <= CurTime() and ply.Ability.PlyUseCD != 0 then
+            ply:Kill()
+        end
+    end
+    --]]
+
+end)
+
+hook.Add("DoPlayerDeath","AbilityPlayerDeath",function(ply,attacker,dmg)
+    if attacker:IsPlayer() and ply != attacker then
+        if attacker.Ability and attacker.Ability.name == "Swan Song" then
+            if attacker.Ability.SwanCD then
+                attacker.Ability.SwanCD = attacker.Ability.SwanCD + 5
+            end
         end
     end
 end)
@@ -161,12 +134,5 @@ end)
     if ply.Ability != nil and ply.Ability.name == "Berserk" and ply.Ability.FirstUsed == true then
         ply:Kill() 
     end
-end)
---]]
-
---[[net.Receive("DisquiseClient",function(len,ply)
-    if ply.defaultModel then 
-    ply:SetModel(ply.defaultModel)
-    end 
 end)
 --]]

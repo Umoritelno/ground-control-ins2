@@ -113,9 +113,9 @@ local PLAYER = FindMetaTable("Player")
 function GM:PlayerInitialSpawn(ply)
 	ply:resetSpawnData()
 
-	player_manager.SetPlayerClass(ply,"soldier")
 	ply:SetTeam(TEAM_SPECTATOR)
 	ply:KillSilent()
+	player_manager.SetPlayerClass(ply,"soldier")
 	ply:resetSpectateData()
 
 	ply:loadAttachments()
@@ -179,31 +179,12 @@ local ZeroAng = Angle(0, 0, 0)
 
 function GM:PlayerSpawn(ply)
 	local team = ply:Team()
-	ply:ResetClassInfo()
-	--ply.plclass = player_manager.GetPlayerClasses()[player_manager.GetPlayerClass(ply)]
-	--print(ply.plclass.StartHealth)
-	--PrintTable(player_manager.GetPlayerClasses())
 	
 	if team == TEAM_SPECTATOR then
 		ply:KillSilent()
 		return false
 	end
-
-    --net.Start("HUDRemove")
-    --net.Send(ply)
-    --ply.Cooldown = 0
-    --ply.Ability = nil 
-	if self.rolesenable then
-		timer.Simple(0,function()
-		if ply.plclass.DisplayName == "Commander" then
-			ply:GiveAbility(3)
-		elseif ply.plclass.DisplayName == "Specialist" then 
-			ply:GiveAbility(math.random(2,table.Count(abilities)))
-		else 
-			return
-		end
-	  end)
-	end
+	ply:ResetClassInfo()
 	
 	ply:SetViewPunchAngles(ZeroAng)
 	ply.currentTraits = ply.currentTraits and table.Empty(ply.currentTraits) or {}
@@ -638,7 +619,7 @@ function GM:PlayerDeathThink(ply)
 	if self.curGametype.canSpawn then
 		return self.curGametype:canSpawn(ply)
 	else
-		if #player.GetAll() < 2 then
+		if #self.currentPlayerList < 2 then
 			if ply:KeyPressed(IN_ATTACK) or ply:KeyPressed(IN_JUMP) then --self.curGametype.name != "ghettodrugbust"
 				--print(#player.GetAll())
 				ply:Spawn()
@@ -668,6 +649,7 @@ function GM:updateCurrentPlayerList(exclude)
 end
 
 function GM:PlayerDisconnected(ply)
+	AbilityDebug(ply) -- experimental
 	--self:checkRoundOverPossibility()
 	if self.curGametype.playerDisconnected then
 		self.curGametype:playerDisconnected(ply)

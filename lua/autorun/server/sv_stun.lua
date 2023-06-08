@@ -20,17 +20,13 @@ hook.Add("EntityFireBullets","suppression",function(ent,bl)
     end
     ent.stun.stunamount = math.Clamp(ent.stun.stunamount + activestun,0,100)
     ent.stun.regendelay = CurTime() + 5
-    --print(ent.stun.stunamount)
     for k,v in pairs(ents.FindInSphere(bl.Src,125)) do
         if v == ent then continue end
         if v:IsPlayer() and v.stun then
             v.stun.stunamount = math.Clamp(ent.stun.stunamount + (ent:GetActiveWeapon().stun / 2),0,100)
             v.stun.regendelay = CurTime() + 5
-            --print(v.stun.stunamount)
         end
     end
-    --print(ent.stun.stunamount)
-    --print(ent.stun.regendelay)
 end) 
 
 hook.Add("FinishMove","supressionController",function(ply,mv) 
@@ -47,6 +43,5 @@ hook.Add("FinishMove","supressionController",function(ply,mv)
     if ply.stun.regendelay < CurTime() and ply.stun.regentimer < CurTime() then
     ply.stun.regentimer = CurTime() + 0.5
     ply.stun.stunamount = math.Clamp(ply.stun.stunamount - 5,0,100)
-    --print(ply.stun.stunamount)
     end 
 end)

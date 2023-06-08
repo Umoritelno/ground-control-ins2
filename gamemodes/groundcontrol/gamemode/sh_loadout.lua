@@ -105,6 +105,9 @@ end
 
 function GM:applyWeaponDataToWeaponClass(weaponData, primaryWeapon, slot)
 	local wepClass = weapons.GetStored(weaponData.weaponClass)
+	if not wepClass then
+		return
+	end
 	wepClass.weight = weaponData.weight -- apply weight to the weapon class
 	wepClass.isPrimaryWeapon = primaryWeapon
 	wepClass.Slot = slot
@@ -1021,13 +1024,14 @@ function GM:postInitEntity()
 	wepObj.selectSortWeight = 4
 	
 	local wepObj = weapons.GetStored("cw_kk_ins2_rpg")
-	wepObj.weight = 0.5
+	wepObj.noResupply = true 
+	wepObj.weight = 10
 	wepObj.dropsDisabled = true
 	wepObj.isKnife = false
 	wepObj.selectSortWeight = 6
     
 	local wepObj = weapons.GetStored(self.MedkitClass)
-	wepObj.weight = 10
+	wepObj.weight = 0.5
 	wepObj.dropsDisabled = true
 	wepObj.isKnife = false
 	wepObj.selectSortWeight = 5

@@ -55,7 +55,6 @@ else
 end
 
 local scrw,scrh = ScrW(),ScrH()
-CreateClientConVar("InMainMenu","0",false,false,"",0,1)
 CreateClientConVar("VGOLOVU",0,true,false,"",0,1)
 CreateClientConVar("BlueFilter",0,true,false,"",0,1)
 
@@ -66,7 +65,6 @@ end )
 
 net.Receive("Golova",function()
     if GetConVar("VGOLOVU"):GetBool() == true then
-        --print("belike")
         surface.PlaySound("golova.mp3")
     end
 end)
@@ -77,9 +75,8 @@ function OpenMainMenu()
         MainMenu:Remove()
         MainMenu = nil 
         settings = nil 
-        mainmenustatus:SetBool(false)
+        print("Bebra")
     else
-        mainmenustatus:SetBool(true)
         MainMenu = vgui.Create("DFrame")
         MainMenu:SetSize(scrw,scrh)
         MainMenu:Center()
@@ -93,10 +90,9 @@ function OpenMainMenu()
             surface.DrawTexturedRect(0,0,w,h)
         end
         function MainMenu:OnKeyCodePressed(keycode)
-            if keycode == 92 then
+            if keycode == 95 then
                 MainMenu:Remove()
                 MainMenu = nil 
-                mainmenustatus:SetBool(false)
             end
         end
 
@@ -179,6 +175,54 @@ function OpenMainMenu()
                     MainMenu.settings.BlueFilter:DockMargin(0,0,0,scrh * 0.01)
                     MainMenu.settings.BlueFilter:SetText("Включить синий фильтр?")
                     MainMenu.settings.BlueFilter:SetConVar("BlueFilter")
+                    MainMenu.settings.XAxis = vgui.Create("DNumSlider",MainMenu.settings)
+                    MainMenu.settings.XAxis:Dock(TOP)
+                    MainMenu.settings.XAxis:DockMargin(0,0,0,scrh * 0.01)
+                    MainMenu.settings.XAxis:SetText("Коэффициент оси X для оружия CW 2.0")
+                    MainMenu.settings.XAxis:SetMin(GetConVar("gc_cw_x"):GetMin())
+                    MainMenu.settings.XAxis:SetMax(GetConVar("gc_cw_x"):GetMax())
+                    MainMenu.settings.XAxis:SetDecimals(1)
+                    MainMenu.settings.XAxis:SetConVar("gc_cw_x")
+                    MainMenu.settings.YAxis = vgui.Create("DNumSlider",MainMenu.settings)
+                    MainMenu.settings.YAxis:Dock(TOP)
+                    MainMenu.settings.YAxis:DockMargin(0,0,0,scrh * 0.01)
+                    MainMenu.settings.YAxis:SetText("Коэффициент оси Y для оружия CW 2.0")
+                    MainMenu.settings.YAxis:SetMin(GetConVar("gc_cw_y"):GetMin())
+                    MainMenu.settings.YAxis:SetMax(GetConVar("gc_cw_y"):GetMax())
+                    MainMenu.settings.YAxis:SetDecimals(1)
+                    MainMenu.settings.YAxis:SetConVar("gc_cw_y")
+                    MainMenu.settings.ZAxis = vgui.Create("DNumSlider",MainMenu.settings)
+                    MainMenu.settings.ZAxis:Dock(TOP)
+                    MainMenu.settings.ZAxis:DockMargin(0,0,0,scrh * 0.01)
+                    MainMenu.settings.ZAxis:SetText("Коэффициент оси Z для оружия CW 2.0")
+                    MainMenu.settings.ZAxis:SetMin(GetConVar("gc_cw_z"):GetMin())
+                    MainMenu.settings.ZAxis:SetMax(GetConVar("gc_cw_z"):GetMax())
+                    MainMenu.settings.ZAxis:SetDecimals(1)
+                    MainMenu.settings.ZAxis:SetConVar("gc_cw_z")
+                    MainMenu.settings.XAxisTFA = vgui.Create("DNumSlider",MainMenu.settings)
+                    MainMenu.settings.XAxisTFA:Dock(TOP)
+                    MainMenu.settings.XAxisTFA:DockMargin(0,0,0,scrh * 0.01)
+                    MainMenu.settings.XAxisTFA:SetText("Коэффициент оси X для оружия TFA")
+                    MainMenu.settings.XAxisTFA:SetMin(GetConVar("cl_tfa_viewmodel_offset_x"):GetMin())
+                    MainMenu.settings.XAxisTFA:SetMax(GetConVar("cl_tfa_viewmodel_offset_x"):GetMax())
+                    MainMenu.settings.XAxisTFA:SetDecimals(1)
+                    MainMenu.settings.XAxisTFA:SetConVar("cl_tfa_viewmodel_offset_x")
+                    MainMenu.settings.YAxisTFA = vgui.Create("DNumSlider",MainMenu.settings)
+                    MainMenu.settings.YAxisTFA:Dock(TOP)
+                    MainMenu.settings.YAxisTFA:DockMargin(0,0,0,scrh * 0.01)
+                    MainMenu.settings.YAxisTFA:SetText("Коэффициент оси Y для оружия TFA")
+                    MainMenu.settings.YAxisTFA:SetMin(GetConVar("cl_tfa_viewmodel_offset_y"):GetMin())
+                    MainMenu.settings.YAxisTFA:SetMax(GetConVar("cl_tfa_viewmodel_offset_y"):GetMax())
+                    MainMenu.settings.YAxisTFA:SetDecimals(1)
+                    MainMenu.settings.YAxisTFA:SetConVar("cl_tfa_viewmodel_offset_y")
+                    MainMenu.settings.ZAxisTFA = vgui.Create("DNumSlider",MainMenu.settings)
+                    MainMenu.settings.ZAxisTFA:Dock(TOP)
+                    MainMenu.settings.ZAxisTFA:DockMargin(0,0,0,scrh * 0.01)
+                    MainMenu.settings.ZAxisTFA:SetText("Коэффициент оси Z для оружия TFA")
+                    MainMenu.settings.ZAxisTFA:SetMin(GetConVar("cl_tfa_viewmodel_offset_z"):GetMin())
+                    MainMenu.settings.ZAxisTFA:SetMax(GetConVar("cl_tfa_viewmodel_offset_z"):GetMax())
+                    MainMenu.settings.ZAxisTFA:SetDecimals(1)
+                    MainMenu.settings.ZAxisTFA:SetConVar("cl_tfa_viewmodel_offset_z")
                     MainMenu.settings:MoveTo(scrw * 0.7,0,0.5,0,-1,function()
                     MainMenu.settings.InAnim = false 
                 end)
@@ -208,7 +252,6 @@ function OpenMainMenu()
             playButton.DoClick = function()
                 MainMenu:Remove()
                 MainMenu = nil 
-                mainmenustatus:SetBool(false)
             end
 
             local title = vgui.Create("DLabel",MainMenu)
@@ -222,16 +265,18 @@ function OpenMainMenu()
     end
 end
 
---[[hook.Add("PlayerBindPress","MainMenuClose",function(ply,bind,pr,cd)
-    if bind == "gm_showhelp" then
+hook.Add("PlayerBindPress","MainMenuClose",function(ply,bind,pr,cd)
+    if bind == "gm_showspare2" then
         OpenMainMenu()
     end
 end)
---]]
 
-hook.Add("ShowSpare2","MainMenu",function(ply)
+
+--[[hook.Add("ShowSpare2","MainMenu",function(ply)
+    print("hehe")
     OpenMainMenu()
 end)
+--]]
 
 net.Receive( "SpawnMainMenu", function()
 	OpenMainMenu()

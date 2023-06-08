@@ -64,21 +64,6 @@ function GM:parseARC9Weapon(data)
     return output
 end
 
-GM.Roles = {
-	["Soldier"] = {
-		Description = "You are soldier. Stay close to the squad and follow the orders of the commander."
-	},
-	["Specialist"] = {
-		Description = "You are specialist. Use your gear to complete the task."
-	},
-	["Commander"] = {
-      Description = "You are commander of your squad. Lead your squad."
-	},
-	["Demoman"] = {
-		Description = "You are demoman. Use your weapons to wipe enemies off the face of the earth"
-	},
-}
-
 GM.NewGolosArgs = {"gc_roles_enable","gc_crippling"}
 
 --[[
