@@ -317,7 +317,7 @@ function GM:HUDPaint()
 	for key, obj in ipairs(self.teamPlayers) do
 		--if obj.withinPVS then -- only draw the player if we can see him, GMod has no clientside ways of checking whether the player is in PVS, check cl_render.lua for the second part of this
 		if self.rolesenable then
-			if obj ~= ply and obj:Alive() and ply:GetNWString("Role","Soldier") == "Commander" then
+			if obj ~= ply and obj:Alive() and ply.plclass and ply.plclass.DisplayName == "Commander" then
 				local pos = obj:GetBonePosition(obj:LookupBone("ValveBiped.Bip01_Head1"))
 				
 				if pos:Distance(ourShootPos) <= teamMateMarkerDisplayDistance then

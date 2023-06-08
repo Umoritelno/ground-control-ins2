@@ -246,7 +246,7 @@ covertOps.description = {
 }
 
 function covertOps:onSpawn(player, currentLevel)
-	player:SetCrouchedWalkSpeed(GAMEMODE.CrouchedWalkSpeed + covertOps.crouchSpeedPerLevel * currentLevel)
+	player:SetCrouchedWalkSpeed((player.plclass.CrouchedWalkSpeed or GAMEMODE.CrouchedWalkSpeed) + covertOps.crouchSpeedPerLevel * currentLevel)
 end
 
 GM:registerTrait(covertOps)

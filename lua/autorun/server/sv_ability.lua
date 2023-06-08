@@ -33,6 +33,7 @@ function plym:GiveAbility(int)
        net.WriteString(self.Ability.description)
        net.WriteString(self.Ability.name)
        net.WriteString(self.Ability.icon)
+       net.WriteFloat(self.Ability.usetime)
        net.Send(self)
     end 
 end 
