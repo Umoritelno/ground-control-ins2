@@ -7,13 +7,53 @@
 ]]--
 
 -- client cvars start 
-CreateClientConVar("gc_cw_z","0",true,false,"How much z-axis of CW 2.0 weapons will be increased",-3,1)
-CreateClientConVar("gc_cw_y","0",true,false,"How much y-axis of CW 2.0 weapons will be increased",-1,5)
-CreateClientConVar("gc_cw_x","0",true,false,"How much x-axis of CW 2.0 weapons will be increased",-1,3)
+local cwZ = CreateClientConVar("gc_cw_z","0",true,false,"How much z-axis of CW 2.0 weapons will be increased",-3,1)
+local cwY = CreateClientConVar("gc_cw_y","0",true,false,"How much y-axis of CW 2.0 weapons will be increased",-1,5)
+local cwX = CreateClientConVar("gc_cw_x","0",true,false,"How much x-axis of CW 2.0 weapons will be increased",-1,3)
 
-GM.CW_Z = GetConVar("gc_cw_z"):GetFloat()
-GM.CW_Y = GetConVar("gc_cw_y"):GetFloat()
-GM.CW_X = GetConVar("gc_cw_x"):GetFloat()
+local filter = CreateClientConVar("BlueFilter",0,true,false,"Will filter work?",0,1)
+-- filter rgb elements start
+local filterRed = CreateClientConVar("gc_filter_red","0",true,false,"The add color's red value. 0 (black) means no change.",0,0.05)
+local filterGreen = CreateClientConVar("gc_filter_green","0",true,false,"The add color's green value. 0 (black) means no change.",0,0.05)
+local filterBlue = CreateClientConVar("gc_filter_blue","0",true,false,"The add color's blue value. 0 (black) means no change.",0,0.05)
+-- filter rgb elements end 
+GM.FilterColor = Color(filterRed:GetFloat(),filterBlue:GetFloat(),filterGreen:GetFloat())
+local customModify = {
+	[ "$pp_colour_addr" ] = GM.FilterColor.r,
+	[ "$pp_colour_addg" ] = GM.FilterColor.g,
+	[ "$pp_colour_addb" ] = GM.FilterColor.b,
+	[ "$pp_colour_brightness" ] = 0,
+	[ "$pp_colour_contrast" ] = 0.8,
+	[ "$pp_colour_colour" ] = 3,
+	[ "$pp_colour_mulr" ] = 0,
+	[ "$pp_colour_mulg" ] = 0,
+	[ "$pp_colour_mulb" ] = 0
+}
+
+GM.CW_Z = cwZ:GetFloat()
+GM.CW_Y = cwY:GetFloat()
+GM.CW_X = cwX:GetFloat()
+
+-- filter cvars callback start
+
+cvars.AddChangeCallback("gc_filter_red", function(name, old, new)
+	GAMEMODE.FilterColor.r = new 
+	customModify["$pp_colour_addr"] = new 
+end)
+
+cvars.AddChangeCallback("gc_filter_green", function(name, old, new)
+	GAMEMODE.FilterColor.g = new 
+	customModify["$pp_colour_addg"] = new
+end)
+
+cvars.AddChangeCallback("gc_filter_blue", function(name, old, new)
+	GAMEMODE.FilterColor.b = new
+	customModify["$pp_colour_addb"] = new
+end)
+
+--filter cvars callback end 
+
+-- weapon cvars callback start 
 
 cvars.AddChangeCallback("gc_cw_z", function(name, old, new)
 	GAMEMODE.CW_Z = new 
@@ -26,7 +66,16 @@ end)
 cvars.AddChangeCallback("gc_cw_x", function(name, old, new)
 	GAMEMODE.CW_X = new 
 end)
+-- weapon cvars callback end 
 -- client cvars end 
+-- colormodify start 
+hook.Add( "RenderScreenspaceEffects", "GroundControlColorModify", function()
+	local bool = filter:GetBool()
+	if bool then
+		DrawColorModify( customModify )
+	end
+end )
+-- colormodify end 
 local blur = Material("pp/blurscreen")
 local plr = FindMetaTable("Player")
 

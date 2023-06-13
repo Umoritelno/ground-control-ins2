@@ -132,6 +132,10 @@ function GM:disableDropsForWeapon(wepClass)
 end
 
 function GM:registerPrimaryWeapon(weaponData)
+	local wepClass = weapons.GetStored(weaponData.weaponClass)
+	if not wepClass then
+		return
+	end
 	weaponData.id = weaponData.id or weaponData.weaponClass
 	self.RegisteredWeaponData[weaponData.id] = weaponData
 	
@@ -140,7 +144,7 @@ function GM:registerPrimaryWeapon(weaponData)
 	if not weaponData.maxAmmo then
 		weaponData.maxAmmo = math.huge
 	end
-	if not string.find(weapons.Get(weaponData.weaponClass).Base,self:GetBaseClassByID(GetConVar("gc_wepbase"):GetInt())) then -- weapons.Get(weaponData.weaponClass).Base != self:GetBaseClassByID(GetConVar("gc_wepbase"):GetInt())
+	if not string.find(weapons.Get(weaponData.weaponClass).Base,self:GetBaseClassByID(GetConVar("gc_wepbase"):GetInt())) then 
 		return 
 	end
 	
@@ -150,6 +154,10 @@ function GM:registerPrimaryWeapon(weaponData)
 end
 
 function GM:registerSecondaryWeapon(weaponData)
+	local wepClass = weapons.GetStored(weaponData.weaponClass)
+	if not wepClass then
+		return
+	end
 	weaponData.id = weaponData.id or weaponData.weaponClass
 	self.RegisteredWeaponData[weaponData.id] = weaponData
 	
@@ -158,7 +166,8 @@ function GM:registerSecondaryWeapon(weaponData)
 	if not weaponData.maxAmmo then
 		weaponData.maxAmmo = math.huge
 	end
-	if not string.find(weapons.Get(weaponData.weaponClass).Base,self:GetBaseClassByID(GetConVar("gc_wepbase"):GetInt())) then -- weapons.Get(weaponData.weaponClass).Base != self:GetBaseClassByID(GetConVar("gc_wepbase"):GetInt())
+	if not string.find(weapons.Get(weaponData.weaponClass).Base,self:GetBaseClassByID(GetConVar("gc_wepbase"):GetInt())) then 
+		--ErrorNoHalt("[Ground Control] ERROR/nReason: Trying to register invalid weapon")
 		return 
 	end
 	
@@ -167,6 +176,11 @@ function GM:registerSecondaryWeapon(weaponData)
 end
 
 function GM:registerTertiaryWeapon(weaponData)
+	local wepClass = weapons.GetStored(weaponData.weaponClass)
+	if not wepClass then
+		ErrorNoHalt("[Ground Control] !Error!\nReason:'Trying to register invalid weapon'")
+		return
+	end
 	weaponData.id = weaponData.id or weaponData.weaponClass
 	self.RegisteredWeaponData[weaponData.id] = weaponData
 	
@@ -174,6 +188,10 @@ function GM:registerTertiaryWeapon(weaponData)
 	
 	if not weaponData.maxAmmo then
 		weaponData.maxAmmo = math.huge
+	end
+
+	if self.CurWepBase == 3 then
+		weaponData.skipWeaponGive = nil -- also can be false, no difference
 	end
 	
 	self:applyWeaponDataToWeaponClass(weaponData, false, 2)

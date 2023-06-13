@@ -1,4 +1,5 @@
 print("Shared loaded!")
+AddCSLuaFile("includes/circles.lua") -- add squid module(thx)
 abilities = {}
 nets = {}
 debugtable = {

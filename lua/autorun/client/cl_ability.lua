@@ -1,5 +1,6 @@
 local scrw,scrh = ScrW(),ScrH()
 local plym = FindMetaTable("Player")
+local circles = include("includes/circles.lua")
 --local abilityPanel = nil  
 
 surface.CreateFont("AbilityUseTimeCD", {
@@ -89,12 +90,14 @@ function HudAbility(name,desc,icon)
                 draw.SimpleText(math.Round(LocalPlayer().Ability.PlyCooldown - CurTime()),"AbilityCD",w / 2,h / 2,Color(255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
             end
             if LocalPlayer().Ability.PlyUseCD and LocalPlayer().Ability.PlyUseCD > CurTime() then
-                local ang = LocalPlayer().Ability.PlyUseCD / LocalPlayer().Ability.usetime * 360
-                local radius = h 
-                local originX,originY = w / 2, h / 2
-                local y = math.sin( ang ) * radius + originY
-                local x = math.cos( ang ) * radius + originX
-                draw.SimpleText(math.Round(LocalPlayer().Ability.PlyUseCD - CurTime()),"AbilityUseTimeCD",w / 2,h / 5,Color(0,204,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+	            local UseTimeCDCircle = circles.New(CIRCLE_OUTLINED,h * 0.4,w / 2, h / 2,1)
+                local realPlyUseTime = LocalPlayer().Ability.PlyUseCD - CurTime()
+                local percent = math.Clamp(realPlyUseTime / ply.Ability.usetime,0,1)
+                local end_angle = percent * 360
+                draw.NoTexture()
+                surface.SetDrawColor(26,189,211)
+                UseTimeCDCircle:SetStartAngle(360 - end_angle)
+                UseTimeCDCircle()
             end
         end
     end

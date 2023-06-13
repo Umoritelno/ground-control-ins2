@@ -102,19 +102,16 @@ function PLAYER:giveLoadout(forceGive)
 		
 		if primaryWepObj then
 			--print(primaryWepObj.Primary.ClipSize_Orig)
-			--PrintTable(primaryData)
 			if string.find(primaryWepObj.Base,"arc9") then
 				plyObj:GiveAmmo(math.min(primaryData.maxAmmo, primaryMags * primaryWepObj:GetMaxClip1() ), primaryWepObj.Primary.Ammo)
 				--print("this is arc9 weapon")
 			else 
 				plyObj:GiveAmmo(math.min(primaryData.maxAmmo, primaryMags * primaryWepObj.Primary.ClipSize_Orig ), primaryWepObj.Primary.Ammo)
 			end
-			if string.find(primaryWepObj.Base,"cw") then -- set the ammo after we've attached everything, since some attachments may modify mag size
-			primaryWepObj:maxOutWeaponAmmo(primaryWepObj.Primary.ClipSize_Orig) -- same for the magazine
-			end  
 			if primaryWepObj.CW20Weapon then
 				primaryWepObj:maxOutWeaponAmmo(primaryWepObj.Primary.ClipSize_Orig)
 			end
+			
 
 		end
 		
@@ -124,12 +121,10 @@ function PLAYER:giveLoadout(forceGive)
 			else
                 plyObj:GiveAmmo(math.min(secondaryData.maxAmmo, secondaryMags * secWepObj.Primary.ClipSize_Orig), secWepObj.Primary.Ammo)
 			end
-            if string.find(secWepObj.Base,"cw") then 
-			secWepObj:maxOutWeaponAmmo(secWepObj.Primary.ClipSize_Orig)
-			end 
 			if secWepObj.CW20Weapon then
 				secWepObj:maxOutWeaponAmmo(secWepObj.Primary.ClipSize_Orig)
 			end
+			
 		end
 		
 		plyObj:GiveAmmo(1, "Frag Grenades")
