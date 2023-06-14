@@ -1,4 +1,20 @@
-
+surface.CreateFont("MMSimple",{
+    font = "Arial", --  Use the font-name which is shown to you by your operating system Font Viewer, not the file name
+	extended = false,
+	size = 13,
+	weight = 500,
+	blursize = 0,
+	scanlines = 1,
+	antialias = true,
+	underline = false,
+	italic = false,
+	strikeout = false,
+	symbol = false,
+	rotary = false,
+	shadow = true,
+	additive = false,
+	outline = false,
+})
 
 --local MainMenu,settings
 local creditslabels = {
@@ -172,8 +188,10 @@ function OpenMainMenu()
                     MainMenu.settings:SetPos(scrw * 1.30,0)
                     MainMenu.settings:SetSize(scrw * 0.3,scrh)
                     MainMenu.settings.InAnim = true 
+                    local scroll = vgui.Create("DScrollPanel",MainMenu.settings)
+                    scroll:Dock(FILL)
                     -- OTHER LIST START
-                    MainMenu.settings.OtherCollap = vgui.Create( "MMCollapsible", MainMenu.settings )
+                    MainMenu.settings.OtherCollap = vgui.Create( "MMCollapsible", scroll )
                     MainMenu.settings.OtherCollap:SetLabel( "Other" )	
                     MainMenu.settings.OtherCollap:Dock(TOP)
                     MainMenu.settings.OtherCollap:DockMargin(0,0,0,scrh * 0.03)	
@@ -184,7 +202,7 @@ function OpenMainMenu()
                     MainMenu.settings.OtherCollap.list:EnableVerticalScrollbar( false )	
                     MainMenu.settings.OtherCollap:SetContents( MainMenu.settings.OtherCollap.list )	
                     -- OTHER LIST END 	
-                    MainMenu.settings.OtherCollap.Golova = vgui.Create("DCheckBoxLabel",MainMenu.settings)
+                    MainMenu.settings.OtherCollap.Golova = vgui.Create("DCheckBoxLabel",scroll)
                     --MainMenu.settings.Golova:Dock(TOP)
                     --MainMenu.settings.Golova:DockMargin(0,0,0,scrh * 0.01)
                     MainMenu.settings.OtherCollap.Golova:SetText("В ГОЛОВУ")
@@ -192,7 +210,7 @@ function OpenMainMenu()
                     MainMenu.settings.OtherCollap.list:AddItem( MainMenu.settings.OtherCollap.Golova )
 
                     -- VISUAL LIST START 
-                    MainMenu.settings.VisualCollap = vgui.Create( "MMCollapsible", MainMenu.settings )
+                    MainMenu.settings.VisualCollap = vgui.Create( "MMCollapsible", scroll )
                     MainMenu.settings.VisualCollap:SetLabel( "Visual" )	
                     MainMenu.settings.VisualCollap:Dock(TOP)
                     MainMenu.settings.VisualCollap:DockMargin(0,0,0,scrh * 0.03)	
@@ -204,43 +222,51 @@ function OpenMainMenu()
                     MainMenu.settings.VisualCollap.list:EnableVerticalScrollbar( false )			-- Enable the scrollbar if (the contents are too wide)
                     MainMenu.settings.VisualCollap:SetContents( MainMenu.settings.VisualCollap.list )
                     -- VISUAL LIST END 
-                    MainMenu.settings.VisualCollap.FilterBool = vgui.Create("DCheckBoxLabel",MainMenu.settings)
+                    MainMenu.settings.VisualCollap.FilterBool = vgui.Create("DCheckBoxLabel",scroll)
                     MainMenu.settings.VisualCollap.FilterBool:SetText("Включить фильтр?")
                     MainMenu.settings.VisualCollap.FilterBool:SetConVar("BlueFilter")
                     MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.FilterBool )
                     MainMenu.settings.VisualCollap.FilterColor = {}
 
-                    MainMenu.settings.VisualCollap.FilterColor.r = vgui.Create("DNumSlider", MainMenu.settings)
+                    MainMenu.settings.VisualCollap.FilterColor.r = vgui.Create("DNumSlider", scroll)
                     MainMenu.settings.VisualCollap.FilterColor.r:SetText("Красный элемент в фильтре")
                     MainMenu.settings.VisualCollap.FilterColor.r:SetMin(GetConVar("gc_filter_red"):GetMin())
                     MainMenu.settings.VisualCollap.FilterColor.r:SetMax(GetConVar("gc_filter_red"):GetMax())
-                    MainMenu.settings.VisualCollap.FilterColor.r:SetDecimals(2)
+                    MainMenu.settings.VisualCollap.FilterColor.r:SetDecimals(3)
                     MainMenu.settings.VisualCollap.FilterColor.r:SetConVar("gc_filter_red")
 
-                    MainMenu.settings.VisualCollap.FilterColor.g = vgui.Create("DNumSlider", MainMenu.settings)
+                    MainMenu.settings.VisualCollap.FilterColor.g = vgui.Create("DNumSlider", scroll)
                     MainMenu.settings.VisualCollap.FilterColor.g:SetText("Зеленый элемент в фильтре")
                     MainMenu.settings.VisualCollap.FilterColor.g:SetMin(GetConVar("gc_filter_green"):GetMin())
                     MainMenu.settings.VisualCollap.FilterColor.g:SetMax(GetConVar("gc_filter_green"):GetMax())
-                    MainMenu.settings.VisualCollap.FilterColor.g:SetDecimals(2)
+                    MainMenu.settings.VisualCollap.FilterColor.g:SetDecimals(3)
                     MainMenu.settings.VisualCollap.FilterColor.g:SetConVar("gc_filter_green")
 
-                    MainMenu.settings.VisualCollap.FilterColor.b = vgui.Create("DNumSlider", MainMenu.settings)
+                    MainMenu.settings.VisualCollap.FilterColor.b = vgui.Create("DNumSlider", scroll)
                     MainMenu.settings.VisualCollap.FilterColor.b:SetText("Синий элемент в фильтре")
                     MainMenu.settings.VisualCollap.FilterColor.b:SetMin(GetConVar("gc_filter_blue"):GetMin())
                     MainMenu.settings.VisualCollap.FilterColor.b:SetMax(GetConVar("gc_filter_blue"):GetMax())
-                    MainMenu.settings.VisualCollap.FilterColor.b:SetDecimals(2)
+                    MainMenu.settings.VisualCollap.FilterColor.b:SetDecimals(3)
                     MainMenu.settings.VisualCollap.FilterColor.b:SetConVar("gc_filter_blue")
+
+                    MainMenu.settings.VisualCollap.FilterColor.a = vgui.Create("DNumSlider", scroll)
+                    MainMenu.settings.VisualCollap.FilterColor.a:SetText("Насыщенность")
+                    MainMenu.settings.VisualCollap.FilterColor.a:SetMin(GetConVar("gc_filter_colour"):GetMin())
+                    MainMenu.settings.VisualCollap.FilterColor.a:SetMax(GetConVar("gc_filter_colour"):GetMax())
+                    MainMenu.settings.VisualCollap.FilterColor.a:SetDecimals(3)
+                    MainMenu.settings.VisualCollap.FilterColor.a:SetConVar("gc_filter_colour")
 
                     MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.FilterColor.r )
                     MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.FilterColor.g )
                     MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.FilterColor.b )
+                    MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.FilterColor.a )
                     
-                    MainMenu.settings.VisualCollap.Impact = vgui.Create("DCheckBoxLabel",MainMenu.settings)
+                    MainMenu.settings.VisualCollap.Impact = vgui.Create("DCheckBoxLabel",scroll)
                     MainMenu.settings.VisualCollap.Impact:SetText("Включить улучшенные эффекты попадания пуль?")
                     MainMenu.settings.VisualCollap.Impact:SetConVar("cl_new_impact_effects")
                     MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.Impact )
 
-                    MainMenu.settings.VisualCollap.XAxis = vgui.Create("DNumSlider",MainMenu.settings)
+                    MainMenu.settings.VisualCollap.XAxis = vgui.Create("DNumSlider",scroll)
                     MainMenu.settings.VisualCollap.XAxis:SetText("Коэффициент оси X для оружия CW 2.0")
                     MainMenu.settings.VisualCollap.XAxis:SetMin(GetConVar("gc_cw_x"):GetMin())
                     MainMenu.settings.VisualCollap.XAxis:SetMax(GetConVar("gc_cw_x"):GetMax())
@@ -248,7 +274,7 @@ function OpenMainMenu()
                     MainMenu.settings.VisualCollap.XAxis:SetConVar("gc_cw_x")
                     MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.XAxis )
 
-                    MainMenu.settings.VisualCollap.YAxis = vgui.Create("DNumSlider",MainMenu.settings)
+                    MainMenu.settings.VisualCollap.YAxis = vgui.Create("DNumSlider",scroll)
                     MainMenu.settings.VisualCollap.YAxis:SetText("Коэффициент оси Y для оружия CW 2.0")
                     MainMenu.settings.VisualCollap.YAxis:SetMin(GetConVar("gc_cw_y"):GetMin())
                     MainMenu.settings.VisualCollap.YAxis:SetMax(GetConVar("gc_cw_y"):GetMax())
@@ -256,7 +282,7 @@ function OpenMainMenu()
                     MainMenu.settings.VisualCollap.YAxis:SetConVar("gc_cw_y")
                     MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.YAxis )
 
-                    MainMenu.settings.VisualCollap.ZAxis = vgui.Create("DNumSlider",MainMenu.settings)
+                    MainMenu.settings.VisualCollap.ZAxis = vgui.Create("DNumSlider",scroll)
                     MainMenu.settings.VisualCollap.ZAxis:SetText("Коэффициент оси Z для оружия CW 2.0")
                     MainMenu.settings.VisualCollap.ZAxis:SetMin(GetConVar("gc_cw_z"):GetMin())
                     MainMenu.settings.VisualCollap.ZAxis:SetMax(GetConVar("gc_cw_z"):GetMax())
@@ -264,7 +290,7 @@ function OpenMainMenu()
                     MainMenu.settings.VisualCollap.ZAxis:SetConVar("gc_cw_z")
                     MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.ZAxis )
 
-                    MainMenu.settings.VisualCollap.XAxisTFA = vgui.Create("DNumSlider",MainMenu.settings)
+                    MainMenu.settings.VisualCollap.XAxisTFA = vgui.Create("DNumSlider",scroll)
                     MainMenu.settings.VisualCollap.XAxisTFA:SetText("Коэффициент оси X для оружия TFA")
                     MainMenu.settings.VisualCollap.XAxisTFA:SetMin(GetConVar("cl_tfa_viewmodel_offset_x"):GetMin())
                     MainMenu.settings.VisualCollap.XAxisTFA:SetMax(GetConVar("cl_tfa_viewmodel_offset_x"):GetMax())
@@ -272,9 +298,7 @@ function OpenMainMenu()
                     MainMenu.settings.VisualCollap.XAxisTFA:SetConVar("cl_tfa_viewmodel_offset_x")
                     MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.XAxisTFA )
 
-                    MainMenu.settings.VisualCollap.YAxisTFA = vgui.Create("DNumSlider",MainMenu.settings)
-                    --MainMenu.settings.YAxisTFA:Dock(TOP)
-                    --MainMenu.settings.YAxisTFA:DockMargin(0,0,0,scrh * 0.01)
+                    MainMenu.settings.VisualCollap.YAxisTFA = vgui.Create("DNumSlider",scroll)
                     MainMenu.settings.VisualCollap.YAxisTFA:SetText("Коэффициент оси Y для оружия TFA")
                     MainMenu.settings.VisualCollap.YAxisTFA:SetMin(GetConVar("cl_tfa_viewmodel_offset_y"):GetMin())
                     MainMenu.settings.VisualCollap.YAxisTFA:SetMax(GetConVar("cl_tfa_viewmodel_offset_y"):GetMax())
@@ -282,7 +306,7 @@ function OpenMainMenu()
                     MainMenu.settings.VisualCollap.YAxisTFA:SetConVar("cl_tfa_viewmodel_offset_y")
                     MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.YAxisTFA )
 
-                    MainMenu.settings.VisualCollap.ZAxisTFA = vgui.Create("DNumSlider",MainMenu.settings)
+                    MainMenu.settings.VisualCollap.ZAxisTFA = vgui.Create("DNumSlider",scroll)
                     --MainMenu.settings.ZAxisTFA:Dock(TOP)
                     --MainMenu.settings.ZAxisTFA:DockMargin(0,0,0,scrh * 0.01)
                     MainMenu.settings.VisualCollap.ZAxisTFA:SetText("Коэффициент оси Z для оружия TFA")
@@ -293,22 +317,22 @@ function OpenMainMenu()
                     MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.ZAxisTFA )
 
                     MainMenu.settings:MoveTo(scrw * 0.7,0,0.5,0,-1,function()
-                    MainMenu.settings.InAnim = false 
-                end)
+                       MainMenu.settings.InAnim = false 
+                    end)
                 MainMenu.settings:SetTitle("")
                 MainMenu.settings:ShowCloseButton(false)
-                MainMenu.settings.Paint = function(s,w,h)
+                 MainMenu.settings.Paint = function(s,w,h)
                     draw.RoundedBox(0,0,0,w,h,Color(0,0,0,150))
-                end
+                 end
             else
                 if not MainMenu.settings.InAnim then 
                     MainMenu.settings:MoveTo(scrw * 1.30,0,0.5,0,-1,function()
-                    if MainMenu.settings != nil then 
+                    if MainMenu and MainMenu.settings then 
                         MainMenu.settings:Remove()
                         MainMenu.settings = nil 
                     end 
                 end)
-            end 
+              end 
             end 
         end
 
@@ -323,14 +347,83 @@ function OpenMainMenu()
                 MainMenu = nil 
             end
 
-            local title = vgui.Create("DLabel",MainMenu)
-            --title:SetPos(scrw * 0.045 ,scrh * 0.4)
-            --title:SetSize(scrw * 0.1,scrh * 0.1)
-            title:Dock(BOTTOM)
-            title:DockMargin(scrw * 0.05,0,scrw * 0.75,scrh * 0.05)
-            title:SetTextColor(Color(255,255,255,120))
-            title:SetText("Ground Kontrol")
-            title:SetFont("CloseCaption_BoldItalic")
+        local title = vgui.Create("DLabel",MainMenu)
+        title:Dock(BOTTOM)
+        title:DockMargin(scrw * 0.05,0,scrw * 0.75,scrh * 0.05)
+        title:SetTextColor(Color(255,255,255,120))
+        title:SetText("Ground Kontrol")
+        title:SetFont("CloseCaption_BoldItalic")
+
+        local achivs = vgui.Create("MMButton",MainMenu)
+        achivs:Dock(BOTTOM)
+        achivs:DockMargin(scrw * 0.05,0,scrw * 0.75,scrh * 0.05)
+        achivs:SetText("ACHIEVEMENTS")
+        achivs:SetTextColor(Color(255,255,255))
+        achivs.DoClick = function()
+            if MainMenu.achivs == nil then 
+                MainMenu.achivs = vgui.Create("DFrame",MainMenu)
+                MainMenu.achivs:SetPos(scrw * 0.25,scrh * 2)
+                MainMenu.achivs:SetSize(scrw * 0.25,scrh)
+                MainMenu.achivs.InAnim = true
+                local scroll = vgui.Create("DScrollPanel",MainMenu.achivs)
+                scroll:Dock(FILL)
+
+            local i = 1
+            local count = table.Count(GAMEMODE.Achievements)
+
+        for id, ach in pairs(GAMEMODE.Achievements) do
+          local panel = scroll:Add("DPanel")
+          local mat = Material("icon16/accept.png")
+          panel:Dock(TOP)
+          panel:DockMargin(0,0,0,scrh * 0.03)
+
+        if ach.Goal then
+                panel.Done = (GAMEMODE.AchievementsProgress[id] or 0) >= ach.Goal
+            else
+                panel.Done = GAMEMODE.AchievementsProgress[id] == true
+        end
+        
+          panel.Paint = function(me,w,h)
+            surface.SetMaterial(mat)
+            draw.RoundedBox(0,0,0,w,h,Color(63,59,59))
+            --surface.DrawOutlinedRect(0,0,w,h,1.1)
+            draw.SimpleText(ach.Name,"MMSimple",w * 0.75,h / 2,Color(255,255,255),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+            if panel.Done then
+                surface.DrawTexturedRect(0,0,w * 0.1,h)
+            end
+            if ach.Goal then
+                draw.SimpleTextOutlined((GAMEMODE.AchievementsProgress[id] or 0) .. "/" .. ach.Goal,"MMSimple",w * 0.5,h * 0.5,Color(255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER,1.1,Color(0,0,0))
+                self:ShadowedText((GAMEMODE.AchievementsProgress[id] or 0) .. "/" .. ach.Goal, "HNS.RobotoSmall", w / 2, 60, self:GetTheme(3), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            end
+         end
+
+        i = i + 1
+        end
+
+                MainMenu.achivs:MoveTo(scrw * 0.25,0,0.5,0,-1,function()
+                    MainMenu.achivs.InAnim = false
+                end)
+                MainMenu.achivs:SetTitle("")
+                MainMenu.achivs:ShowCloseButton(false)
+                 MainMenu.achivs.Paint = function(s,w,h)
+                    draw.RoundedBox(0,0,0,w,h,Color(0,0,0,150))
+                    surface.SetDrawColor(255,255,255,125)
+                    surface.DrawOutlinedRect(0,0,w,h,1.5)
+                 end
+            else 
+                if not MainMenu.achivs.InAnim then 
+                    MainMenu.achivs:MoveTo(scrw * 1.30,0,0.5,0,-1,function()
+                    if MainMenu and MainMenu.achivs then 
+                        MainMenu.achivs:Remove()
+                        MainMenu.achivs = nil 
+                    end 
+                  end)
+                end 
+            end 
+ 
+
+        end
+
     end
 end
 

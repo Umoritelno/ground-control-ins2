@@ -16,15 +16,16 @@ local filter = CreateClientConVar("BlueFilter",0,true,false,"Will filter work?",
 local filterRed = CreateClientConVar("gc_filter_red","0",true,false,"The add color's red value. 0 (black) means no change.",0,0.05)
 local filterGreen = CreateClientConVar("gc_filter_green","0",true,false,"The add color's green value. 0 (black) means no change.",0,0.05)
 local filterBlue = CreateClientConVar("gc_filter_blue","0",true,false,"The add color's blue value. 0 (black) means no change.",0,0.05)
+local filterColour = CreateClientConVar("gc_filter_colour","0",true,false,"The saturation value. Setting this to 0 will turn the image to grey-scale. 1 means no change.",1,3)
 -- filter rgb elements end 
-GM.FilterColor = Color(filterRed:GetFloat(),filterBlue:GetFloat(),filterGreen:GetFloat())
+GM.FilterColor = Color(filterRed:GetFloat(),filterBlue:GetFloat(),filterGreen:GetFloat(),filterColour:GetFloat())
 local customModify = {
 	[ "$pp_colour_addr" ] = GM.FilterColor.r,
 	[ "$pp_colour_addg" ] = GM.FilterColor.g,
 	[ "$pp_colour_addb" ] = GM.FilterColor.b,
 	[ "$pp_colour_brightness" ] = 0,
-	[ "$pp_colour_contrast" ] = 0.8,
-	[ "$pp_colour_colour" ] = 3,
+	[ "$pp_colour_contrast" ] = 1,
+	[ "$pp_colour_colour" ] = GM.FilterColor.a,
 	[ "$pp_colour_mulr" ] = 0,
 	[ "$pp_colour_mulg" ] = 0,
 	[ "$pp_colour_mulb" ] = 0
@@ -49,6 +50,11 @@ end)
 cvars.AddChangeCallback("gc_filter_blue", function(name, old, new)
 	GAMEMODE.FilterColor.b = new
 	customModify["$pp_colour_addb"] = new
+end)
+
+cvars.AddChangeCallback("gc_filter_colour", function(name, old, new)
+	GAMEMODE.FilterColor.a = new
+	customModify["$pp_colour_colour"] = new
 end)
 
 --filter cvars callback end 

@@ -62,6 +62,9 @@ end
 
 -- For one time achievements
 function PLAYER:GiveAchievement(id)
+    if not self.Achs then
+        self:ProcessAchievements()
+    end
     -- Check if achievement was already earned
     if self.Achs[id] then return end
     -- Insert into SQL
@@ -105,3 +108,4 @@ function PLAYER:GiveAchievementProgress(id, count)
     -- Update
     self:ProcessAchievements()
 end
+

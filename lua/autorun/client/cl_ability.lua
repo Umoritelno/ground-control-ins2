@@ -98,7 +98,10 @@ function HudAbility(name,desc,icon)
                 surface.SetDrawColor(26,189,211)
                 UseTimeCDCircle:SetStartAngle(360 - end_angle)
                 UseTimeCDCircle()
+            else
+                surface.SetDrawColor(255,255,255)
             end
+            surface.DrawOutlinedRect(0,0,w,h,2)
         end
     end
     

@@ -1,4 +1,4 @@
-resource.AddWorkshop( "2948456154" )
+--resource.AddWorkshop( "2948456154" )
 
 util.AddNetworkString("SpawnMainMenu")
 util.AddNetworkString("Golova")
@@ -20,10 +20,12 @@ hook.Add("PlayerHurt","Hurt",function(victim,attacker,healthremaining,damagetake
     if healthremaining <= 0 and victim:LastHitGroup() == 1 then
         net.Start("Golova")
         net.Send(attacker)
+        attacker:GiveAchievement("headshot")
     end
 end)
 
 net.Receive( "cool_addon_client_ready", function( len, ply )
 	net.Start("SpawnMainMenu")
     net.Send(ply)
+    ply:ProcessAchievements()
 end )
