@@ -38,7 +38,7 @@ hook.Add("FinishMove","supressionController",function(ply,mv)
     elseif ply.stun.stunamount > 50 and ply.stun.stunamount < 75 then 
         ply:SetDSP(31,false)
     elseif ply.stun.stunamount > 75 then 
-        ply:SetDSP(34,false )
+        ply:SetDSP(16,false )
     end
     if ply.stun.regendelay < CurTime() and ply.stun.regentimer < CurTime() then
     ply.stun.regentimer = CurTime() + 0.5
