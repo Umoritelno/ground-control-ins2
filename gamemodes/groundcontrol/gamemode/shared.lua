@@ -33,7 +33,6 @@ GM.HeavyLandingVelocity = 500
 GM.HeavyLandingVelocityToWeight = 0.03 -- multiply velocity by this much, if the final value exceeds our weight, then it is considered a heavy landing and will make extra noise
 GM.CurMap = string.lower(game.GetMap())
 GM.DefBase = 2
-GM.SpecRounds = {}
 GM.WepBases = {
 	[1] = {
 		class = "cw_base",
@@ -138,6 +137,7 @@ end
 
 local sharedCVar = FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED
 
+CreateConVar("gc_specround_enable",1,sharedCVar,"Will special rounds work?")
 CreateConVar("gc_crippling", 1, sharedCVar, "is the crippling gameplay mechanic enabled?")
 CreateConVar("gc_round_prep_time", GM.RoundPreparationTime, sharedCVar, "how much time players spend in the preparation stage of the new round")
 CreateConVar("gc_round_restart_time", GM.RoundRestartTime, sharedCVar, "amount of time before the next round starts")
@@ -147,7 +147,7 @@ CreateConVar("gc_damagemult", GM.DamageMultiplier, sharedCVar, "multiplier for d
 CreateConVar("gc_damage_scale", GM.defaultDamageScale, sharedCVar, "multiplier for all weapon damage")
 CreateConVar("gc_wepbase",GM.DefBase,sharedCVar,"What weapon base we will use?")
 CreateConVar("gc_roles_enable",1,sharedCVar,"Will roles and work?")
-CreateConVar("gc_abil_enable",1,sharedCVar,"Will abilities work&")
+CreateConVar("gc_abil_enable",1,sharedCVar,"Will abilities work?")
 
 --GM.CurWepBase = GetConVar("gc_wepbase"):GetInt() or 1
 if GM.WepBases[GetConVar("gc_wepbase"):GetInt()] then
@@ -163,6 +163,10 @@ end
 local function getCvarNumber(new, old)
 	return tonumber(new) and new or old
 end
+
+GM:registerAutoUpdateConVar("gc_specround_enable", function(name, old, new)
+	GAMEMODE.specRoundEnabled = tonumber(new) and tonumber(new) > 0
+end)
 
 GM:registerAutoUpdateConVar("gc_abil_enable", function(name, old, new)
 	GAMEMODE.abilityEnabled = tonumber(new) and tonumber(new) > 0

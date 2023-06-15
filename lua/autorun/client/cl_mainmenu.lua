@@ -3,8 +3,8 @@ surface.CreateFont("MMSimple",{
 	extended = false,
 	size = 13,
 	weight = 500,
-	blursize = 0,
-	scanlines = 1,
+	blursize = 0.25,
+	scanlines = 2,
 	antialias = true,
 	underline = false,
 	italic = false,
@@ -31,13 +31,14 @@ PANEL.BarSpeed = 2
 
 function PANEL:Paint(w,h)
    if self:IsHovered() then
-                self.BarStatus = math.Clamp(self.BarStatus + self.BarSpeed * FrameTime(),0,1)
-            else
-                self.BarStatus = math.Clamp(self.BarStatus - self.BarSpeed * FrameTime(),0,1)
+            self.BarStatus = math.Clamp(self.BarStatus + self.BarSpeed * FrameTime(),0,1)
+        else
+            self.BarStatus = math.Clamp(self.BarStatus - self.BarSpeed * FrameTime(),0,1)
     end
-            DisableClipping(true)
-            draw.RoundedBox(0,5,h,w * self.BarStatus,1,Color(255,255,255))
-            draw.RoundedBox(0,0,2.5,5,h,Color(255,255,255,125))
+    DisableClipping(true)
+    draw.RoundedBox(0,5,h,w * self.BarStatus,1,Color(255,255,255))
+    draw.RoundedBox(0,0,2.5,5,h,Color(255,255,255,125))
+    DisableClipping(false)
 end 
 
 vgui.Register("MMButton",PANEL,"DButton")
@@ -47,8 +48,10 @@ vgui.Register("MMButton",PANEL,"DButton")
 local PANEL = {}
 
 function PANEL:Paint(w,h)
+    DisableClipping(true)
     surface.SetDrawColor(255,255,255)
     surface.DrawOutlinedRect(-5,0,w,h + 5,1.1)
+    DisableClipping(false)
 end 
 
 vgui.Register("MMCollapsible",PANEL,"DCollapsibleCategory")
@@ -232,28 +235,28 @@ function OpenMainMenu()
                     MainMenu.settings.VisualCollap.FilterColor.r:SetText("Красный элемент в фильтре")
                     MainMenu.settings.VisualCollap.FilterColor.r:SetMin(GetConVar("gc_filter_red"):GetMin())
                     MainMenu.settings.VisualCollap.FilterColor.r:SetMax(GetConVar("gc_filter_red"):GetMax())
-                    MainMenu.settings.VisualCollap.FilterColor.r:SetDecimals(3)
+                    MainMenu.settings.VisualCollap.FilterColor.r:SetDecimals(2)
                     MainMenu.settings.VisualCollap.FilterColor.r:SetConVar("gc_filter_red")
 
                     MainMenu.settings.VisualCollap.FilterColor.g = vgui.Create("DNumSlider", scroll)
                     MainMenu.settings.VisualCollap.FilterColor.g:SetText("Зеленый элемент в фильтре")
                     MainMenu.settings.VisualCollap.FilterColor.g:SetMin(GetConVar("gc_filter_green"):GetMin())
                     MainMenu.settings.VisualCollap.FilterColor.g:SetMax(GetConVar("gc_filter_green"):GetMax())
-                    MainMenu.settings.VisualCollap.FilterColor.g:SetDecimals(3)
+                    MainMenu.settings.VisualCollap.FilterColor.g:SetDecimals(2)
                     MainMenu.settings.VisualCollap.FilterColor.g:SetConVar("gc_filter_green")
 
                     MainMenu.settings.VisualCollap.FilterColor.b = vgui.Create("DNumSlider", scroll)
                     MainMenu.settings.VisualCollap.FilterColor.b:SetText("Синий элемент в фильтре")
                     MainMenu.settings.VisualCollap.FilterColor.b:SetMin(GetConVar("gc_filter_blue"):GetMin())
                     MainMenu.settings.VisualCollap.FilterColor.b:SetMax(GetConVar("gc_filter_blue"):GetMax())
-                    MainMenu.settings.VisualCollap.FilterColor.b:SetDecimals(3)
+                    MainMenu.settings.VisualCollap.FilterColor.b:SetDecimals(2)
                     MainMenu.settings.VisualCollap.FilterColor.b:SetConVar("gc_filter_blue")
 
                     MainMenu.settings.VisualCollap.FilterColor.a = vgui.Create("DNumSlider", scroll)
                     MainMenu.settings.VisualCollap.FilterColor.a:SetText("Насыщенность")
                     MainMenu.settings.VisualCollap.FilterColor.a:SetMin(GetConVar("gc_filter_colour"):GetMin())
                     MainMenu.settings.VisualCollap.FilterColor.a:SetMax(GetConVar("gc_filter_colour"):GetMax())
-                    MainMenu.settings.VisualCollap.FilterColor.a:SetDecimals(3)
+                    MainMenu.settings.VisualCollap.FilterColor.a:SetDecimals(2)
                     MainMenu.settings.VisualCollap.FilterColor.a:SetConVar("gc_filter_colour")
 
                     MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.FilterColor.r )
@@ -336,6 +339,12 @@ function OpenMainMenu()
             end 
         end
 
+        local achivs = vgui.Create("MMButton",MainMenu)
+        achivs:Dock(BOTTOM)
+        achivs:DockMargin(scrw * 0.05,0,scrw * 0.75,scrh * 0.05)
+        achivs:SetText("ACHIEVEMENTS")
+        achivs:SetTextColor(Color(255,255,255))
+
 
         local playButton = vgui.Create("MMButton",MainMenu)
             playButton:Dock(BOTTOM)
@@ -354,11 +363,6 @@ function OpenMainMenu()
         title:SetText("Ground Kontrol")
         title:SetFont("CloseCaption_BoldItalic")
 
-        local achivs = vgui.Create("MMButton",MainMenu)
-        achivs:Dock(BOTTOM)
-        achivs:DockMargin(scrw * 0.05,0,scrw * 0.75,scrh * 0.05)
-        achivs:SetText("ACHIEVEMENTS")
-        achivs:SetTextColor(Color(255,255,255))
         achivs.DoClick = function()
             if MainMenu.achivs == nil then 
                 MainMenu.achivs = vgui.Create("DFrame",MainMenu)
@@ -376,6 +380,7 @@ function OpenMainMenu()
           local mat = Material("icon16/accept.png")
           panel:Dock(TOP)
           panel:DockMargin(0,0,0,scrh * 0.03)
+          panel:SetTooltip(ach.Desc)
 
         if ach.Goal then
                 panel.Done = (GAMEMODE.AchievementsProgress[id] or 0) >= ach.Goal
@@ -389,11 +394,11 @@ function OpenMainMenu()
             --surface.DrawOutlinedRect(0,0,w,h,1.1)
             draw.SimpleText(ach.Name,"MMSimple",w * 0.75,h / 2,Color(255,255,255),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
             if panel.Done then
-                surface.DrawTexturedRect(0,0,w * 0.1,h)
+                draw.SimpleText("+","MMSimple",w * 0.1,h / 2,Color(255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
             end
             if ach.Goal then
                 draw.SimpleTextOutlined((GAMEMODE.AchievementsProgress[id] or 0) .. "/" .. ach.Goal,"MMSimple",w * 0.5,h * 0.5,Color(255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER,1.1,Color(0,0,0))
-                self:ShadowedText((GAMEMODE.AchievementsProgress[id] or 0) .. "/" .. ach.Goal, "HNS.RobotoSmall", w / 2, 60, self:GetTheme(3), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                --self:ShadowedText((GAMEMODE.AchievementsProgress[id] or 0) .. "/" .. ach.Goal, "HNS.RobotoSmall", w / 2, 60, self:GetTheme(3), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             end
          end
 
@@ -412,7 +417,7 @@ function OpenMainMenu()
                  end
             else 
                 if not MainMenu.achivs.InAnim then 
-                    MainMenu.achivs:MoveTo(scrw * 1.30,0,0.5,0,-1,function()
+                    MainMenu.achivs:MoveTo(scrw * 0.25,scrh * 2,0.5,0,-1,function()
                     if MainMenu and MainMenu.achivs then 
                         MainMenu.achivs:Remove()
                         MainMenu.achivs = nil 

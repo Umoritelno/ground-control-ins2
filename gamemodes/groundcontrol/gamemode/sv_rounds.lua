@@ -272,6 +272,11 @@ function GM:StartWeaponBaseVote()
 		local key = self:GetIDByName(highestOption.option)
 		--self:SetWeaponBaseID(self:GetIDByName(highestOption.option))
 		game.ConsoleCommand("gc_wepbase " .. key .. "\n")
+		local text = "NEXT WEAPON BASE: " .. highestOption.option
+		print("[GROUND CONTROL] " .. text)
+		umsg.Start("GC_NOTIFICATION")
+			umsg.String(text)
+		umsg.End()
 	end, self.VoteBaseID)
 
 end 
@@ -314,7 +319,36 @@ function GM:restartRound()
 	
 	self:setupRoundPreparation()
 
-	self.CurSpecRound = self.SpecRounds[math.random(1,table.Count(self.SpecRounds))]
+
+if self.specRoundEnabled then 
+	self.GlobalSpecRound = self.GlobalSpecRound - 1
+
+	if self.GlobalSpecRound <= -1 then
+		local randomround = math.random(1,#self.SpecRounds)
+		self.GlobalSpecRound = self.DefaultSpecRoundDelay
+		self.CurSpecRound = self.SpecRounds[randomround]
+		net.Start("SpecRoundUpdate")
+		net.WriteInt(randomround,32)
+		print(self.GlobalSpecRound)
+		net.WriteInt(self.GlobalSpecRound,31)
+		net.Broadcast()
+	else
+		self.CurSpecRound = nil 
+		net.Start("SpecRoundUpdate")
+		net.WriteInt(-1,32)
+		net.WriteInt(self.GlobalSpecRound,31)
+		net.Broadcast()
+	end
+
+else 
+	self.CurSpecRound = nil 
+	net.Start("SpecRoundUpdate")
+	net.WriteInt(-1,32)
+	net.WriteInt(self.GlobalSpecRound,31)
+	net.Broadcast()
+end 
+
+	--self.CurSpecRound = self.SpecRounds[math.random(1,table.Count(self.SpecRounds))]
 	--print(self:GetSpecRound())
 
 --end
@@ -332,7 +366,6 @@ if self.rolesenable then
 		for k,v in RandomPairs(team.GetPlayers(i)) do
 			local randomdemo = math.random(1,7)
 			if maxcommander > commanderamount  then
-				--v:SetNWString("Role","Commander")
 				player_manager.SetPlayerClass( v, "cmd" )
 				commanderamount = commanderamount + 1
 			elseif maxcommander <= commanderamount then 
@@ -342,19 +375,13 @@ if self.rolesenable then
 						specamount = specamount + 1
 						demoamount = demoamount + 1
 					else 
-						--v:SetNWString("Role","Specialist")
 						player_manager.SetPlayerClass( v, "spec" )
 						specAmount = specamount + 1
 					end 
 				else 
-					--v:SetNWString("Role","Soldier")
 					player_manager.SetPlayerClass( v, "soldier" )
 				end
 			end
-			--[[net.Start("ShowRole")
-			net.WriteTable(self.Roles[v:GetNWString("Role","Soldier")])
-			net.Send(v)]]
-			--print(v:GetNWString("Role"))
 		end
 		--print(self:specCount(team.NumPlayers(i)))
 	end

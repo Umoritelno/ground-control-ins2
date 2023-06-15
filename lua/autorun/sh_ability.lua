@@ -77,35 +77,33 @@ AddSkill(
          description = "Вы блокируете дверь перед собой",
          cooldown = 30,
          usetime = 10,
-         nets = {"doorblock",
-                "doorblockdeath"},
+         nets = {},
          use = function(ply)
             local ent = ply:GetEyeTrace().Entity
             local hitpos = ply:GetEyeTrace().HitPos
             if ent:IsValid() then
-                if ply.PlyCooldown <= CurTime() and ent:GetClass() == "prop_door_rotating" then
-                if hitpos:DistToSqr(ply:GetPos()) > 0 and hitpos:DistToSqr(ply:GetPos()) < 5500 then 
-                print("Ability Activated")
-                ply.Ability.PlyCooldown = CurTime() + ply.Ability.cooldown
-                net.Start("AbilityUse")
-                net.WriteFloat(ply.Ability.PlyCooldown,32)
-                net.WriteInt(ply.Ability.PlyUseCD,16)
-                net.Send(ply)
-                ent:Fire("Lock")
-                timer.Simple(10,function()
+                if ply.Ability.PlyCooldown <= CurTime() and ent:GetClass() == "prop_door_rotating" then
+                 if hitpos:DistToSqr(ply:GetPos()) > 0 and hitpos:DistToSqr(ply:GetPos()) < 5500 then 
+                  print("Ability Activated")
+                  ply.Ability.PlyCooldown = CurTime() + ply.Ability.cooldown
+                  ply.Ability.PlyUseCD = CurTime() + ply.Ability.usetime
+                  net.Start("AbilityUse")
+                  net.WriteFloat(ply.Ability.PlyCooldown)
+                  net.WriteFloat(ply.Ability.PlyUseCD)
+                  net.Send(ply)
+                  ent:Fire("Lock")
+                   timer.Simple(10,function()
                     ent:Fire("Unlock")
-                end)
-            else 
-                print("Я не могу дотянуться")
+                   end)
+                 else 
+                    print("Я не могу дотянуться")
+                 end 
+                else
+                 print("Ability is reloading")
+                end 
             end 
-            else
-                print("Ability is reloading")
-            end 
-        end 
          end,
          death = function(ply)
-            net.Start("doorblockdeath")
-            net.Send(ply)
          end,
          customUse = true,
      }
@@ -117,22 +115,10 @@ AddSkill(
          description = "Ваши шаги не издают звуков",
          cooldown = 60,
          usetime = 15,
-         nets = {"SilentStep",
-                 "SilentStepDeath"},
+         nets = {},
          use = function(ply)
-            net.Start("SilentStep")
-            net.Send(ply)
-            timer.Create("SilentStepTimer"..ply:EntIndex(),15,1,function()
-                net.Start("SilentStepDeath")
-                net.Send(ply)
-            end)
          end,
          death = function(ply)
-            if timer.Exists("SilentStepTimer"..ply:EntIndex()) then
-                timer.Remove("SilentStepTimer"..ply:EntIndex())
-            end
-            net.Start("SilentStepDeath")
-            net.Send(ply)
          end,
          customUse = false,
      }
@@ -144,8 +130,7 @@ AddSkill(
          description = "Вам выдали экспериментальный препарат, который повышает ваше сопротивление к повреждениям и ускоряет пульс. К сожалению, у него есть и недостатки, но вас же это не волнует, верно?",
          cooldown = 90,
          usetime = 15,
-         nets = {--"BerserkDeath",
-                "BerserkKill"},
+         nets = {},
          active = false,
          use = function(ply)
             ply:ScreenFade( SCREENFADE.IN, Color( 255, 0, 0, 120), 15, 0 )

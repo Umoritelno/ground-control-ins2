@@ -92,7 +92,7 @@ surface.CreateFont("ShowRole", {
 	extended = false,
 	size = 30,
 	weight = 500,
-	blursize = 0.5,
+	blursize = 1.25,
 	scanlines = 2,
 	antialias = true,
 	underline = false,
@@ -103,6 +103,24 @@ surface.CreateFont("ShowRole", {
 	shadow = false,
 	additive = false,
 	outline = false,
+})
+
+surface.CreateFont("SpecRound", {
+    font = "GC_HUD14", 
+	extended = false,
+	size = 20,
+	weight = 500,
+	blursize = 0.1,
+	scanlines = 0,
+	antialias = true,
+	underline = false,
+	italic = false,
+	strikeout = false,
+	symbol = false,
+	rotary = false,
+	shadow = true,
+	additive = false,
+	outline = false ,
 })
 
 -- fonts end 

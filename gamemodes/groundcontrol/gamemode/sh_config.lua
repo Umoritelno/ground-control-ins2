@@ -1,6 +1,11 @@
 AddCSLuaFile()
+if SERVER then
+    util.AddNetworkString("SpecRoundUpdate")
+end
 
-GM.CurSpecRound = "None"
+GM.DefaultSpecRoundDelay = 4 -- in rounds
+GM.GlobalSpecRound = GM.DefaultSpecRoundDelay
+GM.SpecRounds = {}
 
 function GM:AddSpecRound(data)
     self.SpecRounds[table.Count(GM.SpecRounds) + 1] = data 
@@ -10,21 +15,41 @@ function GM:GetSpecRound()
    return self.CurSpecRound
 end 
 
+if CLIENT then
+    net.Receive("SpecRoundUpdate",function()
+        local roundid = net.ReadInt(32)
+        local roundcount = net.ReadInt(31)
+        if not GAMEMODE.specRoundEnabled then
+            GAMEMODE.specRoundEnabled = true 
+        end
+        GAMEMODE.GlobalSpecRound = roundcount
+        if roundid != -1 then
+            print("Spec Round Time")
+            GAMEMODE.CurSpecRound = roundid
+        else 
+            GAMEMODE.CurSpecRound = nil 
+        end
+    end)
+
+    hook.Add( "CalcView", "PerevertishCalcView", function( ply, pos, angles, fov )
+        if GAMEMODE.CurSpecRound == 1 then
+            local view = {
+                origin = origin,
+                angles = angles,
+                fov = fov,
+                drawviewer = false
+            }
+            angles.r = 180 -- hehe
+        
+            return view
+        end
+    end )
+end
+
 GM:AddSpecRound(
 	{
-		name = "WW2 TDM",
+		name = "Перевертыш",
 		description = "Что за хуйня здесь происходит?",
-        weapontable = {
-			"cw_kk_ins2_mp40",
-			"cw_kk_ins2_mosin",
-			"cw_kk_ins2_cstm_m14",
-		},
-		postLoadout = function(ply)
-			ply:RemoveAllAmmo()
-			ply:StripWeapons()
-			ply:Give(self:GetSpecRound().weapontable[math.random(1,table.Count(self:GetSpecRound().weapontable))])
-		end,
-		giveloadout = true,
 	}
 )
 

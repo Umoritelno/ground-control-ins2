@@ -20,7 +20,7 @@ net.Receive("GetAchiv", function()
     local ply = net.ReadEntity()
     local id = net.ReadString()
     -- Chat
-    chat.AddText(COLOR_WHITE, "[", Color(10, 192, 216), "Ground Control", COLOR_WHITE, "] ", ply, COLOR_WHITE, " has earned ", Color(125, 255, 125), GAMEMODE.Achievements[id].Name, COLOR_WHITE, ".")
+    chat.AddText(Color(150, 197, 255, 255), "[", "Ground Control", "] ",Color(25,0,255), ply, COLOR_WHITE, " has earned ", Color(125, 255, 125), GAMEMODE.Achievements[id].Name, COLOR_WHITE, ".")
     -- Sound
     --ply:EmitSound("misc/achievement_earned.wav")
     -- Create particles

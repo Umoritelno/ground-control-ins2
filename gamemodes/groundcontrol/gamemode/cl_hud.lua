@@ -104,6 +104,8 @@ function GM:HUDPaint()
 		surface.SetFont(self.BandageDisplayFont)
 		local bandageText = (ply.bandages or 0) .. "x BANDAGES"
 		local bandageX = surface.GetTextSize(bandageText)
+
+
 		
 		xSize = math.max(bandageX, xSize) -- get the biggest text size for the semi-transparent rectangle
 		
@@ -118,6 +120,22 @@ function GM:HUDPaint()
 		
 		--draw.ShadowText(healthText, self.HealthDisplayFont, scrW - textX, scrH - baseOffset - overallTextHeight, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 		draw.ShadowText(bandageText, self.BandageDisplayFont, scrW - textX, scrH - baseOffset + bandageOff - overallTextHeight, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+		if self.specRoundEnabled then
+		    local SpecCountText = "Special round in "..self.GlobalSpecRound.." round(s)."
+
+            local CurSpecRound
+
+		    if self.CurSpecRound then
+			 CurSpecRound = self.SpecRounds[self.CurSpecRound].name
+		    else 
+			 CurSpecRound = "None"
+		    end
+
+		    local CurSpecRoundText = "Current special round: "..CurSpecRound.."."
+
+			draw.ShadowText(CurSpecRoundText, "SpecRound", scrW * 0.055, scrH * 0.12, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.ShadowText(SpecCountText, "SpecRound", scrW * 0.054, scrH * 0.1, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		end
 		--draw.ShadowText(ply.stamina, self.BandageDisplayFont, 55, scrH - 200, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 		
 		local baseX = scrW - _S(145)

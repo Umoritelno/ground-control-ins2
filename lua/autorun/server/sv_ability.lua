@@ -71,8 +71,8 @@ function plym:UseAbilityServer()
         self.Ability.PlyCooldown = CurTime() + self.Ability.cooldown
         self.Ability.PlyUseCD = CurTime() + self.Ability.usetime
         net.Start("AbilityUse")
-        net.WriteFloat(self.Ability.PlyCooldown,32)
-        net.WriteInt(self.Ability.PlyUseCD,16)
+        net.WriteFloat(self.Ability.PlyCooldown)
+        net.WriteFloat(self.Ability.PlyUseCD)
         net.Send(self)
     else
         print("Ability is reloading")

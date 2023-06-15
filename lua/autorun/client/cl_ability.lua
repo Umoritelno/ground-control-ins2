@@ -57,10 +57,10 @@ function plym:UseAbilityClient()
 end 
 
 net.Receive("AbilityUse",function()
-    if abilityPanel == nil  then return end
+    if not abilityPanel then return end
     if not LocalPlayer().Ability then return end 
     LocalPlayer().Ability.PlyCooldown = net.ReadFloat()
-    LocalPlayer().Ability.PlyUseCD = net.ReadInt(16)
+    LocalPlayer().Ability.PlyUseCD = net.ReadFloat()
     
 end)
 
@@ -81,7 +81,7 @@ function HudAbility(name,desc,icon)
     abilityPanel:SetTooltip(desc)
 	
     function abilityPanel:Paint( w, h )
-        surface.SetDrawColor( 255, 255, 255, 255 ) -- Set the drawing color
+        surface.SetDrawColor( 255, 255, 255 ) -- Set the drawing color
 	    surface.SetMaterial( self.mat ) -- Use our cached material
 	    surface.DrawTexturedRect( 0, 0, w, h ) -- Actually draw the rectangle
         if LocalPlayer().Ability then
@@ -95,11 +95,9 @@ function HudAbility(name,desc,icon)
                 local percent = math.Clamp(realPlyUseTime / ply.Ability.usetime,0,1)
                 local end_angle = percent * 360
                 draw.NoTexture()
-                surface.SetDrawColor(26,189,211)
+                surface.SetDrawColor(26,189,211,self:GetAlpha())
                 UseTimeCDCircle:SetStartAngle(360 - end_angle)
                 UseTimeCDCircle()
-            else
-                surface.SetDrawColor(255,255,255)
             end
             surface.DrawOutlinedRect(0,0,w,h,2)
         end
@@ -162,18 +160,4 @@ end)
     
 end)
 --]]
-
-net.Receive("doorblock",function()
-end)
-
-net.Receive("doorblockdeath",function()
-end)
-
-net.Receive("SilentStep",function()
-  
-end)
-
-net.Receive("SilentStepDeath",function()
-end)
-
 
