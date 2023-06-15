@@ -345,6 +345,7 @@ else
 	net.Start("SpecRoundUpdate")
 	net.WriteInt(-1,32)
 	net.WriteInt(self.GlobalSpecRound,31)
+	net.WriteBool(true)
 	net.Broadcast()
 end 
 

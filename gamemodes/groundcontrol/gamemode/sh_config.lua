@@ -19,10 +19,16 @@ if CLIENT then
     net.Receive("SpecRoundUpdate",function()
         local roundid = net.ReadInt(32)
         local roundcount = net.ReadInt(31)
-        if not GAMEMODE.specRoundEnabled then
-            GAMEMODE.specRoundEnabled = true 
+        local serverbool = net.ReadBool()
+
+        if serverbool then
+            GAMEMODE.specRoundEnabled = false
+        else 
+            GAMEMODE.specRoundEnabled = true
         end
+
         GAMEMODE.GlobalSpecRound = roundcount
+
         if roundid != -1 then
             print("Spec Round Time")
             GAMEMODE.CurSpecRound = roundid
