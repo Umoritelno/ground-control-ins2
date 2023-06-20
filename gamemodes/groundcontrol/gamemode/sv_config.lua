@@ -1,5 +1,6 @@
 AddCSLuaFile()
 util.AddNetworkString("classinfo")
+util.AddNetworkString("killnotification")
 local pl = FindMetaTable("Player")
 
 function pl:ResetClassInfo()
@@ -10,14 +11,31 @@ function pl:ResetClassInfo()
 	   elseif self.plclass.DisplayName == "Specialist" then 
 		self:GiveAbility(math.random(2,table.Count(abilities)))
 	   else 
-		self:DeathAbility()
+		self:DeathAbility(true)
 	 end
 	else
-		self:DeathAbility()
+		self:DeathAbility(true)
    end
    net.Start("classinfo")
    net.Send(self)
 end 
+
+hook.Add("PlayerDeath","TeamkillNotification",function(victim,infl,attacker)
+	if victim != attacker and victim:Team() == attacker:Team() then
+		local role
+		if victim.plclass and victim.plclass.DisplayName then
+			rolestr = victim.plclass.DisplayName
+		else 
+			rolestr = "Unknown"
+		end
+		local nick = victim:Nick()
+
+		net.Start("killnotification")
+		net.WriteString(rolestr)
+		net.WriteString(nick)
+		net.Send(attacker)
+	end
+end)
 
 
 --[[util.AddNetworkString("NewVote_Get")

@@ -1,63 +1,30 @@
 AddCSLuaFile()
-if SERVER then
-    util.AddNetworkString("SpecRoundUpdate")
+
+local pl = FindMetaTable("Player")
+
+function pl:GetSteamPData( name, default )
+
+	name = Format( "%s[%s]", self:SteamID(), name )
+	local val = sql.QueryValue( "SELECT value FROM playerpdata WHERE infoid = " .. SQLStr( name ) .. " LIMIT 1" )
+	if ( val == nil ) then return default end
+
+	return val
+
 end
 
-GM.DefaultSpecRoundDelay = 4 -- in rounds
-GM.GlobalSpecRound = GM.DefaultSpecRoundDelay
-GM.SpecRounds = {}
+function pl:SetSteamPData( name, value )
 
-function GM:AddSpecRound(data)
-    self.SpecRounds[table.Count(GM.SpecRounds) + 1] = data 
-end 
+	name = Format( "%s[%s]", self:SteamID(), name )
+	return sql.Query( "REPLACE INTO playerpdata ( infoid, value ) VALUES ( " .. SQLStr( name ) .. ", " .. SQLStr( value ) .. " )" ) ~= false
 
-function GM:GetSpecRound()
-   return self.CurSpecRound
-end 
-
-if CLIENT then
-    net.Receive("SpecRoundUpdate",function()
-        local roundid = net.ReadInt(32)
-        local roundcount = net.ReadInt(31)
-        local serverbool = net.ReadBool()
-
-        if serverbool then
-            GAMEMODE.specRoundEnabled = false
-        else 
-            GAMEMODE.specRoundEnabled = true
-        end
-
-        GAMEMODE.GlobalSpecRound = roundcount
-
-        if roundid != -1 then
-            print("Spec Round Time")
-            GAMEMODE.CurSpecRound = roundid
-        else 
-            GAMEMODE.CurSpecRound = nil 
-        end
-    end)
-
-    hook.Add( "CalcView", "PerevertishCalcView", function( ply, pos, angles, fov )
-        if GAMEMODE.CurSpecRound == 1 then
-            local view = {
-                origin = origin,
-                angles = angles,
-                fov = fov,
-                drawviewer = false
-            }
-            angles.r = 180 -- hehe
-        
-            return view
-        end
-    end )
 end
 
-GM:AddSpecRound(
-	{
-		name = "Перевертыш",
-		description = "Что за хуйня здесь происходит?",
-	}
-)
+function pl:RemoveSteamPData( name )
+
+	name = Format( "%s[%s]", self:SteamID(), name )
+	return sql.Query( "DELETE FROM playerpdata WHERE infoid = " .. SQLStr( name ) ) ~= false
+
+end
 
 function GM:parseTFAWeapon(data)
     local walkSpeed = self.BaseRunSpeed

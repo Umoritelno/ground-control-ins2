@@ -16,8 +16,10 @@ function AddSkill(data)
     local name = data.name 
     data.id = table.Count(abilities) + 1
     abilities[table.Count(abilities) + 1] = data 
-    for k,v in pairs(data.nets) do
-        table.Add(nets,data.nets)
+    if SERVER then
+        for key,nt in pairs(data.nets) do
+            util.AddNetworkString(nt)
+        end
     end
  end 
  
@@ -33,7 +35,7 @@ function AddSkill(data)
              net.Start("SkanAbility")
              net.Send(ply)
          end,
-         death = function(ply)
+         death = function(ply,bool)
             net.Start("SkanDeath")
             net.Send(ply)
          end,
@@ -103,7 +105,7 @@ AddSkill(
                 end 
             end 
          end,
-         death = function(ply)
+         death = function(ply,bool)
          end,
          customUse = true,
      }
@@ -118,7 +120,7 @@ AddSkill(
          nets = {},
          use = function(ply)
          end,
-         death = function(ply)
+         death = function(ply,bool)
          end,
          customUse = false,
      }
@@ -138,7 +140,7 @@ AddSkill(
                 ply:Kill()
             end)
          end,
-         death = function(ply)
+         death = function(ply,bool)
             if timer.Exists("BerserkKD"..ply:EntIndex()) then
                 timer.Remove("BerserkKD"..ply:EntIndex())
             end
@@ -185,7 +187,7 @@ AddSkill(
                 ply:SetModel(ply.defaultModel)
             end)
          end,
-         death = function(ply)
+         death = function(ply,bool)
             if timer.Exists("DisquiseKD"..ply:EntIndex()) then
                  timer.Remove("DisquiseKD"..ply:EntIndex())
             end
@@ -207,13 +209,13 @@ end )
          description = "Что такое смерть?",
          cooldown = 90,
          usetime = 10,
-         nets = {"SwanKill"},
+         nets = {},
          use = function(ply)
             ply.Ability.active = true 
             ply.Ability.SwanCD = CurTime() + ply.Ability.usetime
             ply:ScreenFade( SCREENFADE.IN, Color( 0, 140, 255, 100), ply.Ability.usetime, 0 )
          end,
-         death = function(ply)
+         death = function(ply,bool)
             ply.Ability.active = false
             ply.Ability.SwanCD = nil 
          end,
@@ -222,6 +224,32 @@ end )
      }
 )
 --]]
+
+AddSkill(
+     {   name = "Death's hand",
+         icon = "berserk/berserk.jpg",
+         description = "Вы не можете уйти из этого мира, не отомстив",
+         cooldown = 90,
+         usetime = 10,
+         nets = {},
+         use = function(ply)
+         end,
+         death = function(ply,bool)
+            if not bool then
+             local grenade = ents.Create("cw_kk_ins2_projectile_m18")
+             local pos = ply:GetPos()
+                grenade:SetPos(pos)
+
+		        grenade:Spawn()
+		        grenade:Activate()
+		        grenade:SetOwner(ply)
+                grenade:Fuse(3)
+            end
+         end,
+         customUse = false,
+         passive = true,
+     }
+)
 
 hook.Add("PlayerFootstep","SilentStep",function(ply,pos,foot,sound,volume,filter)
     if ply.Ability and ply.Ability.name == "SilentStep" and ply.Ability.active then

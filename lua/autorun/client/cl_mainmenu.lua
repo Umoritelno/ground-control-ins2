@@ -269,6 +269,21 @@ function OpenMainMenu()
                     MainMenu.settings.VisualCollap.Impact:SetConVar("cl_new_impact_effects")
                     MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.Impact )
 
+                    MainMenu.settings.VisualCollap.Dynlight = vgui.Create("DCheckBoxLabel",scroll)
+                    MainMenu.settings.VisualCollap.Dynlight:SetText("Включить возникновение освещения от выстрелов?[Только для TFA]")
+                    MainMenu.settings.VisualCollap.Dynlight:SetConVar("cl_tfa_rms_muzzleflash_dynlight")
+                    MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.Dynlight )
+
+                    MainMenu.settings.VisualCollap.SmokeShock = vgui.Create("DCheckBoxLabel",scroll)
+                    MainMenu.settings.VisualCollap.SmokeShock:SetText("Включить партиклы MW19 партиклы дыма от выстрела?[Только для TFA]")
+                    MainMenu.settings.VisualCollap.SmokeShock:SetConVar("cl_tfa_rms_smoke_shock")
+                    MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.SmokeShock )
+
+                    MainMenu.settings.VisualCollap.EjectSmoke = vgui.Create("DCheckBoxLabel",scroll)
+                    MainMenu.settings.VisualCollap.EjectSmoke:SetText("Заменить стандартный дым от гильз?[Только для TFA]")
+                    MainMenu.settings.VisualCollap.EjectSmoke:SetConVar("cl_tfa_rms_default_eject_smoke")
+                    MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.EjectSmoke )
+
                     MainMenu.settings.VisualCollap.XAxis = vgui.Create("DNumSlider",scroll)
                     MainMenu.settings.VisualCollap.XAxis:SetText("Коэффициент оси X для оружия CW 2.0")
                     MainMenu.settings.VisualCollap.XAxis:SetMin(GetConVar("gc_cw_x"):GetMin())

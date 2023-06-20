@@ -9,9 +9,6 @@ util.AddNetworkString("InitPost")
 util.AddNetworkString("ClientUse")
 util.AddNetworkString("ActiveState")
 
-for k,v in pairs(nets) do
-    util.AddNetworkString(v)
-end
 
 function AbilityDebug(ply)
     for k,v in pairs(debugtable) do
@@ -39,8 +36,8 @@ function plym:GiveAbility(int)
 end 
 
 function plym:DeathAbility(silentbool)
-    if not silentbool and self.Ability != nil then
-        self.Ability.death(self)
+    if self.Ability then
+        self.Ability.death(self,silentbool)
     end
     AbilityDebug(self)
     self.Ability = nil 
@@ -51,7 +48,12 @@ end
 
 function plym:UseAbilityServer()
     if not self.Ability then return end 
-    if not self:Alive() then return end 
+    if not self:Alive() then self:DeathAbility(true) return end -- idk if it was causing problems but why not?
+    if self.Ability.UsesCount then
+        if self.Abiltiy.UsesCount <= 0 then
+            return 
+        end
+    end
     if self.Ability.passive then return end 
  if not self.Ability.customUse then 
     if self.Ability.PlyCooldown <= CurTime() then
@@ -105,7 +107,10 @@ hook.Add("PlayerHurt","PlayerHurtAbility",function(victim,attacker,healthRemaini
     if victim.Ability then
         if victim.Ability.name == "Swan Song" and not victim.Ability.SwanCD and healthRemaining <= 0 and not victim:IsBot() then
             victim:SetHealth(victim.plclass.MaxHealth or 100)
-            victim.Ability.use(victim)
+            --victim.Ability.use(victim)
+            victim.Ability.active = true 
+            victim.Ability.SwanCD = CurTime() + victim.Ability.usetime
+            victim:ScreenFade( SCREENFADE.IN, Color( 0, 140, 255, 100), victim.Ability.usetime, 0 )
         end
     end
 end)

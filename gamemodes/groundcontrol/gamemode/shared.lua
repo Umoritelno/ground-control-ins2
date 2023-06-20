@@ -148,6 +148,7 @@ CreateConVar("gc_damage_scale", GM.defaultDamageScale, sharedCVar, "multiplier f
 CreateConVar("gc_wepbase",GM.DefBase,sharedCVar,"What weapon base we will use?")
 CreateConVar("gc_roles_enable",1,sharedCVar,"Will roles and work?")
 CreateConVar("gc_abil_enable",1,sharedCVar,"Will abilities work?")
+CreateConVar("gc_nvg_enable",1,sharedCVar,"Will NVG work?")
 
 --GM.CurWepBase = GetConVar("gc_wepbase"):GetInt() or 1
 if GM.WepBases[GetConVar("gc_wepbase"):GetInt()] then
@@ -163,6 +164,10 @@ end
 local function getCvarNumber(new, old)
 	return tonumber(new) and new or old
 end
+
+GM:registerAutoUpdateConVar("gc_nvg_enable", function(name, old, new)
+	GAMEMODE.NVGEnabled = tonumber(new) and tonumber(new) > 0
+end)
 
 GM:registerAutoUpdateConVar("gc_specround_enable", function(name, old, new)
 	GAMEMODE.specRoundEnabled = tonumber(new) and tonumber(new) > 0
