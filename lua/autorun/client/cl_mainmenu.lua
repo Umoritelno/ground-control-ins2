@@ -225,6 +225,11 @@ function OpenMainMenu()
                     MainMenu.settings.VisualCollap.list:EnableVerticalScrollbar( false )			-- Enable the scrollbar if (the contents are too wide)
                     MainMenu.settings.VisualCollap:SetContents( MainMenu.settings.VisualCollap.list )
                     -- VISUAL LIST END 
+                    MainMenu.settings.VisualCollap.Legs = vgui.Create("DCheckBoxLabel",scroll)
+                    MainMenu.settings.VisualCollap.Legs:SetText("Включить отображение ног от первого лица?")
+                    MainMenu.settings.VisualCollap.Legs:SetConVar("cl_legs")
+                    MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.Legs )
+
                     MainMenu.settings.VisualCollap.FilterBool = vgui.Create("DCheckBoxLabel",scroll)
                     MainMenu.settings.VisualCollap.FilterBool:SetText("Включить фильтр?")
                     MainMenu.settings.VisualCollap.FilterBool:SetConVar("BlueFilter")
