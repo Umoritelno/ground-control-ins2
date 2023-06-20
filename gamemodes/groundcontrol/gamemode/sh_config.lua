@@ -1,32 +1,30 @@
 AddCSLuaFile()
 
-GM.CurSpecRound = "None"
+local pl = FindMetaTable("Player")
 
-function GM:AddSpecRound(data)
-    self.SpecRounds[table.Count(GM.SpecRounds) + 1] = data 
-end 
+function pl:GetSteamPData( name, default )
 
-function GM:GetSpecRound()
-   return self.CurSpecRound
-end 
+	name = Format( "%s[%s]", self:SteamID(), name )
+	local val = sql.QueryValue( "SELECT value FROM playerpdata WHERE infoid = " .. SQLStr( name ) .. " LIMIT 1" )
+	if ( val == nil ) then return default end
 
-GM:AddSpecRound(
-	{
-		name = "WW2 TDM",
-		description = "Что за хуйня здесь происходит?",
-        weapontable = {
-			"cw_kk_ins2_mp40",
-			"cw_kk_ins2_mosin",
-			"cw_kk_ins2_cstm_m14",
-		},
-		postLoadout = function(ply)
-			ply:RemoveAllAmmo()
-			ply:StripWeapons()
-			ply:Give(self:GetSpecRound().weapontable[math.random(1,table.Count(self:GetSpecRound().weapontable))])
-		end,
-		giveloadout = true,
-	}
-)
+	return val
+
+end
+
+function pl:SetSteamPData( name, value )
+
+	name = Format( "%s[%s]", self:SteamID(), name )
+	return sql.Query( "REPLACE INTO playerpdata ( infoid, value ) VALUES ( " .. SQLStr( name ) .. ", " .. SQLStr( value ) .. " )" ) ~= false
+
+end
+
+function pl:RemoveSteamPData( name )
+
+	name = Format( "%s[%s]", self:SteamID(), name )
+	return sql.Query( "DELETE FROM playerpdata WHERE infoid = " .. SQLStr( name ) ) ~= false
+
+end
 
 function GM:parseTFAWeapon(data)
     local walkSpeed = self.BaseRunSpeed

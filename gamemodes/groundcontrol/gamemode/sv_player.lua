@@ -289,7 +289,7 @@ function GM:PlayerSetHandsModel( ply, ent )
 end
 
 function GM:DoPlayerDeath(ply, attacker, dmgInfo)
-	ply:DeathAbility()
+	ply:DeathAbility(false)
 	local wep = ply:GetActiveWeapon()
 	local nadeCntOffset = 0
 	

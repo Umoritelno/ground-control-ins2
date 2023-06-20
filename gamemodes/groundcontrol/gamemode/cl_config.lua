@@ -92,7 +92,7 @@ surface.CreateFont("ShowRole", {
 	extended = false,
 	size = 30,
 	weight = 500,
-	blursize = 0.5,
+	blursize = 1.25,
 	scanlines = 2,
 	antialias = true,
 	underline = false,
@@ -103,6 +103,24 @@ surface.CreateFont("ShowRole", {
 	shadow = false,
 	additive = false,
 	outline = false,
+})
+
+surface.CreateFont("SpecRound", {
+    font = "Prototype", 
+	extended = false,
+	size = 20,
+	weight = 500,
+	blursize = 0.1,
+	scanlines = 0,
+	antialias = true,
+	underline = false,
+	italic = false,
+	strikeout = false,
+	symbol = false,
+	rotary = false,
+	shadow = true,
+	additive = false,
+	outline = false ,
 })
 
 -- fonts end 
@@ -204,6 +222,12 @@ CustomizableWeaponry.callbacks:addNew("adjustViewmodelPosition", "GroundControl_
 	end
 	
 	return targetPos, targetAng
+end)
+
+net.Receive("killnotification",function()
+	local rolestr = net.ReadString()
+	local nick = net.ReadString()
+	chat.AddText(Color(150, 197, 255, 255), "[GROUND CONTROL] ", Color(255, 255, 255, 255), "Вы убили союзника ",Color(252,207,8),nick,Color(255,255,255)," Роль: ",Color(3,243,23),rolestr,"." )
 end)
 
 --[[

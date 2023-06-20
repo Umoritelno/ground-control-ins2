@@ -16,6 +16,7 @@ GM.PunishLevels = { -- punish level time is in minutes
 	{ban = 60 * 24 * 7 * 4 * 12} -- a year (wtf, how and why would anyone TK this much)
 }
 
+
 GM.PunishLevelString = "GC_PunishLevel"
 GM.TDCounterString = "GC_TDCounter"
 GM.BanDurationString = "GC_BanDuration"
@@ -61,8 +62,14 @@ function GM:startPunishVote(target)
 		local highestOption, highestKey = self:getHighestVote()
 		local affectedPlayer = player.GetBySteamID(targetSteamID)
 		local playerValid = IsValid(affectedPlayer)
+
+		    -- Rookie System start
+			--[[util.SetPData(targetSteamID,"DefaultRookieCount",util.GetPData(targetSteamID,"DefaultRookieCount",0) + 1)
+			util.SetPData(targetSteamID,"CurRookieCount",util.GetPData(targetSteamID,"CurRookieCount",0) + 2) -- we give player a "rookie" status so he will spawn as a weak class]]
+			-- Rookie System end
 		
 		if highestOption.option == "Yes" and highestOption.votes > 0 then -- if the majority thinks he should be banned
+
 			if punishData.ban then
 				util.SetPData(targetSteamID, self.BanDurationString, os.time() + punishData.ban * 60) -- ban the player
 			end

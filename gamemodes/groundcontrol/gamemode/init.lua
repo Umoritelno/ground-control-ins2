@@ -99,6 +99,10 @@ include("sv_killcount.lua")
 include("sh_postload.lua")
 include("sv_achivs.lua")
 include("sh_achiv_table.lua")
+include("sv_specrounds.lua")
+include("sh_specrounds.lua")
+include("sv_nvgs.lua")
+include("sh_nvgs.lua")
 
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("cl_gui_scoreboard.lua")
@@ -121,6 +125,8 @@ AddCSLuaFile("cl_config.lua")
 AddCSLuaFile("cl_killcount.lua")
 AddCSLuaFile("cum_splat_controller.lua")
 AddCSLuaFile("cl_achiv.lua") -- achivki client
+AddCSLuaFile("cl_specrounds.lua")
+AddCSLuaFile("cl_nvgs.lua")
 
 GM.MemeRadio = true -- hehe, set to true for very funny memes
 CreateConVar("gc_meme_radio_chance", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- in 1000

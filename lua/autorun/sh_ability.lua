@@ -16,8 +16,10 @@ function AddSkill(data)
     local name = data.name 
     data.id = table.Count(abilities) + 1
     abilities[table.Count(abilities) + 1] = data 
-    for k,v in pairs(data.nets) do
-        table.Add(nets,data.nets)
+    if SERVER then
+        for key,nt in pairs(data.nets) do
+            util.AddNetworkString(nt)
+        end
     end
  end 
  
@@ -33,7 +35,7 @@ function AddSkill(data)
              net.Start("SkanAbility")
              net.Send(ply)
          end,
-         death = function(ply)
+         death = function(ply,bool)
             net.Start("SkanDeath")
             net.Send(ply)
          end,
@@ -77,35 +79,33 @@ AddSkill(
          description = "Вы блокируете дверь перед собой",
          cooldown = 30,
          usetime = 10,
-         nets = {"doorblock",
-                "doorblockdeath"},
+         nets = {},
          use = function(ply)
             local ent = ply:GetEyeTrace().Entity
             local hitpos = ply:GetEyeTrace().HitPos
             if ent:IsValid() then
-                if ply.PlyCooldown <= CurTime() and ent:GetClass() == "prop_door_rotating" then
-                if hitpos:DistToSqr(ply:GetPos()) > 0 and hitpos:DistToSqr(ply:GetPos()) < 5500 then 
-                print("Ability Activated")
-                ply.Ability.PlyCooldown = CurTime() + ply.Ability.cooldown
-                net.Start("AbilityUse")
-                net.WriteFloat(ply.Ability.PlyCooldown,32)
-                net.WriteInt(ply.Ability.PlyUseCD,16)
-                net.Send(ply)
-                ent:Fire("Lock")
-                timer.Simple(10,function()
+                if ply.Ability.PlyCooldown <= CurTime() and ent:GetClass() == "prop_door_rotating" then
+                 if hitpos:DistToSqr(ply:GetPos()) > 0 and hitpos:DistToSqr(ply:GetPos()) < 5500 then 
+                  print("Ability Activated")
+                  ply.Ability.PlyCooldown = CurTime() + ply.Ability.cooldown
+                  ply.Ability.PlyUseCD = CurTime() + ply.Ability.usetime
+                  net.Start("AbilityUse")
+                  net.WriteFloat(ply.Ability.PlyCooldown)
+                  net.WriteFloat(ply.Ability.PlyUseCD)
+                  net.Send(ply)
+                  ent:Fire("Lock")
+                   timer.Simple(10,function()
                     ent:Fire("Unlock")
-                end)
-            else 
-                print("Я не могу дотянуться")
+                   end)
+                 else 
+                    print("Я не могу дотянуться")
+                 end 
+                else
+                 print("Ability is reloading")
+                end 
             end 
-            else
-                print("Ability is reloading")
-            end 
-        end 
          end,
-         death = function(ply)
-            net.Start("doorblockdeath")
-            net.Send(ply)
+         death = function(ply,bool)
          end,
          customUse = true,
      }
@@ -117,22 +117,10 @@ AddSkill(
          description = "Ваши шаги не издают звуков",
          cooldown = 60,
          usetime = 15,
-         nets = {"SilentStep",
-                 "SilentStepDeath"},
+         nets = {},
          use = function(ply)
-            net.Start("SilentStep")
-            net.Send(ply)
-            timer.Create("SilentStepTimer"..ply:EntIndex(),15,1,function()
-                net.Start("SilentStepDeath")
-                net.Send(ply)
-            end)
          end,
-         death = function(ply)
-            if timer.Exists("SilentStepTimer"..ply:EntIndex()) then
-                timer.Remove("SilentStepTimer"..ply:EntIndex())
-            end
-            net.Start("SilentStepDeath")
-            net.Send(ply)
+         death = function(ply,bool)
          end,
          customUse = false,
      }
@@ -144,8 +132,7 @@ AddSkill(
          description = "Вам выдали экспериментальный препарат, который повышает ваше сопротивление к повреждениям и ускоряет пульс. К сожалению, у него есть и недостатки, но вас же это не волнует, верно?",
          cooldown = 90,
          usetime = 15,
-         nets = {--"BerserkDeath",
-                "BerserkKill"},
+         nets = {},
          active = false,
          use = function(ply)
             ply:ScreenFade( SCREENFADE.IN, Color( 255, 0, 0, 120), 15, 0 )
@@ -153,7 +140,7 @@ AddSkill(
                 ply:Kill()
             end)
          end,
-         death = function(ply)
+         death = function(ply,bool)
             if timer.Exists("BerserkKD"..ply:EntIndex()) then
                 timer.Remove("BerserkKD"..ply:EntIndex())
             end
@@ -200,7 +187,7 @@ AddSkill(
                 ply:SetModel(ply.defaultModel)
             end)
          end,
-         death = function(ply)
+         death = function(ply,bool)
             if timer.Exists("DisquiseKD"..ply:EntIndex()) then
                  timer.Remove("DisquiseKD"..ply:EntIndex())
             end
@@ -222,13 +209,13 @@ end )
          description = "Что такое смерть?",
          cooldown = 90,
          usetime = 10,
-         nets = {"SwanKill"},
+         nets = {},
          use = function(ply)
             ply.Ability.active = true 
             ply.Ability.SwanCD = CurTime() + ply.Ability.usetime
             ply:ScreenFade( SCREENFADE.IN, Color( 0, 140, 255, 100), ply.Ability.usetime, 0 )
          end,
-         death = function(ply)
+         death = function(ply,bool)
             ply.Ability.active = false
             ply.Ability.SwanCD = nil 
          end,
@@ -237,6 +224,32 @@ end )
      }
 )
 --]]
+
+AddSkill(
+     {   name = "Death's hand",
+         icon = "berserk/berserk.jpg",
+         description = "Вы не можете уйти из этого мира, не отомстив",
+         cooldown = 90,
+         usetime = 10,
+         nets = {},
+         use = function(ply)
+         end,
+         death = function(ply,bool)
+            if not bool then
+             local grenade = ents.Create("cw_kk_ins2_projectile_m18")
+             local pos = ply:GetPos()
+                grenade:SetPos(pos)
+
+		        grenade:Spawn()
+		        grenade:Activate()
+		        grenade:SetOwner(ply)
+                grenade:Fuse(3)
+            end
+         end,
+         customUse = false,
+         passive = true,
+     }
+)
 
 hook.Add("PlayerFootstep","SilentStep",function(ply,pos,foot,sound,volume,filter)
     if ply.Ability and ply.Ability.name == "SilentStep" and ply.Ability.active then
