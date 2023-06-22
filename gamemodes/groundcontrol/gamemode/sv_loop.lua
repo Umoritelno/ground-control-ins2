@@ -10,13 +10,14 @@ function GM:Think()
 	for key, ply in ipairs(self.currentPlayerList) do
 		if ply:Alive() and ply:Team() ~= TEAM_SPECTATOR then
 			-- Ability Loop start
-			if ply.Ability then
-				if ply.Ability.name == "Swan Song" then
+			--[[if ply.Ability then
+				if ply.Ability.id == 6 then
 					if ply.Ability.SwanCD and ply.Ability.SwanCD <= CurTime() then
 						ply:Kill() 
 					end
 				end
 			end
+			--]]
 			-- Ability Loop end
 			if ply:OnGround() then
 				ply.curMaxStamina = ply:getMaxStamina()

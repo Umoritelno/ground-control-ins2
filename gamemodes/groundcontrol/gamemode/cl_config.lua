@@ -11,14 +11,167 @@ local cwZ = CreateClientConVar("gc_cw_z","0",true,false,"How much z-axis of CW 2
 local cwY = CreateClientConVar("gc_cw_y","0",true,false,"How much y-axis of CW 2.0 weapons will be increased",-1,5)
 local cwX = CreateClientConVar("gc_cw_x","0",true,false,"How much x-axis of CW 2.0 weapons will be increased",-1,3)
 
+local toytown =  CreateClientConVar("gc_toytown",0,true,false,"Should toytown effect work?",0,1)
+
+-- bloom start
+GM.BloomTable = {} 
+local bloombool = CreateClientConVar("gc_bloom_enable",0,true,false,"Should bloom effect work?",0,1)
+local bloomid = CreateClientConVar("gc_bloom_id","Orange/White Bloom Modifier",true,false,"What type of bloom should work?")
+GM.BloomType = bloomid:GetString()
+
+cvars.AddChangeCallback("gc_bloom_id", function(name, old, new)
+	if GAMEMODE.BloomTable[new] then
+		GAMEMODE.BloomType = new 
+	end
+end)
+
+function AddBloomModifier(key,tbl)
+  for key, col in pairs(tbl.Colour) do
+    tbl.Colour[key] = col / 255
+  end
+
+	GM.BloomTable[key] = tbl
+end
+
+                      AddBloomModifier("Orange/White Bloom Modifier", { -- thx lifemod devs for this code
+                        Colour = {
+                          R = 355,
+                          G = 323,
+                          B = 127
+                        },
+                        Darken = 0.19,
+                        Multiply = 0.45 / 5,
+                        SizeX = 2.97,
+                        SizeY = 3.18,
+                        Passes = 2,
+                        ColourMultiply = 2.24
+                      })
+                    
+                      AddBloomModifier("Orange/Gold Bloom Modifier", {
+                        Colour = {
+                          R = 455,
+                          G = 391,
+                          B = 0
+                        },
+                        Darken = 0.19,
+                        Multiply = 0.45 / 5,
+                        SizeX = 2.97,
+                        SizeY = 3.18,
+                        Passes = 2,
+                        ColourMultiply = 2.24
+                      })
+                    
+                      AddBloomModifier("Red/White Bloom Modifier", {
+                        Colour = {
+                          R = 355,
+                          G = 127,
+                          B = 127
+                        },
+                        Darken = 0.19,
+                        Multiply = 1 / 5,
+                        SizeX = 2.97,
+                        SizeY = 3.18,
+                        Passes = 2,
+                        ColourMultiply = 2.24
+                      })
+                    
+                     AddBloomModifier("Red/Orange Bloom Modifier", {
+                        Colour = {
+                          R = 355,
+                          G = 193,
+                          B = 0
+                        },
+                        Darken = 0.19,
+                        Multiply = 1 / 5,
+                        SizeX = 2.97,
+                        SizeY = 3.18,
+                        Passes = 2,
+                        ColourMultiply = 2.24
+                      })
+                    
+                      AddBloomModifier("Magenta/White Bloom Modifier", {
+                        Colour = {
+                          R = 191,
+                          G = 127,
+                          B = 355
+                        },
+                        Darken = 0.19,
+                        Multiply = 1.15 / 5,
+                        SizeX = 2.97,
+                        SizeY = 3.18,
+                        Passes = 2,
+                        ColourMultiply = 2.24
+                      })
+                    
+                      AddBloomModifier("Green/White Bloom Modifier", {
+                        Colour = {
+                          R = 127,
+                          G = 355,
+                          B = 159
+                        },
+                        Darken = 0.19,
+                        Multiply = 0.35 / 5,
+                        SizeX = 2.97,
+                        SizeY = 3.18,
+                        Passes = 2,
+                        ColourMultiply = 2.24
+                      })
+                    
+                      AddBloomModifier("Blue/White Bloom Modifier", {
+                        Colour = {
+                          R = 127,
+                          G = 159,
+                          B = 355
+                        },
+                        Darken = 0.19,
+                        Multiply = 0.7 / 5,
+                        SizeX = 2.97,
+                        SizeY = 3.18,
+                        Passes = 2,
+                        ColourMultiply = 2.24
+                      })
+                      
+                  
+                    
+                      AddBloomModifier("Heretic's Bloom Modifier", {
+                        Colour = {
+                          R = 64,
+                          G = 200,
+                          B = 255
+                        },
+                        Darken = 0.69,
+                        Multiply = 2.32,
+                        SizeX = 8.84,
+                        SizeY = 0,
+                        Passes = 25 / 30,
+                        ColourMultiply = 1
+                      })
+                    
+                      AddBloomModifier("Shell's BloomModifier for UEP 3.5", {
+                        Colour = {
+                          R = 224,
+                          G = 237,
+                          B = 255
+                        },
+                        Darken = 0.60,
+                        Multiply = 1 / 5,
+                        SizeX = 2.97,
+                        SizeY = 3.18,
+                        Passes = 2,
+                        ColourMultiply = 0.9
+                      })
+-- bloom end 
+
+
 local filter = CreateClientConVar("BlueFilter",0,true,false,"Will filter work?",0,1)
 -- filter rgb elements start
 local filterRed = CreateClientConVar("gc_filter_red","0",true,false,"The add color's red value. 0 (black) means no change.",0,0.05)
 local filterGreen = CreateClientConVar("gc_filter_green","0",true,false,"The add color's green value. 0 (black) means no change.",0,0.05)
 local filterBlue = CreateClientConVar("gc_filter_blue","0",true,false,"The add color's blue value. 0 (black) means no change.",0,0.05)
-local filterColour = CreateClientConVar("gc_filter_colour","0",true,false,"The saturation value. Setting this to 0 will turn the image to grey-scale. 1 means no change.",1,3)
+local filterColour = CreateClientConVar("gc_filter_colour","0",true,false,"The saturation value. Setting this to 0 will turn the image to grey-scale. 1 means no change.",1,2.25)
 -- filter rgb elements end 
-GM.FilterColor = Color(filterRed:GetFloat(),filterBlue:GetFloat(),filterGreen:GetFloat(),filterColour:GetFloat())
+
+GM.FilterColor = Color(filterRed:GetFloat(),filterGreen:GetFloat(),filterBlue:GetFloat(),filterColour:GetFloat())
 local customModify = {
 	[ "$pp_colour_addr" ] = GM.FilterColor.r,
 	[ "$pp_colour_addg" ] = GM.FilterColor.g,
@@ -77,8 +230,18 @@ end)
 -- colormodify start 
 hook.Add( "RenderScreenspaceEffects", "GroundControlColorModify", function()
 	local bool = filter:GetBool()
-	if bool then
-		DrawColorModify( customModify )
+	local toy = toytown:GetBool()
+	local bloomb = bloombool:GetBool()
+	local bloomstr = GetConVar("gc_bloom_id"):GetString()
+	local bloomtbl = GAMEMODE.BloomTable[bloomstr]
+	if bool and !LocalPlayer():NVGBASE_IsGoggleActive() then
+		DrawColorModify( customModify ) -- color modification
+	end
+	if toy then
+		DrawToyTown(1,ScrH() / 5) -- toytown
+	end
+	if bloomb and bloomtbl then
+		DrawBloom(bloomtbl.Darken,bloomtbl.Multiply,bloomtbl.SizeX,bloomtbl.SizeY,bloomtbl.Passes,bloomtbl.ColourMultiply,bloomtbl.Colour.R,bloomtbl.Colour.G,bloomtbl.Colour.B)
 	end
 end )
 -- colormodify end 
@@ -92,7 +255,7 @@ surface.CreateFont("ShowRole", {
 	extended = false,
 	size = 30,
 	weight = 500,
-	blursize = 1.25,
+	blursize = 1,
 	scanlines = 2,
 	antialias = true,
 	underline = false,
@@ -193,7 +356,7 @@ function plr:ShowRole(desc)
 
     function text:Paint(w,h)
 	    BlurPanel( self, 1, 1, self:GetAlpha() )
-		surface.DrawOutlinedRect(0,0,w,h,3.5)
+		surface.DrawOutlinedRect(0,0,w,h,2.5)
 		draw.RoundedBox(0,0,0,w,h,Color(0,0,0,125))
 	end
 

@@ -329,7 +329,6 @@ if self.specRoundEnabled then
 		self.CurSpecRound = self.SpecRounds[randomround]
 		net.Start("SpecRoundUpdate")
 		net.WriteInt(randomround,32)
-		print(self.GlobalSpecRound)
 		net.WriteInt(self.GlobalSpecRound,31)
 		net.Broadcast()
 	else

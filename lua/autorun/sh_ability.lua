@@ -40,6 +40,7 @@ function AddSkill(data)
             net.Send(ply)
          end,
          customUse = false,
+         UsesCount = 3,
      }
  )
 
@@ -81,17 +82,18 @@ AddSkill(
          usetime = 10,
          nets = {},
          use = function(ply)
+            local origAbility = abilities[ply.Ability.id]
             local ent = ply:GetEyeTrace().Entity
             local hitpos = ply:GetEyeTrace().HitPos
             if ent:IsValid() then
                 if ply.Ability.PlyCooldown <= CurTime() and ent:GetClass() == "prop_door_rotating" then
                  if hitpos:DistToSqr(ply:GetPos()) > 0 and hitpos:DistToSqr(ply:GetPos()) < 5500 then 
                   print("Ability Activated")
-                  ply.Ability.PlyCooldown = CurTime() + ply.Ability.cooldown
-                  ply.Ability.PlyUseCD = CurTime() + ply.Ability.usetime
+                  ply.Ability.PlyCooldown = CurTime() + origAbility.cooldown
+                  ply.Ability.PlyUseCD = CurTime() + origAbility.usetime
                   net.Start("AbilityUse")
-                  net.WriteFloat(ply.Ability.PlyCooldown)
-                  net.WriteFloat(ply.Ability.PlyUseCD)
+                  net.WriteFloat(self.Ability.PlyCooldown)
+                  net.WriteFloat(self.Ability.PlyUseCD)
                   net.Send(ply)
                   ent:Fire("Lock")
                    timer.Simple(10,function()
@@ -178,10 +180,8 @@ AddSkill(
             ply.defaultModel = ply:GetModel()
             if GAMEMODE.curGametype.name == "ghettodrugbust" and GAMEMODE.curGametype.loadoutTeam == ply:Team() then
                 ply:SetModel(ply.Ability.models[3][math.random(1,table.Count(ply.Ability.models[3]))])
-                print("toyka negr")
             else 
                 ply:SetModel(ply.Ability.models[ply:Team()][math.random(1,table.Count(ply.Ability.models[ply:Team()]))])
-                print("toyka faschist")
             end
             timer.Create("DisquiseKD"..ply:EntIndex(),30,1,function()
                 ply:SetModel(ply.defaultModel)
@@ -203,7 +203,7 @@ AddSkill(
 end )
 --]]
 
---[[AddSkill(
+AddSkill(
      {   name = "Swan Song",
          icon = "berserk/berserk.jpg",
          description = "Что такое смерть?",
@@ -211,24 +211,23 @@ end )
          usetime = 10,
          nets = {},
          use = function(ply)
+            local usetm = abilities[ply.Ability.id].usetime
             ply.Ability.active = true 
-            ply.Ability.SwanCD = CurTime() + ply.Ability.usetime
-            ply:ScreenFade( SCREENFADE.IN, Color( 0, 140, 255, 100), ply.Ability.usetime, 0 )
+            ply.Ability.SwanCD = CurTime() + usetm
+            ply:ScreenFade( SCREENFADE.IN, Color( 0, 140, 255, 100), usetm, 0 )
          end,
          death = function(ply,bool)
-            ply.Ability.active = false
-            ply.Ability.SwanCD = nil 
          end,
          customUse = false,
          passive = true,
      }
 )
---]]
+
 
 AddSkill(
      {   name = "Death's hand",
          icon = "berserk/berserk.jpg",
-         description = "Вы не можете уйти из этого мира, не отомстив",
+         description = "После смерти вы дарите противникам разрывной подарок",
          cooldown = 90,
          usetime = 10,
          nets = {},
@@ -236,10 +235,9 @@ AddSkill(
          end,
          death = function(ply,bool)
             if not bool then
-             local grenade = ents.Create("cw_kk_ins2_projectile_m18")
+             local grenade = ents.Create("cw_kk_ins2_projectile_frag")
              local pos = ply:GetPos()
                 grenade:SetPos(pos)
-
 		        grenade:Spawn()
 		        grenade:Activate()
 		        grenade:SetOwner(ply)
@@ -252,8 +250,7 @@ AddSkill(
 )
 
 hook.Add("PlayerFootstep","SilentStep",function(ply,pos,foot,sound,volume,filter)
-    if ply.Ability and ply.Ability.name == "SilentStep" and ply.Ability.active then
-        --print("Toyka cheater")
+    if ply.Ability and ply.Ability.id == 3 and ply.Ability.active then
         return true 
     end
 end)

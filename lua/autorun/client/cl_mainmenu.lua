@@ -20,8 +20,9 @@ surface.CreateFont("MMSimple",{
 local creditslabels = {
     ["Spy"] = "Ground Control and CW 2.0 Creator",
     ["Knife Kitty"] = "KK Ins2 base creator",
-    ["Nextoren And RXSend developers"] = "Inspiration",
+    ["NextOren and RXSend developers"] = "Inspiration",
     ["Toyka"] = "Insipiration and help with code",
+    ["LifeMod Developers"] = "Bloom settings and vignettes",
     ["-Spac3-"] = "Pidorasina ebannaya, not RXSend enjoyer",
 }
 -- Main Menu Button Register start 
@@ -58,35 +59,8 @@ vgui.Register("MMCollapsible",PANEL,"DCollapsibleCategory")
 
 -- Main Menu Collapsible Register end 
 
+local curMap = string.lower(game.GetMap())
 
-local background = {
-    ["cs_militia"] = Material("backgrounds/fon1.png"),
-    ["cs_assault"] = Material("backgrounds/fon2.png"),
-    ["cs_italy"] = Material("backgrounds/fon3.png"),
-    ["de_nuke"] = Material("backgrounds/fon4.png"),
-    ["de_inferno"] = Material("backgrounds/fon5.png"),
-    ["de_train"] = Material("backgrounds/fon6.png"),
-    ["de_dust2"] = Material("backgrounds/fon7.png"),
-    ["de_dust"] = Material("backgrounds/fon8.png"),
-    ["cs_compound"] = Material("backgrounds/fon9.png"),
-    ["cs_havana"] = Material("backgrounds/fon10.png"),
-    ["cs_office"] = Material("backgrounds/fon11.png"),
-    ["de_aztec"] = Material("backgrounds/fon12.png"),
-    ["de_cbble"] = Material("backgrounds/fon13.png"),
-    ["de_chateau"] = Material("backgrounds/fon14.png"),
-    ["de_piranesi"] = Material("backgrounds/fon15.png"),
-    ["de_port"] = Material("backgrounds/fon16.png"),
-    ["de_prodigy"] = Material("backgrounds/fon17.png"),
-    ["de_tides"] = Material("backgrounds/fon18.png"),
-}
-
-local fon = Material("defaultfon.png")
-local titleimage = Material("Logo.png")
-if background[game.GetMap()] != nil then
-    fon = background[game.GetMap()]
-else
-    fon = Material("backgrounds/defaultfon.png")
-end
 
 local scrw,scrh = ScrW(),ScrH()
 local golova = CreateClientConVar("VGOLOVU",0,true,false,"",0,1)
@@ -104,7 +78,15 @@ net.Receive("Golova",function()
 end)
 
 function OpenMainMenu()
-    local mainmenustatus = GetConVar("InMainMenu")
+    local bglist = file.Find("materials/"..curMap.."/*.png","GAME")
+    local fon 
+    if bglist and #bglist > 0 then
+        fon = table.Random(bglist)
+        fon = Material(curMap.."/"..fon) -- i changed content directories so adding new backgrounds are easier
+    else 
+        fon = Material("backgrounds/defaultfon.png")
+    end
+
     if MainMenu != nil then
         MainMenu:Remove()
         MainMenu = nil 
@@ -230,6 +212,34 @@ function OpenMainMenu()
                     MainMenu.settings.VisualCollap.Legs:SetConVar("cl_legs")
                     MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.Legs )
 
+                    MainMenu.settings.VisualCollap.Toytown = vgui.Create("DCheckBoxLabel",scroll)
+                    MainMenu.settings.VisualCollap.Toytown:SetText("Включить эффект игрушечного города?")
+                    MainMenu.settings.VisualCollap.Toytown:SetConVar("gc_toytown")
+                    MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.Toytown )
+
+                    -- bloom effect start
+                    MainMenu.settings.VisualCollap.BloomBool = vgui.Create("DCheckBoxLabel",scroll)
+                    MainMenu.settings.VisualCollap.BloomBool:SetText("Включить эффект свечения?")
+                    MainMenu.settings.VisualCollap.BloomBool:SetConVar("gc_bloom_enable")
+                    MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.BloomBool )
+
+                    MainMenu.settings.VisualCollap.BloomCombo = vgui.Create("DComboBox",scroll)
+
+                    for ind,tbl in pairs(GAMEMODE.BloomTable) do
+                        MainMenu.settings.VisualCollap.BloomCombo:AddChoice(ind,tbl)
+                    end
+
+                    MainMenu.settings.VisualCollap.BloomCombo.OnSelect = function(index,val,data)
+                        GetConVar("gc_bloom_id"):SetString(data)
+                    end
+
+                    MainMenu.settings.VisualCollap.BloomCombo:SetValue(GAMEMODE.BloomType)  
+
+                    MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.BloomCombo )
+                    
+
+                    -- bloom effect end 
+                    
                     MainMenu.settings.VisualCollap.FilterBool = vgui.Create("DCheckBoxLabel",scroll)
                     MainMenu.settings.VisualCollap.FilterBool:SetText("Включить фильтр?")
                     MainMenu.settings.VisualCollap.FilterBool:SetConVar("BlueFilter")
@@ -338,6 +348,27 @@ function OpenMainMenu()
                     MainMenu.settings.VisualCollap.ZAxisTFA:SetDecimals(1)
                     MainMenu.settings.VisualCollap.ZAxisTFA:SetConVar("cl_tfa_viewmodel_offset_z")
                     MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.ZAxisTFA )
+                    -- gameplay Collap start
+                    MainMenu.settings.GameplayCollap = vgui.Create( "MMCollapsible", scroll )
+                    MainMenu.settings.GameplayCollap:SetLabel( "Gameplay" )	
+                    MainMenu.settings.GameplayCollap:Dock(TOP)
+                    MainMenu.settings.GameplayCollap:DockMargin(0,0,0,scrh * 0.03)	
+                    MainMenu.settings.GameplayCollap:SetExpanded( true )	-- Start collapsed
+                    MainMenu.settings.GameplayCollap.list = vgui.Create( "DPanelList", MainMenu.settings.OtherCollap ) -- Make a list of items to add to our category (collection of controls)
+                    MainMenu.settings.GameplayCollap.list:SetSpacing( 5 )				
+                    MainMenu.settings.GameplayCollap.list:SetPadding(9) -- DColorMixer is looking weird without padding changes
+                    MainMenu.settings.GameplayCollap.list:EnableHorizontal( false )					-- Only vertical items
+                    MainMenu.settings.GameplayCollap.list:EnableVerticalScrollbar( false )			-- Enable the scrollbar if (the contents are too wide)
+                    MainMenu.settings.GameplayCollap:SetContents( MainMenu.settings.GameplayCollap.list )
+                    -- gameplay Collap end 
+                    MainMenu.settings.GameplayCollap.bind = vgui.Create("DBinder",scroll)
+                    MainMenu.settings.GameplayCollap.bind:SetSelectedNumber(GetConVar("ability_key"):GetInt())
+                    function MainMenu.settings.GameplayCollap.bind:OnChange(num)
+                        GetConVar("ability_key"):SetInt(num)
+                    end 
+                    MainMenu.settings.GameplayCollap.list:AddItem( MainMenu.settings.GameplayCollap.bind )
+
+
 
                     MainMenu.settings:MoveTo(scrw * 0.7,0,0.5,0,-1,function()
                        MainMenu.settings.InAnim = false 

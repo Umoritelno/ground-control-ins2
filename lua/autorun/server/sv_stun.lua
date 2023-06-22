@@ -1,5 +1,4 @@
 --Entity(1):SetModel("models/cultist/humans/goc/head/helmet_1.mdl")
-
 --Entity(1):SetDSP(33,false )
 
 hook.Add("PlayerSpawn","SetSuppress",function(ply,trans)
@@ -7,6 +6,7 @@ hook.Add("PlayerSpawn","SetSuppress",function(ply,trans)
     ply.stun.stunamount = 0
     ply.stun.regendelay = CurTime()
     ply.stun.regentimer = 0
+    ply:SetNWFloat("stunamount",ply.stun.stunamount)
 end)
 
 hook.Add("EntityFireBullets","suppression",function(ent,bl)
@@ -19,12 +19,14 @@ hook.Add("EntityFireBullets","suppression",function(ent,bl)
         activestun = activestun / 2
     end
     ent.stun.stunamount = math.Clamp(ent.stun.stunamount + activestun,0,100)
+    ent:SetNWFloat("stunamount",ent.stun.stunamount)
     ent.stun.regendelay = CurTime() + 5
     for k,v in pairs(ents.FindInSphere(bl.Src,125)) do
         if v == ent then continue end
         if v:IsPlayer() and v.stun then
             v.stun.stunamount = math.Clamp(ent.stun.stunamount + (ent:GetActiveWeapon().stun / 2),0,100)
             v.stun.regendelay = CurTime() + 5
+            ent:SetNWFloat("stunamount",ent.stun.stunamount)
         end
     end
 end) 
@@ -41,7 +43,8 @@ hook.Add("FinishMove","supressionController",function(ply,mv)
         ply:SetDSP(16,false )
     end
     if ply.stun.regendelay < CurTime() and ply.stun.regentimer < CurTime() then
-    ply.stun.regentimer = CurTime() + 0.5
-    ply.stun.stunamount = math.Clamp(ply.stun.stunamount - 5,0,100)
+    ply.stun.regentimer = CurTime() + 0.1
+    ply.stun.stunamount = math.Clamp(ply.stun.stunamount - 1,0,100)
+    ply:SetNWFloat("stunamount",ply.stun.stunamount)
     end 
 end)

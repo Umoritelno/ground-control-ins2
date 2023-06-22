@@ -931,7 +931,6 @@ ghettoDrugBust.redteamweaponslist = {
 	--]]
 }
 ghettoDrugBust.redTeamWeapons = ghettoDrugBust.redteamweaponslist[GM.CurWepBase]
-print(GM.CurWepBase)
 
 ghettoDrugBust.redTeamWeaponsWeight = 1
 

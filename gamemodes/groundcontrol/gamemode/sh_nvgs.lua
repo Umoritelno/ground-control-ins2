@@ -30,7 +30,7 @@ function pl:NVGBASE_ToggleGoggle(loadout,silent,force)
 	end
 end 
 
---[[local GC_NVG = {}
+local GC_NVG = {}
 GC_NVG.Settings = {
     Gestures = {
 		On = ACT_ARM,
@@ -126,9 +126,9 @@ GC_NVG[1] = {
 	},
 
 	PostProcess = function(self)
-		DrawBloom(0.65, 3.1, 1.75, 0.45, 2, 1, 155 / 255, 155 / 255, 155 / 255);
-		DrawBloom(0.1, 2, 0.5, 0.25, 1, 0.6, 130 / 255, 135 / 255, 35 / 255);
+		DrawBloom(0.65, 1.5, 1.75, 0.45, 2, 1, 155 / 255, 155 / 255, 155 / 255);
+		DrawBloom(0.1, 1.5, 0.5, 0.25, 1, 0.6, 130 / 255, 135 / 255, 35 / 255);
 	end
 }
 
-NVGBASE.Register("Ground Control", GC_NVG);]]
+NVGBASE.Register("Ground Control", GC_NVG)

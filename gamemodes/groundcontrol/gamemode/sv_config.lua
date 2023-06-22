@@ -7,7 +7,7 @@ function pl:ResetClassInfo()
    self.plclass = player_manager.GetPlayerClasses()[player_manager.GetPlayerClass(self)]
    if GAMEMODE.abilityEnabled then
 	 if self.plclass.DisplayName == "Commander" then
-		self:GiveAbility(1)
+		self:GiveAbility(6)
 	   elseif self.plclass.DisplayName == "Specialist" then 
 		self:GiveAbility(math.random(2,table.Count(abilities)))
 	   else 
@@ -19,26 +19,6 @@ function pl:ResetClassInfo()
    net.Start("classinfo")
    net.Send(self)
 end 
-
-hook.Add("PlayerDeath","TeamkillNotification",function(victim,infl,attacker)
-	if victim != attacker and victim:Team() == attacker:Team() then
-		if victim.Ability and victim.Ability.name == "Disquise" and victim.Ability.active then
-			return
-		end
-		local role
-		if victim.plclass and victim.plclass.DisplayName then
-			rolestr = victim.plclass.DisplayName
-		else 
-			rolestr = "Unknown"
-		end
-		local nick = victim:Nick()
-
-		net.Start("killnotification")
-		net.WriteString(rolestr)
-		net.WriteString(nick)
-		net.Send(attacker)
-	end
-end)
 
 
 --[[util.AddNetworkString("NewVote_Get")
