@@ -365,16 +365,16 @@ function OpenMainMenu()
                     local bindpanel = vgui.Create("DPanel",scroll)
                     bindpanel.Paint = function(w,h) end 
                     bindpanel.bind = vgui.Create("DBinder", bindpanel)
-                    bindpanel.bind:SetSize(scrw * 0.17,0)
+                    bindpanel.bind:SetSize(scrw * 0.14,0)
                     bindpanel.bind:Dock(RIGHT)
                     bindpanel.bind:SetSelectedNumber(GetConVar("ability_key"):GetInt())
                     function bindpanel.bind:OnChange(num)
                         GetConVar("ability_key"):SetInt(num)
                     end 
                     bindpanel.lbl = vgui.Create("DLabel",bindpanel)
-                    bindpanel.lbl:SetSize(scrw * 0.12,0)
+                    bindpanel.lbl:SetSize(scrw * 0.15,0)
                     bindpanel.lbl:Dock(LEFT)
-                    bindpanel.lbl:SetText("Клавиша для активации способности ")
+                    bindpanel.lbl:SetText("Активация способности")
                     bindpanel.lbl:SetTextColor(GAMEMODE.HUDColors.white)
                     
                     MainMenu.settings.GameplayCollap.list:AddItem( bindpanel )
@@ -391,7 +391,41 @@ function OpenMainMenu()
                     bindpanel.lbl = vgui.Create("DLabel",bindpanel)
                     bindpanel.lbl:SetSize(scrw * 0.15,0)
                     bindpanel.lbl:Dock(LEFT)
-                    bindpanel.lbl:SetText("Клавиша для рации(Включение/Выключение)")
+                    bindpanel.lbl:SetText("Включение/Выключение рации")
+                    bindpanel.lbl:SetTextColor(GAMEMODE.HUDColors.white)
+                    
+                    MainMenu.settings.GameplayCollap.list:AddItem( bindpanel )
+
+                    local bindpanel = vgui.Create("DPanel",scroll)
+                    bindpanel.Paint = function(w,h) end 
+                    bindpanel.bind = vgui.Create("DBinder", bindpanel)
+                    bindpanel.bind:SetSize(scrw * 0.14,0)
+                    bindpanel.bind:Dock(RIGHT)
+                    bindpanel.bind:SetSelectedNumber(GetConVar("NVGBASE_INPUT"):GetInt())
+                    function bindpanel.bind:OnChange(num)
+                        GetConVar("NVGBASE_INPUT"):SetInt(num)
+                    end 
+                    bindpanel.lbl = vgui.Create("DLabel",bindpanel)
+                    bindpanel.lbl:SetSize(scrw * 0.15,0)
+                    bindpanel.lbl:Dock(LEFT)
+                    bindpanel.lbl:SetText("Включение/Выключение ПНВ")
+                    bindpanel.lbl:SetTextColor(GAMEMODE.HUDColors.white)
+                    
+                    MainMenu.settings.GameplayCollap.list:AddItem( bindpanel )
+
+                    local bindpanel = vgui.Create("DPanel",scroll)
+                    bindpanel.Paint = function(w,h) end 
+                    bindpanel.bind = vgui.Create("DBinder", bindpanel)
+                    bindpanel.bind:SetSize(scrw * 0.14,0)
+                    bindpanel.bind:Dock(RIGHT)
+                    bindpanel.bind:SetSelectedNumber(GetConVar("NVGBASE_CYCLE"):GetInt())
+                    function bindpanel.bind:OnChange(num)
+                        GetConVar("NVGBASE_CYCLE"):SetInt(num)
+                    end 
+                    bindpanel.lbl = vgui.Create("DLabel",bindpanel)
+                    bindpanel.lbl:SetSize(scrw * 0.15,0)
+                    bindpanel.lbl:Dock(LEFT)
+                    bindpanel.lbl:SetText("Изменение режима ПНВ")
                     bindpanel.lbl:SetTextColor(GAMEMODE.HUDColors.white)
                     
                     MainMenu.settings.GameplayCollap.list:AddItem( bindpanel )
