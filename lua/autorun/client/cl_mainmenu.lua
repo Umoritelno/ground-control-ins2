@@ -361,12 +361,40 @@ function OpenMainMenu()
                     MainMenu.settings.GameplayCollap.list:EnableVerticalScrollbar( false )			-- Enable the scrollbar if (the contents are too wide)
                     MainMenu.settings.GameplayCollap:SetContents( MainMenu.settings.GameplayCollap.list )
                     -- gameplay Collap end 
-                    MainMenu.settings.GameplayCollap.bind = vgui.Create("DBinder",scroll)
-                    MainMenu.settings.GameplayCollap.bind:SetSelectedNumber(GetConVar("ability_key"):GetInt())
-                    function MainMenu.settings.GameplayCollap.bind:OnChange(num)
+
+                    local bindpanel = vgui.Create("DPanel",scroll)
+                    bindpanel.Paint = function(w,h) end 
+                    bindpanel.bind = vgui.Create("DBinder", bindpanel)
+                    bindpanel.bind:SetSize(scrw * 0.17,0)
+                    bindpanel.bind:Dock(RIGHT)
+                    bindpanel.bind:SetSelectedNumber(GetConVar("ability_key"):GetInt())
+                    function bindpanel.bind:OnChange(num)
                         GetConVar("ability_key"):SetInt(num)
                     end 
-                    MainMenu.settings.GameplayCollap.list:AddItem( MainMenu.settings.GameplayCollap.bind )
+                    bindpanel.lbl = vgui.Create("DLabel",bindpanel)
+                    bindpanel.lbl:SetSize(scrw * 0.12,0)
+                    bindpanel.lbl:Dock(LEFT)
+                    bindpanel.lbl:SetText("Клавиша для активации способности ")
+                    bindpanel.lbl:SetTextColor(GAMEMODE.HUDColors.white)
+                    
+                    MainMenu.settings.GameplayCollap.list:AddItem( bindpanel )
+
+                    local bindpanel = vgui.Create("DPanel",scroll)
+                    bindpanel.Paint = function(w,h) end 
+                    bindpanel.bind = vgui.Create("DBinder", bindpanel)
+                    bindpanel.bind:SetSize(scrw * 0.14,0)
+                    bindpanel.bind:Dock(RIGHT)
+                    bindpanel.bind:SetSelectedNumber(GetConVar("gc_radiokey"):GetInt())
+                    function bindpanel.bind:OnChange(num)
+                        GetConVar("gc_radiokey"):SetInt(num)
+                    end 
+                    bindpanel.lbl = vgui.Create("DLabel",bindpanel)
+                    bindpanel.lbl:SetSize(scrw * 0.15,0)
+                    bindpanel.lbl:Dock(LEFT)
+                    bindpanel.lbl:SetText("Клавиша для рации(Включение/Выключение)")
+                    bindpanel.lbl:SetTextColor(GAMEMODE.HUDColors.white)
+                    
+                    MainMenu.settings.GameplayCollap.list:AddItem( bindpanel )
 
 
 

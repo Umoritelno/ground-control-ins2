@@ -5,6 +5,12 @@ local circles = include("includes/circles.lua")
 
 local key = CreateClientConVar("ability_key","18",true,true,"What key will trigger ability?. Check https://wiki.facepunch.com/gmod/Enums/KEY",1,159)
 
+cvars.AddChangeCallback("ability_key",function(name,old,new)
+    if abilityPanel then
+        abilityPanel.bind = input.GetKeyName(new)
+    end
+end)
+
 surface.CreateFont("BindAbility", {
     font = "Roboto lt", 
 	extended = false,
@@ -50,6 +56,7 @@ function AbilityDebug()
 end 
 
 function plym:UseAbilityClient()
+    -- DEPRECATED
     if not self.Ability then return end 
     if not self:Alive() then return end
     if self.Ability.PlyCooldown <= CurTime() or (self.Ability.UsesCount and self.Ability.UsesCount > 0) then
@@ -74,10 +81,6 @@ net.Receive("ActiveState",function()
     LocalPlayer().Ability.active = tim
 end)
 
-concommand.Add("ability_use",function(ply)
-    ply:UseAbilityClient()
-end)
-
 function HudAbility(name,desc,icon)
     abilityPanel = vgui.Create("DPanel")
     abilityPanel.mat = Material(icon)
@@ -87,19 +90,20 @@ function HudAbility(name,desc,icon)
     abilityPanel:SetTooltip(desc)
 	
     function abilityPanel:Paint( w, h )
+        local lcpl = LocalPlayer()
         surface.SetDrawColor( 255, 255, 255 ) -- Set the drawing color
 	    surface.SetMaterial( self.mat ) -- Use our cached material
 	    surface.DrawTexturedRect( 0, 0, w, h ) -- Actually draw the rectangle
-        if LocalPlayer().Ability then
-            if (LocalPlayer().Ability.PlyCooldown and LocalPlayer().Ability.PlyCooldown > CurTime()) or (LocalPlayer().Ability.UsesCount and LocalPlayer().Ability.UsesCount <= 0 ) then
+        if lcpl.Ability then
+            if (lcpl.Ability.PlyCooldown and lcpl.Ability.PlyCooldown > CurTime()) or (lcpl.Ability.UsesCount and lcpl.Ability.UsesCount <= 0 ) then
                 draw.RoundedBox(0,0,0,w,h,Color(0,0,0,227))
-                if LocalPlayer().Ability.PlyCooldown > CurTime() then
-                    draw.SimpleText(math.Round(LocalPlayer().Ability.PlyCooldown - CurTime()),"AbilityCD",w / 2,h / 2,Color(255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+                if lcpl.Ability.PlyCooldown > CurTime() then
+                    draw.SimpleText(math.Round(lcpl.Ability.PlyCooldown - CurTime()),"AbilityCD",w / 2,h / 2,Color(255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
                 end
             end
-            if LocalPlayer().Ability.PlyUseCD and LocalPlayer().Ability.PlyUseCD > CurTime() then
+            if lcpl.Ability.PlyUseCD and lcpl.Ability.PlyUseCD > CurTime() then
 	            local UseTimeCDCircle = circles.New(CIRCLE_OUTLINED,h * 0.4,w / 2, h / 2,1)
-                local realPlyUseTime = LocalPlayer().Ability.PlyUseCD - CurTime()
+                local realPlyUseTime = lcpl.Ability.PlyUseCD - CurTime()
                 local percent = math.Clamp(realPlyUseTime / ply.Ability.usetime,0,1)
                 local end_angle = percent * 360
                 draw.NoTexture()
@@ -107,11 +111,14 @@ function HudAbility(name,desc,icon)
                 UseTimeCDCircle:SetStartAngle(360 - end_angle)
                 UseTimeCDCircle()
             end
-            if LocalPlayer().Ability.UsesCount then
-                draw.ShadowText(LocalPlayer().Ability.UsesCount,"BindAbility",w * 0.15,h * 0.15,GAMEMODE.HUDColors.white,GAMEMODE.HUDColors.black,1,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+            if lcpl.Ability.UsesCount then
+                draw.ShadowText(lcpl.Ability.UsesCount,"BindAbility",w * 0.15,h * 0.15,GAMEMODE.HUDColors.white,GAMEMODE.HUDColors.black,1,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
             end
             surface.DrawOutlinedRect(0,0,w,h,2.5)
-            --draw.SimpleText(self.bind,"BindAbility",w * 0.85,h * 0.1,Color(255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+            if lcpl.Ability.passive then
+                draw.ShadowText("PASSIVE","BindAbility",w * 0.5,h * 0.85,GAMEMODE.HUDColors.white,GAMEMODE.HUDColors.black,1,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
+                return 
+            end
             draw.ShadowText(string.upper(self.bind),"BindAbility",w * 0.85,h * 0.85,GAMEMODE.HUDColors.white,GAMEMODE.HUDColors.black,1,TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
         end
     end
@@ -123,11 +130,12 @@ net.Receive("AbilityHUD",function()
 
     local origAbility = abilities[id]
     LocalPlayer().Ability = {}
-    LocalPlayer().Ability.name = origAbility.name 
-    LocalPlayer().Ability.usetime = origAbilityusetime -- wow radial usetimecd very good idea
+    LocalPlayer().Ability.id = origAbility.id
+    LocalPlayer().Ability.usetime = origAbility.usetime -- wow radial usetimecd very good idea
     LocalPlayer().Ability.PlyCooldown = 0
     LocalPlayer().Ability.PlyUseCD = 0
     LocalPlayer().Ability.UsesCount = origAbility.UsesCount
+    LocalPlayer().Ability.passive = origAbility.passive
     if abilityPanel != nil then abilityPanel:Remove() abilityPanel = nil end 
     HudAbility(origAbility.name,origAbility.desc,origAbility.icon)
 end)

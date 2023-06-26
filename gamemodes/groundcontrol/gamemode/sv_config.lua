@@ -7,7 +7,7 @@ function pl:ResetClassInfo()
    self.plclass = player_manager.GetPlayerClasses()[player_manager.GetPlayerClass(self)]
    if GAMEMODE.abilityEnabled then
 	 if self.plclass.DisplayName == "Commander" then
-		self:GiveAbility(6)
+		self:GiveAbility(1)
 	   elseif self.plclass.DisplayName == "Specialist" then 
 		self:GiveAbility(math.random(2,table.Count(abilities)))
 	   else 

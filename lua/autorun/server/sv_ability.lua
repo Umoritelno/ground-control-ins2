@@ -28,6 +28,7 @@ function plym:GiveAbility(int)
        self.Ability.PlyUseCD = 0
        self.Ability.FirstUsed = false
        self.Ability.UsesCount = origAbility.UsesCount
+       self.Ability.passive = origAbility.passive
        net.Start("AbilityHUD")
        net.WriteInt(self.Ability.id,32)
        net.Send(self)
@@ -49,10 +50,11 @@ function plym:UseAbilityServer()
     if not self.Ability or not self.Ability.id then return end 
     if not self:Alive() then self:DeathAbility(true) return end -- idk if it was causing problems but why not?
     local origAbility = abilities[self.Ability.id]
+    if not origAbility then return end 
     if self.Ability.UsesCount and self.Ability.UsesCount <= 0 then
         return 
     end
-    if origAbility.passive then return end 
+    if self.Ability.passive then return end 
  if not origAbility.customUse then 
     if self.Ability.PlyCooldown <= CurTime() then
         print("Ability Activated")
@@ -87,6 +89,11 @@ else
 end
 
 net.Receive("ClientUse",function(len,ply)
+    ply:UseAbilityServer()
+end)
+
+concommand.Add("+ability_use",function(ply)
+    if !ply then return end 
     ply:UseAbilityServer()
 end)
 
