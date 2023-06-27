@@ -17,13 +17,6 @@ local toytown =  CreateClientConVar("gc_toytown",0,true,false,"Should toytown ef
 GM.BloomTable = {} 
 local bloombool = CreateClientConVar("gc_bloom_enable",0,true,false,"Should bloom effect work?",0,1)
 local bloomid = CreateClientConVar("gc_bloom_id","Orange/White Bloom Modifier",true,false,"What type of bloom should work?")
-GM.BloomType = bloomid:GetString()
-
-cvars.AddChangeCallback("gc_bloom_id", function(name, old, new)
-	if GAMEMODE.BloomTable[new] then
-		GAMEMODE.BloomType = new 
-	end
-end)
 
 function AddBloomModifier(key,tbl)
   for key, col in pairs(tbl.Colour) do
@@ -160,6 +153,19 @@ end
                         Passes = 2,
                         ColourMultiply = 0.9
                       })
+
+cvars.AddChangeCallback("gc_bloom_id", function(name, old, new)
+	if GAMEMODE.BloomTable[new] then
+		GAMEMODE.BloomType = new 
+	end
+end)
+
+if GM.BloomTable[bloomid:GetString()] then
+		GM.BloomType = bloomid:GetString()
+	else
+		local default = "Orange/White Bloom Modifier"
+	    GM.BloomType = default
+end
 -- bloom end 
 
 
@@ -286,6 +292,8 @@ surface.CreateFont("SpecRound", {
 	outline = false ,
 })
 
+
+
 -- fonts end 
 
 function BlurPanel( panel, layers, density, alpha )
@@ -390,7 +398,7 @@ end)
 net.Receive("killnotification",function()
 	local rolestr = net.ReadString()
 	local nick = net.ReadString()
-	chat.AddText(Color(150, 197, 255, 255), "[GROUND CONTROL] ", Color(255, 255, 255, 255), "Вы убили союзника ",Color(252,207,8),nick,Color(255,255,255)," Роль: ",Color(3,243,23),rolestr,"." )
+	chat.AddText(Color(150, 197, 255, 255), "[GROUND CONTROL] ", Color(255, 255, 255, 255), "Вы убили союзника ",Color(252,207,8),nick,Color(255,255,255),". Роль: ",Color(3,243,23),rolestr,"." )
 end)
 
 --[[

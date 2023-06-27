@@ -103,6 +103,7 @@ include("sv_specrounds.lua")
 include("sh_specrounds.lua")
 include("sv_nvgs.lua")
 include("sh_nvgs.lua")
+include("sh_language.lua")
 
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("cl_gui_scoreboard.lua")

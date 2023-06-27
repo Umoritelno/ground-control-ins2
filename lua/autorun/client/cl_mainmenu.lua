@@ -181,9 +181,10 @@ function OpenMainMenu()
                     MainMenu.settings.OtherCollap:Dock(TOP)
                     MainMenu.settings.OtherCollap:DockMargin(0,0,0,scrh * 0.03)	
                     MainMenu.settings.OtherCollap:SetExpanded( true )	-- Start collapsed
-                    MainMenu.settings.OtherCollap.list = vgui.Create( "DPanelList", MainMenu.settings.OtherCollap ) -- Make a list of items to add to our category (collection of controls)
-                    MainMenu.settings.OtherCollap.list:SetSpacing( 5 )							-- Set the spacing between items
-                    MainMenu.settings.OtherCollap.list:EnableHorizontal( false )					-- Only vertical items
+                    MainMenu.settings.OtherCollap.list = vgui.Create( "DPanelList", MainMenu.settings.OtherCollap ) 
+                    MainMenu.settings.OtherCollap.list:SetSpacing( 5 )	
+                    MainMenu.settings.OtherCollap.list:SetPadding(9)						
+                    MainMenu.settings.OtherCollap.list:EnableHorizontal( false )					
                     MainMenu.settings.OtherCollap.list:EnableVerticalScrollbar( false )	
                     MainMenu.settings.OtherCollap:SetContents( MainMenu.settings.OtherCollap.list )	
                     -- OTHER LIST END 	
@@ -193,6 +194,31 @@ function OpenMainMenu()
                     MainMenu.settings.OtherCollap.Golova:SetText("В ГОЛОВУ")
                     MainMenu.settings.OtherCollap.Golova:SetConVar("VGOLOVU")
                     MainMenu.settings.OtherCollap.list:AddItem( MainMenu.settings.OtherCollap.Golova )
+
+                    local bindpanel = vgui.Create("DPanel",scroll)
+                    bindpanel.Paint = function(w,h) end 
+                    bindpanel.combo = vgui.Create("DComboBox", bindpanel)
+                    bindpanel.combo:SetSize(scrw * 0.22,0)
+                    bindpanel.combo:Dock(RIGHT)
+
+                    for id,lang in pairs(Languages) do
+                        bindpanel.combo:AddChoice(id)
+                    end
+
+                    bindpanel.combo.OnSelect = function(index,val,data)
+                        --print(data)
+                        GetConVar("gc_language"):SetString(data)
+                    end
+
+                    bindpanel.combo:SetValue(GAMEMODE.Language)
+                    
+                    bindpanel.lbl = vgui.Create("DLabel",bindpanel)
+                    bindpanel.lbl:SetSize(scrw * 0.15,0)
+                    bindpanel.lbl:Dock(LEFT)
+                    bindpanel.lbl:SetText("Язык перевода: ")
+                    bindpanel.lbl:SetTextColor(GAMEMODE.HUDColors.white)
+                    
+                    MainMenu.settings.OtherCollap.list:AddItem( bindpanel )
 
                     -- VISUAL LIST START 
                     MainMenu.settings.VisualCollap = vgui.Create( "MMCollapsible", scroll )
@@ -223,21 +249,30 @@ function OpenMainMenu()
                     MainMenu.settings.VisualCollap.BloomBool:SetConVar("gc_bloom_enable")
                     MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.BloomBool )
 
-                    MainMenu.settings.VisualCollap.BloomCombo = vgui.Create("DComboBox",scroll)
+                    local bindpanel = vgui.Create("DPanel",scroll)
+                    bindpanel.Paint = function(w,h) end 
+                    bindpanel.combo = vgui.Create("DComboBox", bindpanel)
+                    bindpanel.combo:SetSize(scrw * 0.22,0)
+                    bindpanel.combo:Dock(RIGHT)
 
                     for ind,tbl in pairs(GAMEMODE.BloomTable) do
-                        MainMenu.settings.VisualCollap.BloomCombo:AddChoice(ind,tbl)
+                        bindpanel.combo:AddChoice(ind,tbl)
                     end
 
-                    MainMenu.settings.VisualCollap.BloomCombo.OnSelect = function(index,val,data)
+                    bindpanel.combo.OnSelect = function(index,val,data)
                         GetConVar("gc_bloom_id"):SetString(data)
                     end
 
-                    MainMenu.settings.VisualCollap.BloomCombo:SetValue(GAMEMODE.BloomType)  
-
-                    MainMenu.settings.VisualCollap.list:AddItem( MainMenu.settings.VisualCollap.BloomCombo )
+                    bindpanel.combo:SetValue(GAMEMODE.BloomType)
                     
-
+                    bindpanel.lbl = vgui.Create("DLabel",bindpanel)
+                    bindpanel.lbl:SetSize(scrw * 0.15,0)
+                    bindpanel.lbl:Dock(LEFT)
+                    bindpanel.lbl:SetText("Стиль свечения: ")
+                    bindpanel.lbl:SetTextColor(GAMEMODE.HUDColors.white)
+                    
+                    MainMenu.settings.VisualCollap.list:AddItem( bindpanel )
+                    
                     -- bloom effect end 
                     
                     MainMenu.settings.VisualCollap.FilterBool = vgui.Create("DCheckBoxLabel",scroll)
@@ -428,6 +463,40 @@ function OpenMainMenu()
                     bindpanel.lbl:SetSize(scrw * 0.15,0)
                     bindpanel.lbl:Dock(LEFT)
                     bindpanel.lbl:SetText("Изменение режима ПНВ")
+                    bindpanel.lbl:SetTextColor(GAMEMODE.HUDColors.white)
+                    
+                    MainMenu.settings.GameplayCollap.list:AddItem( bindpanel )
+
+                    local bindpanel = vgui.Create("DPanel",scroll)
+                    bindpanel.Paint = function(w,h) end 
+                    bindpanel.bind = vgui.Create("DBinder", bindpanel)
+                    bindpanel.bind:SetSize(scrw * 0.14,0)
+                    bindpanel.bind:Dock(RIGHT)
+                    bindpanel.bind:SetSelectedNumber(GetConVar("gc_lean_left"):GetInt())
+                    function bindpanel.bind:OnChange(num)
+                        GetConVar("gc_lean_left"):SetInt(num)
+                    end 
+                    bindpanel.lbl = vgui.Create("DLabel",bindpanel)
+                    bindpanel.lbl:SetSize(scrw * 0.15,0)
+                    bindpanel.lbl:Dock(LEFT)
+                    bindpanel.lbl:SetText("Наклон влево")
+                    bindpanel.lbl:SetTextColor(GAMEMODE.HUDColors.white)
+                    
+                    MainMenu.settings.GameplayCollap.list:AddItem( bindpanel )
+
+                    local bindpanel = vgui.Create("DPanel",scroll)
+                    bindpanel.Paint = function(w,h) end 
+                    bindpanel.bind = vgui.Create("DBinder", bindpanel)
+                    bindpanel.bind:SetSize(scrw * 0.14,0)
+                    bindpanel.bind:Dock(RIGHT)
+                    bindpanel.bind:SetSelectedNumber(GetConVar("gc_lean_right"):GetInt())
+                    function bindpanel.bind:OnChange(num)
+                        GetConVar("gc_lean_right"):SetInt(num)
+                    end 
+                    bindpanel.lbl = vgui.Create("DLabel",bindpanel)
+                    bindpanel.lbl:SetSize(scrw * 0.15,0)
+                    bindpanel.lbl:Dock(LEFT)
+                    bindpanel.lbl:SetText("Наклон вправо")
                     bindpanel.lbl:SetTextColor(GAMEMODE.HUDColors.white)
                     
                     MainMenu.settings.GameplayCollap.list:AddItem( bindpanel )

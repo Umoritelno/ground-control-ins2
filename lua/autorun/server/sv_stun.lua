@@ -43,8 +43,8 @@ hook.Add("FinishMove","supressionController",function(ply,mv)
         ply:SetDSP(16,false )
     end
     if ply.stun.regendelay < CurTime() and ply.stun.regentimer < CurTime() then
-    ply.stun.regentimer = CurTime() + 0.1
-    ply.stun.stunamount = math.Clamp(ply.stun.stunamount - 1,0,100)
+    ply.stun.regentimer = CurTime() + 0.01
+    ply.stun.stunamount = math.Clamp(ply.stun.stunamount - 0.5,0,100)
     ply:SetNWFloat("stunamount",ply.stun.stunamount)
     end 
 end)

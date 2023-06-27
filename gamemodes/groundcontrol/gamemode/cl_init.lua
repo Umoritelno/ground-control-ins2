@@ -112,6 +112,7 @@ include("cl_specrounds.lua")
 include("sh_specrounds.lua")
 include("cl_nvgs.lua")
 include("sh_nvgs.lua")
+include("sh_language.lua")
 --include("sh_postload.lua")
 
 GM:registerAutoUpdateConVar("gc_hud_scale", function(cvarName, oldValue, newValue)
