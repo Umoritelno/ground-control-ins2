@@ -33,7 +33,7 @@ function GM:startPunishVote(target)
 	local targetSteamID = target:SteamID()
 	local text = nil
 	
-	local banDuration = target:GetPData(self.BanDurationString)
+	local banDuration = target:GetSteamIDPData(self.BanDurationString)
 	
 	if banDuration then -- check if this player was banned before
 		local delta = banDuration - os.time() -- if he was, figure out how many punishment levels have gone by then
@@ -100,7 +100,7 @@ function GM:updateTeamDamageCount(target, damage)
 end
 
 function GM:verifyPunishment(target, freshBan)
-	local banDuration = target:GetPData(self.BanDurationString)
+	local banDuration = target:GetSteamIDPData(self.BanDurationString)
 	local curTime = os.time()
 		
 	if banDuration and curTime < banDuration then
@@ -116,21 +116,21 @@ end
 local PLAYER = FindMetaTable("Player")
 
 function PLAYER:getTeamDamageCounter()
-	return tonumber((self:GetPData(GAMEMODE.TDCounterString) or 0))
+	return tonumber((self:GetSteamIDPData(GAMEMODE.TDCounterString) or 0))
 end
 
 function PLAYER:getPunishLevel()
-	return tonumber((self:GetPData(GAMEMODE.PunishLevelString) or 1))
+	return tonumber((self:GetSteamIDPData(GAMEMODE.PunishLevelString) or 1))
 end
 
 function PLAYER:increasePunishLevel()
-	self:SetPData(GAMEMODE.PunishLevelString, self:getPunishLevel() + 1)
+	self:SetSteamIDPData(GAMEMODE.PunishLevelString, self:getPunishLevel() + 1)
 end
 
 function PLAYER:setPunishLevel(lev)
-	self:SetPData(GAMEMODE.PunishLevelString, lev)
+	self:SetSteamIDPData(GAMEMODE.PunishLevelString, lev)
 end
 
 function PLAYER:increaseTeamDamageCounter(damage)
-	self:SetPData(GAMEMODE.TDCounterString, self:getTeamDamageCounter() + damage)
+	self:SetSteamIDPData(GAMEMODE.TDCounterString, self:getTeamDamageCounter() + damage)
 end

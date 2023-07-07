@@ -8,6 +8,30 @@ GM.DrawEntities = {}
 
 CreateConVar("gc_hud_scale", 1, {FCVAR_ARCHIVE}, "controls the size of the HUD")
 
+GM.Fonts = {}
+GM.DefFonts = {}
+
+function GM:AddFontReplaceable(font)
+	self.Fonts[font] = font 
+	self.DefFonts[font] = font 
+end 
+
+GM:AddFontReplaceable("CW_HUD12")
+GM:AddFontReplaceable("CW_HUD14")
+GM:AddFontReplaceable("CW_HUD16")
+GM:AddFontReplaceable("CW_HUD20")
+GM:AddFontReplaceable("CW_HUD22")
+GM:AddFontReplaceable("CW_HUD24")
+GM:AddFontReplaceable("CW_HUD28")
+GM:AddFontReplaceable("CW_HUD32")
+GM:AddFontReplaceable("CW_HUD36")
+GM:AddFontReplaceable("CW_HUD38")
+GM:AddFontReplaceable("CW_HUD40")
+GM:AddFontReplaceable("CW_HUD48")
+GM:AddFontReplaceable("CW_HUD52")
+GM:AddFontReplaceable("CW_HUD60")
+GM:AddFontReplaceable("CW_HUD72")
+
 -- GC-specific fonterinos
 local fontDims = {{40, "HealthDisplayFont"}, {32, "BandageDisplayFont"}, {24, "ActionDisplayFont", "DeadFont", "KeyBindsFont", "VoteAnnounceFont", "PopupFont"}, {14, "GadgetDisplayFont", "MarkerFont"}, {20, "AttachmentSlotDisplayFont", "EventFontBig", "SpectateFont", "WeaponFont"}, {16, "EventFont", "StatusEffectFont", "RadioFont", "VoteFont", "TipFont"}, {28, "ObjectiveFont"}, {72, "BigObjectiveFont"}}
 local fontPrefix = "GC_HUD"
@@ -17,6 +41,8 @@ function GM:initFonts()
 		local data = fontDims[i]
 		local fontName = fontPrefix .. data[1]
 		surface.CreateFont(fontName, {font = "Prototype", size = _S(data[1]), weight = 700, blursize = 0, antialias = true, shadow = false})
+		surface.CreateFont(fontName.."Replace", {font = "Roboto", size = _S(data[1]), weight = 700, blursize = 0, antialias = true, shadow = false})
+		self:AddFontReplaceable(fontName)
 		
 		for i = 2, #data do
 			self[data[i]] = fontName
@@ -25,6 +51,15 @@ function GM:initFonts()
 	
 	surface.CreateFont("GroundControl_SelectIcons", {font = "csd", size = _S(100), weight = 500, blursize = 0, antialias = true, shadow = false})
 end
+
+local funcCopy = draw.ShadowText
+
+function draw.ShadowTextReplaceable(str,font,x,y,defcol,shadcol,bold,xalign,yalign)
+	if GAMEMODE.Fonts[font] then
+		font = GAMEMODE.Fonts[font]
+	end
+    funcCopy(str,font,x,y,defcol,shadcol,bold,xalign,yalign)
+end 
 
 -- pre-requisite UI scaling methods
 function GM:OnScreenSizeChanged(oldW, oldH)
@@ -55,6 +90,7 @@ GM:initFonts()
 
 include('shared.lua')
 include("sh_mixins.lua")
+include("sh_language.lua")
 include("player_classes/classes.lua")
 include("cl_hud.lua")
 include("cl_util.lua")
@@ -112,6 +148,7 @@ include("cl_specrounds.lua")
 include("sh_specrounds.lua")
 include("cl_nvgs.lua")
 include("sh_nvgs.lua")
+include("sh_lean.lua")
 --include("sh_postload.lua")
 
 GM:registerAutoUpdateConVar("gc_hud_scale", function(cvarName, oldValue, newValue)
@@ -135,7 +172,7 @@ function GM:InitPostEntity()
 	
 	self:postInitEntity()
 	
-	RunConsoleCommand("cw_customhud_ammo", "1")
+	--RunConsoleCommand("cw_customhud_ammo", "1")
 	ply:SetHullDuck(self.DuckHullMin, self.DuckHullMax)
 	ply:SetViewOffsetDucked(self.ViewOffsetDucked)
 	

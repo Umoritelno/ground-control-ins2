@@ -108,7 +108,7 @@ function PLAYER:giveLoadout(forceGive)
 			else 
 				plyObj:GiveAmmo(math.min(primaryData.maxAmmo, primaryMags * primaryWepObj.Primary.ClipSize_Orig ), primaryWepObj.Primary.Ammo)
 			end
-			if primaryWepObj.CW20Weapon then
+			if primaryWepObj.CW20Weapon or primaryWepObj.KKINS2Wep then
 				primaryWepObj:maxOutWeaponAmmo(primaryWepObj.Primary.ClipSize_Orig)
 			end
 			

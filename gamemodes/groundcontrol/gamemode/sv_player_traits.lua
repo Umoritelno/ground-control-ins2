@@ -34,7 +34,7 @@ function PLAYER:removeTraits()
 end
 
 function PLAYER:loadTraits()
-	local traitData = self:GetPData("GC_TRAITS")
+	local traitData = self:GetSteamIDPData("GC_TRAITS")
 	
 	if traitData then
 		traitData = util.JSONToTable(traitData)
@@ -47,7 +47,7 @@ end
 
 function PLAYER:saveTraits()
 	local traitData = util.TableToJSON(self.traits)
-	self:SetPData("GC_TRAITS", traitData)
+	self:SetSteamIDPData("GC_TRAITS", traitData)
 end
 
 function PLAYER:unlockTrait(traitID)

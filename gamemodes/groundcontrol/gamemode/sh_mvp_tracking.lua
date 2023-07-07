@@ -174,7 +174,7 @@ mvpTracker.registerData({
 	id = "kills", -- id of the entry
 	name = "Bounty Hunter", -- pretty name of the MVP entry
 	text = "Most kills", -- description of the MVP entry
-	formatText = function(self, amount) -- function to format the text with
+	formatText = function(self, amount) -- function to format the text with -
 		if amount == 1 then
 			return "1 kill"
 		end
@@ -187,7 +187,7 @@ mvpTracker.registerData({
 mvpTracker.registerData({
 	id = "headshots",
 	name = "Head Hunter",
-	text = "Most kills",
+	text = "Most headshots",
 	formatText = function(self, amount)
 		if amount == 1 then
 			return "1 headshot"

@@ -32,6 +32,7 @@ PLAYER.CrouchedWalkSpeed	= 0.6		-- Multiply move speed by this when crouching
 PLAYER.DuckSpeed			= 0.3		-- How fast to go from not ducking, to duckingPLAYER.UnDuckSpeed			= 0.3		-- How fast to go from ducking, to not ducking
 PLAYER.JumpPower			= 220		-- How powerful our jump should be
 PLAYER.MaxHealth			= 100		-- Max health we can have
+PLAYER.MaxStamina           = 100
 --PLAYER.MaxArmor				= 100		-- Max armor we can have
 PLAYER.StartHealth			= 100		-- How much health we start with
 --PLAYER.StartArmor			= 0			-- How much armour we start with
@@ -47,7 +48,8 @@ PLAYER.RunSpeed				= 315	-- How fast to move when running
 PLAYER.CrouchedWalkSpeed	= 0.6		-- Multiply move speed by this when crouching
 PLAYER.DuckSpeed			= 0.3		-- How fast to go from not ducking, to duckingPLAYER.UnDuckSpeed			= 0.3		-- How fast to go from ducking, to not ducking
 PLAYER.JumpPower			= 220		-- How powerful our jump should be
-PLAYER.MaxHealth			= 120		-- Max health we can have
+PLAYER.MaxHealth			= 120	
+PLAYER.MaxStamina           = 105	
 --PLAYER.MaxArmor				= 100		-- Max armor we can have
 PLAYER.StartHealth			= 120		-- How much health we start with
 --PLAYER.StartArmor			= 0			-- How much armour we start with
@@ -63,7 +65,8 @@ PLAYER.RunSpeed				= 300	-- How fast to move when running
 PLAYER.CrouchedWalkSpeed	= 0.6		-- Multiply move speed by this when crouching
 PLAYER.DuckSpeed			= 0.3		-- How fast to go from not ducking, to duckingPLAYER.UnDuckSpeed			= 0.3		-- How fast to go from ducking, to not ducking
 PLAYER.JumpPower			= 220		-- How powerful our jump should be
-PLAYER.MaxHealth			= 110		-- Max health we can have
+PLAYER.MaxHealth			= 110	
+PLAYER.MaxStamina           = 120	
 --PLAYER.MaxArmor				= 100		-- Max armor we can have
 PLAYER.StartHealth			= 110		-- How much health we start with
 --PLAYER.StartArmor			= 0			-- How much armour we start with
@@ -80,6 +83,7 @@ PLAYER.CrouchedWalkSpeed	= 0.6		-- Multiply move speed by this when crouching
 PLAYER.DuckSpeed			= 0.3		-- How fast to go from not ducking, to duckingPLAYER.UnDuckSpeed			= 0.3		-- How fast to go from ducking, to not ducking
 PLAYER.JumpPower			= 215		-- How powerful our jump should be
 PLAYER.MaxHealth			= 105		-- Max health we can have
+PLAYER.MaxStamina           = 75
 --PLAYER.MaxArmor				= 100		-- Max armor we can have
 PLAYER.StartHealth			= 105		-- How much health we start with
 --PLAYER.StartArmor			= 0			-- How much armour we start with
@@ -96,6 +100,7 @@ PLAYER.CrouchedWalkSpeed	= 0.4		-- Multiply move speed by this when crouching
 PLAYER.DuckSpeed			= 0.3		-- How fast to go from not ducking, to duckingPLAYER.UnDuckSpeed			= 0.3		-- How fast to go from ducking, to not ducking
 PLAYER.JumpPower			= 150		-- How powerful our jump should be
 PLAYER.MaxHealth			= 70		-- Max health we can have
+PLAYER.MaxStamina           = 50
 --PLAYER.MaxArmor				= 100		-- Max armor we can have
 PLAYER.StartHealth			= 70		-- How much health we start with
 --PLAYER.StartArmor			= 0			-- How much armour we start with

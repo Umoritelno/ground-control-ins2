@@ -131,12 +131,14 @@ function GM:performOnChangedCvarCallbacks()
 		local curValue = GetConVar(cvarName)
 		local finalValue = curValue:GetFloat() or curValue:GetString() -- we don't know whether the callback wants a string or a number, so if we can get a valid number from it, we will use that if we can't, we will use a string value
 		
-		callback(cvarName, finalValue, finalValue)
+		callback(cvarName, finalValue, finalValue,true)
 	end
 end
 
 local sharedCVar = FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED
 
+CreateConVar("gc_lean_enable",1,sharedCVar,"Enable leaning?")
+CreateConVar("gc_ammotextOverride_enable",1,sharedCVar,"Override ammo text for CW 2.0 weapons?")
 CreateConVar("gc_specround_enable",1,sharedCVar,"Will special rounds work?")
 CreateConVar("gc_crippling", 1, sharedCVar, "is the crippling gameplay mechanic enabled?")
 CreateConVar("gc_round_prep_time", GM.RoundPreparationTime, sharedCVar, "how much time players spend in the preparation stage of the new round")
@@ -149,6 +151,7 @@ CreateConVar("gc_wepbase",GM.DefBase,sharedCVar,"What weapon base we will use?")
 CreateConVar("gc_roles_enable",1,sharedCVar,"Will roles and work?")
 CreateConVar("gc_abil_enable",1,sharedCVar,"Will abilities work?")
 CreateConVar("gc_nvg_enable",1,sharedCVar,"Will NVG work?")
+CreateConVar("gc_stun_enable",1,sharedCVar,"Will stun work?")
 
 --GM.CurWepBase = GetConVar("gc_wepbase"):GetInt() or 1
 if GM.WepBases[GetConVar("gc_wepbase"):GetInt()] then
@@ -165,12 +168,69 @@ local function getCvarNumber(new, old)
 	return tonumber(new) and new or old
 end
 
-GM:registerAutoUpdateConVar("gc_nvg_enable", function(name, old, new)
-	GAMEMODE.NVGEnabled = tonumber(new) and tonumber(new) > 0
+GM:registerAutoUpdateConVar("gc_stun_enable", function(name, old, new,isAuto)
+	local bool = tonumber(new) and tonumber(new) > 0
+	GAMEMODE.StunEnabled = bool
+	if !isAuto then 
+	  if !bool then
+		for k,v in pairs(GAMEMODE.currentPlayerList) do
+			v:AddStun(-100)
+		 end
+	  end
+	  net.Start("updateclientcvar")
+	  net.WriteString("StunEnabled")
+	  net.WriteBool(bool)
+	  net.Broadcast() 
+	end
 end)
 
-GM:registerAutoUpdateConVar("gc_specround_enable", function(name, old, new)
-	GAMEMODE.specRoundEnabled = tonumber(new) and tonumber(new) > 0
+GM:registerAutoUpdateConVar("gc_ammotextOverride_enable", function(name, old, new,isAuto)
+	local bool = tonumber(new) and tonumber(new) > 0
+	GAMEMODE.AmmoTextChanged = bool
+	if !isAuto then 
+	  net.Start("updateclientcvar")
+	  net.WriteString("AmmoTextChanged")
+	  net.WriteBool(bool)
+	  net.Broadcast()
+	end 
+end)
+
+GM:registerAutoUpdateConVar("gc_lean_enable", function(name, old, new,isAuto)
+	local bool = tonumber(new) and tonumber(new) > 0
+	GAMEMODE.LeanEnabled = bool
+	if !isAuto then 
+	  net.Start("updateclientcvar")
+	  net.WriteString("LeanEnabled")
+	  net.WriteBool(bool)
+	  net.Broadcast()
+	end 
+end)
+
+GM:registerAutoUpdateConVar("gc_nvg_enable", function(name, old, new,isAuto)
+	local bool = tonumber(new) and tonumber(new) > 0
+	GAMEMODE.NVGEnabled = bool
+	if !isAuto and !bool then 
+		for k,pl in pairs(GAMEMODE.currentPlayerList) do
+	       if pl:NVGBASE_IsGoggleActive() then
+
+			 local loadout = pl:NVGBASE_GetLoadout();
+	         if (loadout == nil) then return; end
+
+			 pl:NVGBASE_ToggleGoggle(loadout,nil)
+		   end
+		end
+	end
+end)
+
+GM:registerAutoUpdateConVar("gc_specround_enable", function(name, old, new,isAuto)
+	local bool = tonumber(new) and tonumber(new) > 0
+	GAMEMODE.specRoundEnabled = bool
+	if !isAuto then 
+	  net.Start("updateclientcvar")
+	  net.WriteString("specRoundEnabled")
+	  net.WriteBool(bool)
+	  net.Broadcast()
+	end 
 end)
 
 GM:registerAutoUpdateConVar("gc_abil_enable", function(name, old, new)
@@ -211,7 +271,7 @@ end
 
 if CLIENT then
 	CustomizableWeaponry.callbacks:addNew("suppressHUDElements", "GroundControl_suppressHUDElements", function(self)
-		return true, true, false -- 3rd argument is whether the weapon interaction menu should be hidden
+		return true , true , false -- 3rd argument is whether the weapon interaction menu should be hidden
 	end)	
 end
 
@@ -282,6 +342,7 @@ CustomizableWeaponry.callbacks:addNew("disableInteractionMenu", "GroundControl_d
 end)
 
 if CLIENT then
+	local string_format = string.format
 	local sidewaysHoldingStates = {
 		[0] = true, -- CW_IDLE
 		[1] = true, -- CW_RUNNING
@@ -293,7 +354,7 @@ if CLIENT then
 	local downwardsVector = Vector(0, 0, 0)
 	local downwardsAngle = Vector(-30, 0, -45)
 	
-	CustomizableWeaponry.callbacks:addNew("adjustViewmodelPosition", "GroundControl_adjustViewmodelPosition", function(self, targetPos, targetAng)
+	--[[CustomizableWeaponry.callbacks:addNew("adjustViewmodelPosition", "GroundControl_adjustViewmodelPosition", function(self, targetPos, targetAng)
 		local gametype = GAMEMODE.curGametype
 		local wepClass = self:GetClass()
 		
@@ -341,13 +402,14 @@ if CLIENT then
 		end
 		
 		return targetPos, targetAng
-	end)
+	end)--]]
 	
 	GM.attachmentSlotDisplaySize = 60
 	GM.attachmentSlotSpacing = 5
 	
 	CustomizableWeaponry.callbacks:addNew("drawToHUD", "GroundControl_drawToHUD", function(self)
 		if self.dt.State == CW_CUSTOMIZE then
+			local lang = GetCurLanguage().slots
 			if not self.Owner.unlockedAttachmentSlots then
 				RunConsoleCommand("gc_request_data")
 			else
@@ -386,10 +448,10 @@ if CLIENT then
 				for i = 1, availableSlots do
 					local x = baseX + (i - 1) * overallSize
 					
-					draw.ShadowText("Slot " .. i, GAMEMODE.AttachmentSlotDisplayFont, x + GAMEMODE.attachmentSlotDisplaySize - 5, baseY + GAMEMODE.attachmentSlotDisplaySize, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
+					draw.ShadowText(string_format(lang.SlotId,i), GAMEMODE.AttachmentSlotDisplayFont, x + GAMEMODE.attachmentSlotDisplaySize - 5, baseY + GAMEMODE.attachmentSlotDisplaySize, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
 				end
 				
-				draw.ShadowText("Used slots " .. curPos - 1 .. "/" .. availableSlots , GAMEMODE.AttachmentSlotDisplayFont, _SCRW * 0.5, baseY + GAMEMODE.attachmentSlotDisplaySize + 20, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+				draw.ShadowText(string_format(lang.UsedSlots,curPos - 1,availableSlots) , GAMEMODE.AttachmentSlotDisplayFont, _SCRW * 0.5, baseY + GAMEMODE.attachmentSlotDisplaySize + 20, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 			end
 		end
 	end)

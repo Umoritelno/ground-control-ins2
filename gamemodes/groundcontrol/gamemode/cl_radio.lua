@@ -1,6 +1,8 @@
 GM.RadioSelection = {selectedCategory = 0, selectedId = 0, alpha = 0, active = false, position = 0}
 GM.RadioSoundCache = {}
 
+local radiokey = CreateClientConVar("gc_radiokey","32",true,true,"What button will trigger radio",1,159)
+
 function GM:SelectRadioCommand(id)
 	self.RadioSelection.selectedId = id
 	self.RadioSelection.active = false
@@ -234,4 +236,9 @@ usermessage.Hook("GC_FRAGOUT", GC_FragOut)
 
 concommand.Add("gc_radio_menu", function(ply, com, args)
 	GAMEMODE:toggleRadio()
+end)
+
+hook.Add("PlayerButtonDown","RadioToggle",function(ply,button)
+    if button != radiokey:GetInt() then return end
+    GAMEMODE:toggleRadio()
 end)

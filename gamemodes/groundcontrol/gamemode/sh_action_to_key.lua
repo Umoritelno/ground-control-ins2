@@ -41,5 +41,5 @@ if CLIENT then
 	
 	GM:assignActionToBind("+menu", "bandage", "gc_bandage")
 	GM:assignActionToBind(GM.NadeActionKey, "quickgrenade", "gc_quickgrenade")
-	GM:assignActionToBind("noclip", "radio_menu", "gc_radio_menu")
+	--GM:assignActionToBind("noclip", "radio_menu", "gc_radio_menu")
 end

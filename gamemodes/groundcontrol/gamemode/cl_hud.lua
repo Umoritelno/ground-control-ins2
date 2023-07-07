@@ -5,6 +5,8 @@ local noDraw = {CHudAmmo = true,
 	CHudWeaponSelection = true,
 	CHudDamageIndicator = true}
 
+local string_format = string.format
+
 function GM:HUDShouldDraw(n)
 	if noDraw[n] then
 		return false
@@ -51,6 +53,7 @@ local gradient = surface.GetTextureID("cw2/gui/gradient")
 function GM:HUDPaint()
 	local ply = LocalPlayer()
 	local wep = ply:GetActiveWeapon()
+	local lang = GetCurLanguage()
 	local scrW, scrH = _SCRW, _SCRH
 	
 	local healthText = nil
@@ -96,7 +99,8 @@ function GM:HUDPaint()
 	local midX, midY = scrW * 0.5, scrH * 0.5
 
 	if alive then
-		healthText = math.max(0, ply:Health()) .. "% HEALTH"
+		local hpPerc = (ply:Health()/ply:GetMaxHealth() * 100)
+		healthText = math.max(0, hpPerc) .. "% HEALTH"
 		
 		surface.SetFont(self.HealthDisplayFont)
 		local xSize, ySize = surface.GetTextSize(healthText)
@@ -121,7 +125,11 @@ function GM:HUDPaint()
 		draw.ShadowText(healthText, self.HealthDisplayFont, scrW - textX, scrH - baseOffset - overallTextHeight, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 		draw.ShadowText(bandageText, self.BandageDisplayFont, scrW - textX, scrH - baseOffset + bandageOff - overallTextHeight, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 		if self.specRoundEnabled then
-		    local SpecCountText = "Special round in "..self.GlobalSpecRound.." round(s)."
+			local font = "SpecRoundReplace"
+			if self.Language == "english" then
+				font = "CW_HUD20"
+			end
+		    local SpecCountText = string_format(lang.specRoundCount,self.GlobalSpecRound)
 
             local CurSpecRound
 
@@ -131,10 +139,10 @@ function GM:HUDPaint()
 			 CurSpecRound = "None"
 		    end
 
-		    local CurSpecRoundText = "Current special round: "..CurSpecRound.."."
+		    local CurSpecRoundText = string_format(lang.curSpecRound,CurSpecRound)
 
-			draw.ShadowText(CurSpecRoundText, "CW_HUD20", scrW * 0.055, scrH * 0.12, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-			draw.ShadowText(SpecCountText, "CW_HUD20", scrW * 0.054, scrH * 0.1, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.ShadowText(CurSpecRoundText, font, scrW * 0.055, scrH * 0.12, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.ShadowText(SpecCountText, font, scrW * 0.054, scrH * 0.1, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		end
 		--draw.ShadowText(ply.stamina, self.BandageDisplayFont, 55, scrH - 200, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 		
@@ -294,16 +302,17 @@ function GM:HUDPaint()
 	
 	if self.DeadState == 3 then
 		local barHeight = _S(50)
+		local bindlang = lang.binds 
 		
 		surface.SetDrawColor(0, 0, 0, 255)
 		surface.DrawRect(0, 0, scrW, barHeight)
 		surface.DrawRect(0, scrH - barHeight, scrW, barHeight)
 		
 		if IsValid(ply.currentSpectateEntity) then
-			draw.ShadowText("Spectating " .. ply.currentSpectateEntity:Nick(), self.SpectateFont, midX, scrH - _S(35), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.ShadowText(string_format(lang.spectating,ply.currentSpectateEntity:Nick()), self.SpectateFont, midX, scrH - _S(35), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		end
 		
-		draw.ShadowText(self:getKeyBind("+attack") .. " - change spectate target", self.DeadFont, midX, scrH - _S(15), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.ShadowText(string_format(bindlang.SpectateBind,self:getKeyBind("+attack")), self.DeadFont, midX, scrH - _S(15), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		
 		--[[draw.ShadowText(self:getKeyBind(self.TeamSelectionKey) .. " - team selection menu", "CW_HUD24", 5, 45, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
 		draw.ShadowText(self:getKeyBind(self.LoadoutMenuKey) .. " - loadout menu", "CW_HUD24", midX, 45, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
@@ -312,9 +321,9 @@ function GM:HUDPaint()
 		local xOff = _S(5)
 		local font = self.KeyBindsFont
 		
-		draw.ShadowText(self:getKeyBind(self.TeamSelectionKey) .. " - team selection menu", font, xOff, _S(55), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-		draw.ShadowText(self:getKeyBind(self.LoadoutMenuKey) .. " - loadout menu", font, xOff, _S(80), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-		draw.ShadowText(self:getKeyBind(self.RadioMenuKey) .. " - voice selection menu", font, xOff, _S(105), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+		draw.ShadowText(string_format(bindlang.TeamBind,self:getKeyBind(self.TeamSelectionKey)), font, xOff, _S(55), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+		draw.ShadowText(string_format(bindlang.LoadoutBind,self:getKeyBind(self.LoadoutMenuKey)), font, xOff, _S(80), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+		draw.ShadowText(string_format(bindlang.VoiceBind,self:getKeyBind(self.RadioMenuKey)), font, xOff, _S(105), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
 		
 		if self.curGametype.deadDraw then
 			self.curGametype:deadDraw(scrW, scrH)
@@ -398,8 +407,10 @@ function GM:HUDPaint()
 		self.HUDColors.black.a = 255
 	
 		if IsValid(wep) and wep:GetClass() ~= self.MedkitClass then
+			local medlang = lang.binds.Medkit
 			if ply.bleeding then
-				draw.ShadowText(self:getKeyBind(self:getActionKey("bandage")) .. " - switch to medkit", self.ActionDisplayFont, scrW * 0.5, scrH * 0.5 + _S(50), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				local bnd = string_format(medlang.SwitchYourself,self:getKeyBind(self:getActionKey("bandage")))
+				draw.ShadowText(bnd, self.ActionDisplayFont, scrW * 0.5, scrH * 0.5 + _S(50), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 				--draw.ShadowText(self:getKeyBind(self:getActionKey("bandage")) .. " - apply bandage", self.ActionDisplayFont, scrW * 0.5, scrH * 0.5 + _S(50), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			else
 				--draw.ShadowText(self:getKeyBind(self:getActionKey("bandage")) .. " - switch to medkit", self.ActionDisplayFont, scrW * 0.5, scrH * 0.5 + _S(50), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -407,7 +418,8 @@ function GM:HUDPaint()
 					local bandageTarget = ply:getBandageTarget()
 					
 					if bandageTarget then
-						draw.ShadowText(string.easyformatbykeys("KEY - equip medkit to heal PLAYER", "KEY", self:getKeyBind(self:getActionKey("bandage")), "PLAYER", bandageTarget:Nick()), self.ActionDisplayFont, scrW * 0.5, scrH * 0.5 + _S(50), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+						local bind = string_format(medlang.SwitchMate,"KEY")
+						draw.ShadowText(string.easyformatbykeys(bind, "KEY", self:getKeyBind(self:getActionKey("bandage")), "PLAYER", bandageTarget:Nick()), self.ActionDisplayFont, scrW * 0.5, scrH * 0.5 + _S(50), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 					end
 				end
 			end
@@ -532,6 +544,7 @@ function GM:drawPlayerMarker(pos, obj, midX, midY)
 end
 
 function GM:createRoundOverDisplay(winTeam, actionType)
+	local lang = GetCurLanguage()
 	self.roundOverTime = CurTime() + GAMEMODE.RoundRestartTime - 1
 	
 	local popup = vgui.Create("GCRoundOver")
@@ -542,7 +555,7 @@ function GM:createRoundOverDisplay(winTeam, actionType)
 		popup:SetWinningTeam(winTeam)
 		
 		if actionType == self.RoundOverAction.RANDOM_MAP_AND_GAMETYPE then
-			popup:SetBottomText("Switching to a random map & gametype in ")
+			popup:SetBottomText(lang.round_switch)
 		end
 		
 		local retVal
@@ -559,12 +572,12 @@ function GM:createRoundOverDisplay(winTeam, actionType)
 			end
 		end
 	else
-		popup:SetTopText("New match start")
+		popup:SetTopText(lang.match_start)
 		
 		if actionType == self.RoundOverAction.NEW_ROUND then
-			popup:SetBottomText("Starting a new game in ")
+			popup:SetBottomText(lang.round_end)
 		elseif actionType == self.RoundOverAction.RANDOM_MAP_AND_GAMETYPE then
-			popup:SetBottomText("Switching to a random map & gametype in ")
+			popup:SetBottomText(lang.round_switch)
 		end
 	end
 	
@@ -615,9 +628,10 @@ function GM:createRoundPreparationDisplay(preparationTime)
 end
 
 function GM:createLastManStandingDisplay()
+	local lang = GetCurLanguage()
 	local popup = vgui.Create("GCGenericPopup")
 	popup:SetSize(_S(310), _S(50))
-	popup:SetText("Last man standing", "Good luck")
+	popup:SetText(lang.lastManStatus, table.Random(lang.lastManPhrases))
 	popup:SetExistTime(5)
 	popup:Center()
 	
@@ -635,6 +649,7 @@ GM.KilledByBaseSize = 28
 GM.KilledByEntrySize = 52
 
 function GM:createKilledByDisplay(killerPlayer, entClassString)
+	local lang = GetCurLanguage().death
 	if self.KilledByPanel and self.KilledByPanel:IsValid() then
 		self.KilledByPanel:Remove()
 		self.KilledByPanel = nil
@@ -645,7 +660,7 @@ function GM:createKilledByDisplay(killerPlayer, entClassString)
 	local baseHeight = _S(self.KilledByEntrySize + self.KilledByBaseSize)
 	local panel = vgui.Create("GCPanel") 
 	panel:SetFont("GC_HUD20")
-	panel:SetText("Killed by")
+	panel:SetText(lang.KilledBy)
 	panel:SetSize(_S(self.KilledByPanelWidth), baseHeight)
 	panel:CenterHorizontal()
 

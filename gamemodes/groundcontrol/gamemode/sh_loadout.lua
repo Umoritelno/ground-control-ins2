@@ -178,7 +178,7 @@ end
 function GM:registerTertiaryWeapon(weaponData)
 	local wepClass = weapons.GetStored(weaponData.weaponClass)
 	if not wepClass then
-		ErrorNoHalt("[Ground Control] !Error!\nReason:'Trying to register invalid weapon'")
+		ErrorNoHalt("[Ground Control] !Error!\nReason:'Trying to register invalid weapon'\n")
 		return
 	end
 	weaponData.id = weaponData.id or weaponData.weaponClass
@@ -196,6 +196,7 @@ function GM:registerTertiaryWeapon(weaponData)
 	
 	self:applyWeaponDataToWeaponClass(weaponData, false, 2)
 	weapons.GetStored(weaponData.weaponClass).isTertiaryWeapon = true
+	weapons.GetStored(weaponData.weaponClass).noResupply = true 
 	self.TertiaryWeapons[#self.TertiaryWeapons + 1] = weaponData
 end
 
