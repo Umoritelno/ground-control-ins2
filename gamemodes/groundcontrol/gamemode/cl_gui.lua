@@ -1,4 +1,5 @@
 GM.AllFrames = {}
+local string_format = string.format
 
 function GM:addFrame(frame)
 	table.insert(self.AllFrames, frame)
@@ -489,6 +490,7 @@ end
 
 function gcWeaponPanel:PaintOver()
 	local w, h = self:GetSize()
+	local lang = GetCurLanguage().weapon
 	
 	local wepData = self.weaponData
 	local wepObject = nil
@@ -517,10 +519,10 @@ function gcWeaponPanel:PaintOver()
 	if wepData and wepData.display then
 		name = wepData.display
 	else
-		name = wepObject and wepObject.PrintName or "None selected"
+		name = wepObject and wepObject.PrintName or lang.NoSelect
 	end
 	
-	ammo = wepObject and wepObject.Primary.Ammo or "None selected"
+	ammo = wepObject and wepObject.Primary.Ammo or lang.NoSelect
 	--magSize = wepObject and ("x" .. wepObject.Primary.ClipSize) or ""
 	
 	draw.ShadowText(name, "CW_HUD16", 5, 10, White, Black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
@@ -636,12 +638,13 @@ end
 
 function curWeaponPanel:OnCursorEntered(w, h)
 	local w, h = self:GetSize()
+	local lang = GetCurLanguage().attaches
 	
 	if not self.descBox and #self.availableAttachments > 0 then
 		local x, y = self:LocalToScreen(0, 0)
 		
 		self.descBox = vgui.Create("GCGenericDescbox")
-		self.descBox:InsertText("You have enough money to buy the following attachments:", "CW_HUD24", 0)
+		self.descBox:InsertText(lang.Enough, "CW_HUD24", 0)
 		
 		for key, attID in ipairs(self.availableAttachments) do
 			local data = CustomizableWeaponry.registeredAttachmentsSKey[attID]
@@ -658,7 +661,7 @@ function curWeaponPanel:OnCursorEntered(w, h)
 		self.descBox:SetZPos(10000)
 		self.descBox:SetDrawOnTop(true)
 		
-		self.descBox:InsertText("Click to begin purchase.", "CW_HUD28", 0, GAMEMODE.HUDColors.limeYellow)
+		self.descBox:InsertText(lang.Begin, "CW_HUD28", 0, GAMEMODE.HUDColors.limeYellow)
 		self.acknowledged = true
 	end
 end 
@@ -748,9 +751,10 @@ function curWeaponPanel:RemoveWeapon()
 end
 
 function curWeaponPanel:OnMousePressed(bind)
+	local lang = GetCurLanguage().attaches
 	if self.weaponData then
 		local wepClass = self.weaponData.weaponObject
-		if not string.find(wepClass.Base,"cw") then
+		if wepClass.Base != "cw_base" and  wepClass.Base != "cw_kk_ins2_base" then -- or !string.find(wepClass.Base,"cw_kk_ins2")
            return 
 		end 
 		
@@ -761,7 +765,7 @@ function curWeaponPanel:OnMousePressed(bind)
 			GAMEMODE:closeLoadoutMenu()
 			
 			local frame = vgui.Create("GCFrame")
-			frame:SetTitle(self.weaponData.weaponObject.PrintName .. " - customization")
+			frame:SetTitle(string_format(lang.Custom,self.weaponData.weaponObject.PrintName))
 			frame:SetDraggable(false, false)
 			frame.alpha = 220
 			frame:SetZPos(100)
@@ -892,6 +896,7 @@ function weaponStats:getLargestTextSize(text)
 end
 
 function weaponStats:Paint()
+	local lang = GetCurLanguage().weapon
 	local w, h = self:GetSize()
 	local wepClass = self.weaponObject
 	local targetTable = self.bestWeaponTable
@@ -905,21 +910,21 @@ function weaponStats:Paint()
 	
 	
 	if wepClass then
-		self:DrawStatBar("Damage", math.Round(self.displayDamage or 25 * GAMEMODE.DamageMultiplier) .. "x" .. self.displayShots, self.displayDamage * self.displayShots, targetTable.damage, 10, w)
-		self:DrawStatBar("Recoil", "x" .. math.Round(self.displayRecoil, 1), self.displayRecoil, targetTable.recoil, 25, w)
-	    self:DrawStatBar("Accuracy", math.Round((100 - self.displaySpread * 1000)) .. "%", targetTable.aimSpread, self.displaySpread, 40, w)
-		self:DrawStatBar("Firerate", math.Round(60 / self.displayFireDelay), targetTable.firerate, self.displayFireDelay, 55, w)
+		self:DrawStatBar(lang.Damage, math.Round(self.displayDamage or 25 * GAMEMODE.DamageMultiplier) .. "x" .. self.displayShots, self.displayDamage * self.displayShots, targetTable.damage, 10, w)
+		self:DrawStatBar(lang.Recoil, "x" .. math.Round(self.displayRecoil, 1), self.displayRecoil, targetTable.recoil, 25, w)
+	    self:DrawStatBar(lang.Accuracy, math.Round((100 - self.displaySpread * 1000)) .. "%", targetTable.aimSpread, self.displaySpread, 40, w)
+		self:DrawStatBar(lang.Firerate, math.Round(60 / self.displayFireDelay), targetTable.firerate, self.displayFireDelay, 55, w)
 	end
 	
 	if self.thoroughDescription then
-		self:DrawStatBar("Hip accuracy", 100 - math.Round(wepClass.HipSpread * 1000) .. "%", targetTable.hipSpread, wepClass.HipSpread, 70, w)
-		self:DrawStatBar("Mobility", math.Round(100 - wepClass.VelocitySensitivity / 3 * 100) .. "%", targetTable.velocitySensitivity, wepClass.VelocitySensitivity, 85, w)
-		self:DrawStatBar("Spread per shot", math.Round(wepClass.SpreadPerShot * 1000, 1) .. "%", wepClass.SpreadPerShot, targetTable.spreadPerShot, 100, w)
-		self:DrawStatBar("Max spread", math.Round(wepClass.MaxSpreadInc * 1000, 1) .. "%", wepClass.MaxSpreadInc, targetTable.maxSpreadInc, 115, w)
+		self:DrawStatBar(lang.Hip, 100 - math.Round(wepClass.HipSpread * 1000) .. "%", targetTable.hipSpread, wepClass.HipSpread, 70, w)
+		self:DrawStatBar(lang.Mobility, math.Round(100 - wepClass.VelocitySensitivity / 3 * 100) .. "%", targetTable.velocitySensitivity, wepClass.VelocitySensitivity, 85, w)
+		self:DrawStatBar(lang.SPS, math.Round(wepClass.SpreadPerShot * 1000, 1) .. "%", wepClass.SpreadPerShot, targetTable.spreadPerShot, 100, w)
+		self:DrawStatBar(lang.MaxSpread, math.Round(wepClass.MaxSpreadInc * 1000, 1) .. "%", wepClass.MaxSpreadInc, targetTable.maxSpreadInc, 115, w)
 		--[[self:DrawStatBar("Movement speed", GAMEMODE.BaseRunSpeed - wepClass.SpeedDec, targetTable.speedDec, wepClass.SpeedDec, 130, w) ]]--
-		self:DrawStatBar("Weapon weight", math.Round(wepClass.weight, 2) .. "KG", wepClass.weight, targetTable.weight, 145, w)
-		self:DrawStatBar("Mag weight", math.Round(wepClass.magWeight, 2) .. "KG", wepClass.magWeight, targetTable.magWeight, 160, w)
-		self:DrawStatBar("Penetration", wepClass.penetrationValue, wepClass.penetrationValue, targetTable.penetrationValue, 175, w)
+		self:DrawStatBar(lang.Weight, math.Round(wepClass.weight, 2) .. "KG", wepClass.weight, targetTable.weight, 145, w)
+		self:DrawStatBar(lang.MagWeight, math.Round(wepClass.magWeight, 2) .. "KG", wepClass.magWeight, targetTable.magWeight, 160, w)
+		self:DrawStatBar(lang.Pen, wepClass.penetrationValue, wepClass.penetrationValue, targetTable.penetrationValue, 175, w)
 	end
 	
 	--[[
@@ -985,6 +990,7 @@ end
 
 function weightBar:Paint()
 	local w, h = self:GetSize()
+	local lang = GetCurLanguage().weight
 	
 	surface.SetDrawColor(0, 0, 0, 255)
 	surface.DrawOutlinedRect(0, 0, w, h)
@@ -1001,20 +1007,22 @@ function weightBar:Paint()
 	
 	local White, Black = GAMEMODE.HUDColors.white, GAMEMODE.HUDColors.black
 	
-	draw.ShadowText("Stamina drain: +" .. math.Round((ply:getStaminaDrainWeightModifier(curWeight) - 1) * 100, 1) .. "%", "CW_HUD16", 5, h * 0.5 - 1, GAMEMODE.HUDColors.lightRed, Black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-	draw.ShadowText("Noise factor: +" .. math.Round(ply:getWeightFootstepNoiseAffector(curWeight), 1), "CW_HUD16", w - 5, h * 0.5 - 1, GAMEMODE.HUDColors.lightRed, Black, 1, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+	draw.ShadowText(string_format(lang.StamDrain,math.Round((ply:getStaminaDrainWeightModifier(curWeight) - 1) * 100, 1)) .. "%", "CW_HUD16", 5, h * 0.5 - 1, GAMEMODE.HUDColors.lightRed, Black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	draw.ShadowText(string_format(lang.NoiseFact,math.Round(ply:getWeightFootstepNoiseAffector(curWeight), 1)), "CW_HUD16", w - 5, h * 0.5 - 1, GAMEMODE.HUDColors.lightRed, Black, 1, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 
-	draw.ShadowText("Weight: " .. math.Round(curWeight, 2) .. "/" .. GAMEMODE.MaxWeight .. "KG", "CW_HUD16", w * 0.5, h * 0.5 - 1, White, Black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-end
+	draw.ShadowText(string_format(lang.Weight,math.Round(curWeight, 2),GAMEMODE.MaxWeight), "CW_HUD16", w * 0.5, h * 0.5 - 1, White, Black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end  
 
 function weightBar:OnCursorEntered()
+	local lang = GetCurLanguage().weight
 	if not IsValid(self.descBox) then
 		local w, h = self:GetSize()
 		local x, y = self:LocalToScreen(0, 0)
 		self.descBox = vgui.Create("GCGenericDescbox")
-		self.descBox:InsertText("The weight of your current loadout.", "CW_HUD28", 0)
-		self.descBox:InsertText("A high weight will increase movement noise and stamina drain from sprinting and jumping.", "CW_HUD20", 0)
-		self.descBox:InsertText("You can always deselect primary/secondary/tertiary weapons by right-clicking on them.", "CW_HUD20", 0)
+		self.descBox:InsertText(lang.CurWeight, "CW_HUD28", 0)
+		self.descBox:InsertText(lang.HighWeight, "CW_HUD20", 0)
+		self.descBox:InsertText(lang.Deselect, "CW_HUD20", 0)
+
 		
 		self.descBox:SetPos(x, y + h + 5)
 		self.descBox:SetZPos(10000)
@@ -1136,6 +1144,7 @@ end
 
 function attachmentSelection:createInfoBox()
 	if not IsValid(self.descBox) then
+		local lang = GetCurLanguage().attaches
 		local w, h = self:GetSize()
 		local x, y = self:LocalToScreen(0, 0)
 		self.descBox = vgui.Create("GCGenericDescbox")
@@ -1143,14 +1152,14 @@ function attachmentSelection:createInfoBox()
 		self.descBox:SetDrawOnTop(true)
 		
 		if self:IsLocked() then
-			self.descBox:InsertText("Click to purchase for " .. self.attachmentData.price .. "$", "CW_HUD20", 10)
+			self.descBox:InsertText(string_format(lang.Purchase,self.attachmentData.price), "CW_HUD20", 10)
 		else
 			if not self:IsAttachmentUsed(self.attachmentName) then
 				local can, result, data = self:CanAttachSpecificAttachmnent()
 				
 				if not can then
 					if result == -4 or result == -6 then -- missing attachment
-						local baseText = "Can't attach, requires: "
+						local baseText = lang.Fail
 						
 						if data then
 							if result == -4 then
@@ -1179,14 +1188,14 @@ function attachmentSelection:createInfoBox()
 						self.descBox:InsertText(baseText, "CW_HUD20", 10)
 					elseif result == -3 or result == -5 then -- incompatibility with other attachment
 						if result == -5 then
-							self.descBox:InsertText("Can't attach, conflicts with: " .. CustomizableWeaponry.registeredAttachmentsSKey[data].displayNameShort, "CW_HUD20", 10)
+							self.descBox:InsertText(string_format(lang.Conflict,CustomizableWeaponry.registeredAttachmentsSKey[data].displayNameShort), "CW_HUD20", 10)
 						end
 					end
 				else
-					self.descBox:InsertText("Left-click to assign attachment.", "CW_HUD20", 10)
+					self.descBox:InsertText(lang.LeftClick, "CW_HUD20", 10)
 				end
 			else
-				self.descBox:InsertText("Right-click to un-assign attachment.", "CW_HUD20", 10)
+				self.descBox:InsertText(lang.RightClick, "CW_HUD20", 10)
 			end
 		end
 		
@@ -1247,11 +1256,12 @@ function attachmentSelection:IsLocked()
 end
 
 function attachmentSelection:OpenAttachmentAssignmentMenu()
+	local lang = GetCurLanguage().attaches
 	local cvarNames = self.isPrimary and GAMEMODE.PrimaryAttachmentStrings or GAMEMODE.SecondaryAttachmentStrings
 	self:GetParent():Hide()
 	
 	local slotFrame = vgui.Create("GCFrame")
-	slotFrame:SetTitle("Assign attachment")
+	slotFrame:SetTitle(lang.Title)
 	slotFrame:SetSize(100, 100)
 	slotFrame:SetDraggable(false, false)
 	slotFrame.PostRemove = function(selfie)
@@ -1305,12 +1315,13 @@ function attachmentSelection:SetAttachment(attName, weaponData, isPrimary)
 end
 
 function attachmentSelection:UpdateDisplay()
+	local lang = GetCurLanguage().attaches
 	if self.attachmentData then
 		self.icon = self.attachmentData.displayIcon
 		self.displayText = self.attachmentData.displayNameShort
 	else
 		self.icon = nil
-		self.displayText = "None"
+		self.displayText = lang.None
 	end
 end
 
@@ -1395,8 +1406,9 @@ function attachmentAssignment:SetDesiredAttachment(attName, weaponData)
 end
 
 function attachmentAssignment:SetSlot(slot)
+	local lang = GetCurLanguage().attaches
 	self.slot = slot
-	self.slotString = "Slot " .. slot
+	self.slotString = string_format(lang.Slot,slot)
 end
 
 function attachmentAssignment:SetIconSize(size)
@@ -1490,6 +1502,7 @@ end
 
 function attachmentAssignment:Paint()
 	local w, h = self:GetSize()
+	local lang = GetCurLanguage().attaches
 	
 	self.validCategory = self:IsCategoryValid()
 	
@@ -1525,27 +1538,27 @@ function attachmentAssignment:Paint()
 			self.descBox:SetDrawOnTop(true)
 			
 			if not self:IsSlotUnlocked() then
-				self.descBox:InsertText("Slot not unlocked, can not assign to it.", "CW_HUD28", 0)
+				self.descBox:InsertText(lang.UnlockFail, "CW_HUD28", 0)
 			else
 				if self.attachmentData then
 					self.descBox:InsertText(self.attachmentData.displayName, "CW_HUD28", 0)
 				
 					if not self:CanAssignToSlot() then
-						self.descBox:InsertText("Can't assign to this slot - desired category already in use.", "CW_HUD20", 0)
+						self.descBox:InsertText(lang.AssignFail, "CW_HUD20", 0)
 					else
-						self.descBox:InsertText("Left-click to re-assign slot.", "CW_HUD20", 0)
+						self.descBox:InsertText(lang.ReAssign, "CW_HUD20", 0)
 					end
 					
-					self.descBox:InsertText("Right-click to un-assign slot.", "CW_HUD20", 10)
+					self.descBox:InsertText(lang.UnAssign, "CW_HUD20", 10)
 					
 					if self.attachmentData then
 						self.descBox:SetText(self.attachmentData.description)
 					end
 				else
 					if not self:CanAssignToSlot() then
-						self.descBox:InsertText("Can't assign to this slot - desired category already in use.", "CW_HUD20", 0)
+						self.descBox:InsertText(lang.AssignFail, "CW_HUD20", 0)
 					else
-						self.descBox:InsertText("Left-click to assign slot.", "CW_HUD20", 0)
+						self.descBox:InsertText(lang.SlotAssign, "CW_HUD20", 0)
 						
 						if self.attachmentData then
 							self.descBox:SetText(self.attachmentData.description)
@@ -1654,7 +1667,8 @@ end
 vgui.Register("GCGenericDescbox", genericDescbox, "Panel")
 
 local roundOver = {}
-roundOver.bottomText = "Starting a new round in "
+local lang = GetCurLanguage()
+roundOver.bottomText = lang.round_end
 roundOver.font = "GC_HUD24"
 
 function roundOver:Init()
@@ -1668,7 +1682,7 @@ end
 
 function roundOver:SetWinningTeam(winTeam)
 	self.winningTeam = winTeam
-	self.winningTeamName = team.GetName(winTeam) .. " has won the round!"
+	self.winningTeamName = string_format(GetCurLanguage().round_win,team.GetName(winTeam))
 	self:stretchToText(self.winningTeamName)
 end
 
@@ -1683,7 +1697,7 @@ function roundOver:SetBottomText(text)
 end
 
 function roundOver:GetFinalBottomText()
-	return self.bottomText .. math.ceil(self.existTime + 1 - CurTime()) .. " second(s)"
+	return string_format(self.bottomText,math.ceil(self.existTime + 1 - CurTime()))
 end
 
 function roundOver:SetRestartTime(time)
@@ -1733,6 +1747,7 @@ function roundPrepare:SetPrepareTime(time)
 end
 
 function roundPrepare:Paint()
+	local lang = GetCurLanguage()
 	if CurTime() > self.existTime then
 		self.alpha = math.Approach(self.alpha, 0, FrameTime() * 8)
 		
@@ -1754,8 +1769,8 @@ function roundPrepare:Paint()
 	surface.DrawRect(0, 0, w, h)
 	
 	local yOff = _S(12)
-	draw.ShadowText("Prepare for new round", GAMEMODE.PopupFont, w * 0.5, yOff, White, Black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-	draw.ShadowText("Round starts in " .. math.ceil(self.existTime + 1 - CurTime()) .. " second(s)", GAMEMODE.PopupFont, w * 0.5, h - yOff, White, Black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	draw.ShadowText(lang.round_prepare, GAMEMODE.PopupFont, w * 0.5, yOff, White, Black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	draw.ShadowText(string_format(lang.round_start,math.ceil(self.existTime + 1 - CurTime())), GAMEMODE.PopupFont, w * 0.5, h - yOff, White, Black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	
 	White.a = 255
 	Black.a = 255
@@ -1807,6 +1822,7 @@ function gcExperienceBar:Paint()
 	local ply = LocalPlayer()
 	local canUnlockMore = ply:canUnlockMoreSlots()
 	local nextSlotPrice = ply:getNextAttachmentSlotPrice()
+	local lang = GetCurLanguage()
 	
 	surface.SetDrawColor(0, 0, 0, 255)
 	surface.DrawRect(0, 0, w, 20)
@@ -1826,18 +1842,20 @@ function gcExperienceBar:Paint()
 	surface.DrawRect(3, 3, (w - 6) * progress, 14)
 	
 	local expDisplay, helperText = nil, nil
-	
+
+
+	helperText = lang.unlock[canUnlockMore]
 	if not canUnlockMore then
 		expDisplay = ply:getNextAttachmentSlotPrice(GAMEMODE.LockedAttachmentSlots)
 		nextSlotPrice = expDisplay
-		helperText = "All locked slots unlocked."
+		--helperText = "All locked slots unlocked."
 	else
 		expDisplay = ply.experience
-		helperText = "Unlock more slots by playing cooperatively."
+		--helperText = "Unlock more slots by playing cooperatively."
 	end
 	
 	local White, Black = GAMEMODE.HUDColors.white, GAMEMODE.HUDColors.black
-	draw.ShadowText(expDisplay .. "/" .. nextSlotPrice .. " EXP", "CW_HUD16", w * 0.5, 9, White, Black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	draw.ShadowText(string_format(lang.expbar,expDisplay,nextSlotPrice), "CW_HUD16", w * 0.5, 9, White, Black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	draw.ShadowText(helperText, "CW_HUD20", w * 0.5, h - 10, White, Black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 end
 
@@ -1852,8 +1870,9 @@ end
 function gcCashDisplay:Paint()
 	local w, h = self:GetSize()
 	local cash = LocalPlayer().cash
+	local lang = GetCurLanguage()
 	
-	draw.ShadowText("Cash $" .. (cash > self.maxDisplayCash and (self.maxDisplayCash .. "+") or cash), "CW_HUD28", w - 5, h * 0.5, GAMEMODE.HUDColors.white, GAMEMODE.HUDColors.black, 1, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+	draw.ShadowText(string_format(lang.cash,(cash > self.maxDisplayCash and (self.maxDisplayCash .. "+") or cash)), "CW_HUD28", w - 5, h * 0.5, GAMEMODE.HUDColors.white, GAMEMODE.HUDColors.black, 1, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 end
 
 vgui.Register("GCCashDisplay", gcCashDisplay, "DPanel")
@@ -1928,20 +1947,22 @@ end
 
 function gcArmorDisplay:OnCursorEntered()
 	if not IsValid(self.descBox) then
+		local lang = GetCurLanguage()
+		local stats = lang.stats 
 		self.descBox = vgui.Create("GCGenericDescbox")
 		self.descBox:SetDrawOnTop(true)
 		
 		if self.armorData then
 			self.descBox:InsertText(self.armorData.displayName, "CW_HUD28", 0)
 			self.descBox:InsertText(self.armorData.description, "CW_HUD20", 0)
-			self.descBox:InsertText("Integrity: " .. self.armorData.health .. " points", "CW_HUD20", 0)
-			self.descBox:InsertText("Weight: " .. self.armorData.weight .. "KG", "CW_HUD16", 0)
-			self.descBox:InsertText("Max penetration value: " .. self.armorData.protection, "CW_HUD16", 0)
-			self.descBox:InsertText("Blunt trauma reduction: " .. math.Round(self.armorData.damageDecrease * 100, 1) .. "%", "CW_HUD16", 0)
-			self.descBox:InsertText("Penetration damage reduction: " .. math.Round(self.armorData.damageDecreasePenetration * 100, 1) .. "%", "CW_HUD16", 0)
+			self.descBox:InsertText(string_format(stats.Integrity,self.armorData.health), "CW_HUD20", 0)
+			self.descBox:InsertText(string_format(stats.Weight,self.armorData.weight), "CW_HUD16", 0)
+			self.descBox:InsertText(string_format(stats.MaxPen,self.armorData.protection), "CW_HUD16", 0)
+			self.descBox:InsertText(string_format(stats.TraumReduc,math.Round(self.armorData.damageDecrease * 100, 1)) .. " %", "CW_HUD16", 0)
+			self.descBox:InsertText(string_format(stats.DamReduc,math.Round(self.armorData.damageDecreasePenetration * 100, 1)) .. " %", "CW_HUD16", 0)
 		else
-			self.descBox:InsertText("No armor selected.", "CW_HUD20", 0)
-			self.descBox:InsertText("Bleeding will occur from any shot.", "CW_HUD20", 0)
+			self.descBox:InsertText(stats.NoArmor, "CW_HUD20", 0)
+			self.descBox:InsertText(stats.Bleeding, "CW_HUD20", 0)
 		end
 		
 		self.descBox:PositionBelow(self)
@@ -2158,6 +2179,7 @@ function gcTraitPanel:OnCursorEntered(w, h)
 	
 	if not IsValid(self.descBox) then
 		local ply = LocalPlayer()
+		local lang = GetCurLanguage().trait
 		
 		local w, h = self:GetSize()
 		self.descBox = vgui.Create("GCGenericDescbox")
@@ -2169,25 +2191,25 @@ function gcTraitPanel:OnCursorEntered(w, h)
 		local active = self:IsTraitActive()
 		
 		if traitLevel > 0 and not active then
-			self.descBox:InsertText(self.traitData.display .. " (Inactive)", "CW_HUD28", 0)
-			self.descBox:InsertText("This trait is not active, left-click to activate it.", "CW_HUD20", 0)
+			self.descBox:InsertText(self.traitData.display .. "("..lang.Inactive")", "CW_HUD28", 0)
+			self.descBox:InsertText(lang.ActivateTip, "CW_HUD20", 0)
 		else
 			self.descBox:InsertText(self.traitData.display, "CW_HUD28", 0)
 		end
 		
-		local levelText = "Level: " .. (traitLevel and traitLevel or 0) .. "/" .. self.traitData.maxLevel
+		local levelText = string_format(lang.Level,(traitLevel and traitLevel or 0),self.traitData.maxLevel) --(traitLevel and traitLevel or 0) .. "/" .. self.traitData.maxLevel
 		local unlockText = nil
 		
 		self.descBox:InsertText(levelText, "CW_HUD24", 10)
 		
 		if traitLevel < self.traitData.maxLevel then
 			if traitLevel > 0 then
-				unlockText = "Right-click to increase level for $" .. GAMEMODE:getTraitPrice(self.traitData, traitLevel)
+				unlockText = string_format(lang.RightClick,GAMEMODE:getTraitPrice(self.traitData, traitLevel))
 			else
-				unlockText = "Left-click to unlock specialization for $" .. GAMEMODE:getTraitPrice(self.traitData, 0)
+				unlockText = string_format(lang.LeftClick,GAMEMODE:getTraitPrice(self.traitData, 0))
 			end
 			
-			unlockText = unlockText .. " (you have $" .. ply.cash .. ")"
+			unlockText = unlockText .. string_format(lang.CashHave,ply.cash)
 			self.descBox:InsertText(unlockText, "CW_HUD20")
 		end
 		
@@ -2259,7 +2281,7 @@ end
 
 function gcMVPDisplay:SetMVPID(id)
 	self.mvpID = id	
-	self.mvpData = mvpTracker.registeredDataByID[id]
+	self.mvpData = GetCurLanguage().MVPs[id]
 end
 
 -- this should be called last, when all the previous data (player object, MVP id) has been set
@@ -2300,20 +2322,21 @@ end
 
 -- should be called after setting the size
 function gcKillerDisplay:SetKillData(killer, inflictorData)
+	local lang = GetCurLanguage().death
 	self.killer = killer
 	self.playerText = killer:Nick()
-	self.killerText = "Unknown death cause"
+	self.killerText = lang.Unknown
 	
 	if inflictorData == "player" then
 		local lply = LocalPlayer()
 		
 		if killer == lply then
-			self.killerText = "Suicide!"
+			self.killerText = lang.Suicide
 		else
 			self.teamKill = killer:Team() == lply:Team()
 			
 			if math.random(1, 100) <= 25 then
-				self.killerText = "A headbutt, maybe?"
+				self.killerText = lang.Random
 			end
 		end
 	else

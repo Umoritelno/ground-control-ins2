@@ -6,6 +6,12 @@
 	this is also the best place for the "GroundControlPostInitEntity" hook (added with hook.Add as usual)
 ]]--
 
+net.Receive("updateclientcvar",function()
+	local child = net.ReadString()
+	local state = net.ReadBool()
+    GAMEMODE[child] = state
+end)
+
 -- client cvars start 
 local cwZ = CreateClientConVar("gc_cw_z","0",true,false,"How much z-axis of CW 2.0 weapons will be increased",-3,1)
 local cwY = CreateClientConVar("gc_cw_y","0",true,false,"How much y-axis of CW 2.0 weapons will be increased",-1,5)
@@ -154,18 +160,14 @@ end
                         ColourMultiply = 0.9
                       })
 
-cvars.AddChangeCallback("gc_bloom_id", function(name, old, new)
+GM:registerAutoUpdateConVar("gc_bloom_id", function(name, old, new)
 	if GAMEMODE.BloomTable[new] then
 		GAMEMODE.BloomType = new 
+	else 
+		local default = "Orange/White Bloom Modifier"
+	    GAMEMODE.BloomType = default
 	end
 end)
-
-if GM.BloomTable[bloomid:GetString()] then
-		GM.BloomType = bloomid:GetString()
-	else
-		local default = "Orange/White Bloom Modifier"
-	    GM.BloomType = default
-end
 -- bloom end 
 
 
@@ -190,9 +192,9 @@ local customModify = {
 	[ "$pp_colour_mulb" ] = 0
 }
 
-GM.CW_Z = cwZ:GetFloat()
+--[[GM.CW_Z = cwZ:GetFloat()
 GM.CW_Y = cwY:GetFloat()
-GM.CW_X = cwX:GetFloat()
+GM.CW_X = cwX:GetFloat()]]
 
 -- filter cvars callback start
 
@@ -220,15 +222,15 @@ end)
 
 -- weapon cvars callback start 
 
-cvars.AddChangeCallback("gc_cw_z", function(name, old, new)
+GM:registerAutoUpdateConVar("gc_cw_z", function(name, old, new)
 	GAMEMODE.CW_Z = new 
 end)
 
-cvars.AddChangeCallback("gc_cw_y", function(name, old, new)
+GM:registerAutoUpdateConVar("gc_cw_y", function(name, old, new)
 	GAMEMODE.CW_Y = new 
 end)
 
-cvars.AddChangeCallback("gc_cw_x", function(name, old, new)
+GM:registerAutoUpdateConVar("gc_cw_x", function(name, old, new)
 	GAMEMODE.CW_X = new 
 end)
 -- weapon cvars callback end 
@@ -261,7 +263,7 @@ surface.CreateFont("ShowRole", {
 	extended = false,
 	size = 30,
 	weight = 500,
-	blursize = 1,
+	blursize = 0.5,
 	scanlines = 2,
 	antialias = true,
 	underline = false,
@@ -274,7 +276,7 @@ surface.CreateFont("ShowRole", {
 	outline = false,
 })
 
-surface.CreateFont("SpecRound", {
+--[[surface.CreateFont("SpecRound", {
     font = "Prototype", 
 	extended = false,
 	size = 20,
@@ -288,6 +290,25 @@ surface.CreateFont("SpecRound", {
 	symbol = false,
 	rotary = false,
 	shadow = true,
+	additive = false,
+	outline = false ,
+})
+--]]
+
+surface.CreateFont("SpecRoundReplace", {
+    font = "Roboto", 
+	extended = false,
+	size = 20,
+	weight = 500,
+	blursize = 0.1,
+	scanlines = 0,
+	antialias = true,
+	underline = false,
+	italic = false,
+	strikeout = false,
+	symbol = false,
+	rotary = false,
+	shadow = false,
 	additive = false,
 	outline = false ,
 })
@@ -311,72 +332,72 @@ function BlurPanel( panel, layers, density, alpha )
     end
 end
 
-function plr:ShowRole(desc)
-    if text then
-		if timer.Exists("RolePanelRemove") then
-			timer.Remove("RolePanelRemove")
-		end
-		--[[for i = 0,text.size do
+function plr:ShowRoleDebug()
+	if text then
+		for i,v in pairs(self.stringtable or {}) do
 			if timer.Exists("RolePanelAdd"..i) then
 			 timer.Remove("RolePanelAdd"..i)
 		    end
 		end
-		--]]
 		text:Remove()
 		text = nil
 	end
+end 
 
+function plr:ShowRole(desc)
+    self:ShowRoleDebug()
 	text = vgui.Create("RichText")
 	text.stringtable = string.ToTable(desc)
-	text.size = table.Count(text.stringtable)
 	text:SetSize(ScrW() * 0.25,ScrH() * 0.15)
 	text:SetPos(ScrW() * 0.325,ScrH() * 0.1)
 	text:CenterHorizontal()
 	--text:Dock(FILL)
-	text:AppendText(desc)
+	--text:AppendText(desc)
 	text:InsertColorChange(0,0,0,255)
 	text:SetVerticalScrollbarEnabled(false)
     local delay = 0
-	--[[for number,bukva in pairs(text.stringtable) do
-		timer.Create("RolePanelAdd"..number,delay + 0.1,1,function()
+	for number,bukva in pairs(text.stringtable) do
+		timer.Create("RolePanelAdd"..number,delay,1,function()
 			if number == table.Count(text.stringtable) then
-				timer.Create("RolePanelRemove",5,1,function()
-		         if text:IsValid() then
-			      text:Remove()
-			      text = nil 
-		         end
-	            end)
+		         text:AlphaTo(0,2,5,function(data,pnl)
+					if pnl:IsValid() then
+						pnl:Remove()
+						pnl = nil 
+					   end
+				 end)
 			end
 			if text then
-				delay = delay + 0.1
 			    text:AppendText(bukva)
 			    chat.PlaySound() 
 			end
 		end)
+		delay = delay + 0.1
 	end
-	--]]
-	timer.Create("RolePanelRemove",15,1,function()
-		if text:IsValid() then
-		 text:Remove()
-		 text = nil 
-		end
-	end)
 
     function text:Paint(w,h)
 	    BlurPanel( self, 1, 1, self:GetAlpha() )
+		surface.SetDrawColor(255,255,255,self:GetAlpha())
 		surface.DrawOutlinedRect(0,0,w,h,2.5)
 		draw.RoundedBox(0,0,0,w,h,Color(0,0,0,125))
 	end
 
 	function text:PerformLayout()
-		self:SetFGColor(Color(255, 255, 255))
+		self:SetFGColor(Color(212,209,209,self:GetAlpha()))
 		self:SetFontInternal( "ShowRole" )
 	end
+	
+	--[[function text:OnRemove()
+		for i,v in pairs(self.stringtable or {}) do
+			if timer.Exists("RolePanelAdd"..i) then
+			 timer.Remove("RolePanelAdd"..i)
+		    end
+		end
+	end--]]
 end 
 
 
 net.Receive("classinfo",function()
-	local classtable = player_manager.GetPlayerClasses()[player_manager.GetPlayerClass(LocalPlayer())]
+	local classtable = table.Copy(player_manager.GetPlayerClasses()[player_manager.GetPlayerClass(LocalPlayer())])
 	LocalPlayer().plclass = classtable
 	LocalPlayer():ShowRole(classtable.Desc)
 end)
@@ -395,67 +416,92 @@ CustomizableWeaponry.callbacks:addNew("adjustViewmodelPosition", "GroundControl_
 	return targetPos, targetAng
 end)
 
+CustomizableWeaponry.callbacks:addNew("overrideReserveAmmoText", "GroundControl_AmmoTextOverride", function(self)
+	if !GAMEMODE.AmmoTextChanged then return end 
+	local ammoCount = self.Owner:GetAmmoCount(self.Primary.Ammo)
+	local magAmount = math.ceil(ammoCount/self.Primary.ClipSize_Orig)
+	local finalstring = magAmount.." Mag(s)"
+	return Color(255,255,255),finalstring
+end)
+
 net.Receive("killnotification",function()
 	local rolestr = net.ReadString()
 	local nick = net.ReadString()
-	chat.AddText(Color(150, 197, 255, 255), "[GROUND CONTROL] ", Color(255, 255, 255, 255), "Вы убили союзника ",Color(252,207,8),nick,Color(255,255,255),". Роль: ",Color(3,243,23),rolestr,"." )
+	chat.AddText(Color(150, 197, 255, 255), "[GROUND CONTROL] ", Color(255, 255, 255, 255), "Вы убили союзника ",Color(252,207,8),nick,Color(255,255,255),". Роль: ",Color(3,243,23),rolestr,Color(255,255,255),"." )
 end)
 
---[[
+
 
 local PANEL = {}
 
-function PANEL:addItem( convar )
-	local RulePanel = self:Add( "DPanel" )
-	RulePanel.Cvr = convar -- Create container for this item
+function PANEL:addItem( tbl )
+	local RulePanel = self.scroll:Add( "DPanel" )
+	RulePanel.Cvr = tbl.cvar -- Create container for this item
 	RulePanel:Dock( TOP ) -- Dock it
 	RulePanel:DockMargin( 0, 1, 0, 0 ) -- Add 1 pixel spacing in between each item
-	self.cvrs[RulePanel.Cvr] = false
 
-	--table.insert( self.cvrs, RulePanel.Cvr ) -- Add to list of lines
+	table.insert(self.ChildPo,RulePanel)
+
 
 	local ImageCheckBox = RulePanel:Add( "ImageCheckBox" ) -- Create checkbox with image
 	ImageCheckBox:SetMaterial( "icon16/accept.png" ) -- Set its image
 	ImageCheckBox:SetWidth( 24 ) -- Make the check box a bit wider than the image so it looks nicer
 	ImageCheckBox:Dock( LEFT ) -- Dock it
 	ImageCheckBox:SetChecked( false )
-	ImageCheckBox.OnChange = function(val)
-		self.cvrs[RulePanel.Cvr] = val
-	end
 	RulePanel.ImageCheckBox = ImageCheckBox -- Add reference to call
 
 	local DLabel = RulePanel:Add( "DLabel" ) -- Create text
-	DLabel:SetText( convar:GetHelpText() ) -- Set the text
+	DLabel:SetText( tbl.helptext ) -- Set the text
 	DLabel:Dock( FILL ) -- Dock it
 	DLabel:DockMargin( 5, 0, 0, 0 ) -- Move the text to the right a little
 	DLabel:SetTextColor( Color( 0, 0, 0 ) ) -- Set text color to black
 end
 
 function PANEL:Init()
-   self.cvrs = {}
-   self:SetSize(ScrW() * 0.25,ScrH() * 0.25)
+   self.ChildPo = {}
+   self:SetSize(ScrW() * 0.25,ScrH() * 0.375)
    self:Center()
    self:MakePopup()
    self:SetTitle("")
-   for k,v in pairs(GM.NewGolosArgs) do
+   local scroll = self:Add("DScrollPanel")
+   scroll:Dock(FILL)
+   self.scroll = scroll
+   for k,v in pairs(GAMEMODE.NewGolosArgs) do
 	self:addItem(v)
    end
-   timer.Simple(30,function()
+   timer.Create("VotePanelRemove",30,1,function()
 	if IsValid(self) then
-		self:Remove()
+		self:Close()
 	end
    end)
    self.Apply = vgui.Create("DButton",self)
+   self.Apply:SetText("Sent to server")
    self.Apply:Dock(BOTTOM)
+   self.Apply:SetTextColor(GAMEMODE.HUDColors.white)
    self.Apply.DoClick = function()
-	self:Remove()
+	self:Close()
+   end
+   self.Apply.Paint = function(s,w,h)
+	surface.SetDrawColor(192,190,190)
+	surface.DrawOutlinedRect(0,0,w,h,1)
    end
 end 
 
-function PANEL:OnRemove()
+function PANEL:OnClose()
+	if timer.Exists("VotePanelRemove") then
+		timer.Remove("VotePanelRemove")
+	end
+	local cvarsTbl = {}
+	for k,v in pairs(self.ChildPo) do
+		cvarsTbl[v.Cvr] = v.ImageCheckBox:GetChecked() == true
+	end
 	net.Start("NewVote_Get")
-	net.WriteTable(self.cvrs)
+	net.WriteTable(cvarsTbl)
 	net.SendToServer()
 end
 
-vgui.Register("NewVote",PANEL,"DFrame")]]
+vgui.Register("NewVotePanel",PANEL,"DFrame")
+
+net.Receive("NewVote_Start",function()
+	vgui.Create("NewVotePanel")
+end)

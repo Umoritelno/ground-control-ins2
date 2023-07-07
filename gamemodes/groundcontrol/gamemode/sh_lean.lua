@@ -1,3 +1,4 @@
+AddCSLuaFile()
 local LeanOffset = 16
 
 local function CreateReplConVar(cvarname, cvarvalue, description)
@@ -10,13 +11,13 @@ local cv_autolean = CreateReplConVar("sv_tfa_lean_automatic", 1, "Automatically 
 if CLIENT then
     local lean1 = CreateClientConVar("gc_lean_left","81",true,true,"Button for left lean",1,159)
     local lean2 = CreateClientConVar("gc_lean_right","82",true,true,"Button for right lean",1,159)
-    LocalPlayer():SetNWInt("leanleftKey",lean1:GetInt())
-    LocalPlayer():SetNWInt("leanrightKey",lean2:GetInt())
+    --LocalPlayer():SetNWInt("leanleftKey",lean1:GetInt())
+    --LocalPlayer():SetNWInt("leanrightKey",lean2:GetInt())
 
-    cvars.AddChangeCallback("gc_lean_left",function(cnv,old,new)
+    GM:registerAutoUpdateConVar("gc_lean_left",function(cnv,old,new)
         LocalPlayer():SetNWInt("leanleftKey",new)
     end)
-    cvars.AddChangeCallback("gc_lean_right",function(cnv,old,new)
+    GM:registerAutoUpdateConVar("gc_lean_right",function(cnv,old,new)
         LocalPlayer():SetNWInt("leanrightKey",new)
     end)
 end
@@ -85,6 +86,7 @@ pcall(MetaInitLean)
 hook.Add("PlayerSpawn", "TFALeanPlayerSpawn", function(ply)
 	ply:SetNW2Int("TFALean", 0)
 	ply.TFALean = 0
+	ply.LeanCD = 0
 end)
 
 --[[Lean Calculations]]
@@ -142,11 +144,12 @@ function TFALeanModel()
 end
 
 hook.Add("Move", "TFALeanThink", function(ply)
+	if not ply:Alive() then return end 
 	targ = (ply.leftBool and -1 or ply.rightBool and 1 or 0)
-	--autolean here
+	--autolean here(No auto lean here)
 	local wep = ply:GetActiveWeapon()
 
-	if targ == 0 and cv_autolean:GetBool() and ((wep.GetIronSights and wep:GetIronSights()) or (wep.GetIronsights and wep:GetIronsights())) then
+	--[[if targ == 0 and cv_autolean:GetBool() and ((wep.GetIronSights and wep:GetIronSights()) or (wep.GetIronsights and wep:GetIronsights())) then
 		local headpos = ply.LeanGetShootPosOld and ply:LeanGetShootPosOld() or ply:GetShootPos()
 		traceData.start = headpos
 		traceData.endpos = traceData.start + ply:EyeAngles():Forward() * autoLeanDist
@@ -167,8 +170,13 @@ hook.Add("Move", "TFALeanThink", function(ply)
 			end
 		end
 	end
-
-	ply:SetNW2Int("TFALean", targ)
+	--]]
+    if !GAMEMODE.LeanEnabled then
+		ply:SetNW2Int("TFALean", 0)
+		return 
+	else 
+		ply:SetNW2Int("TFALean", targ)
+	end
 
 	if SERVER then
 		for _, v in ipairs(player.GetAll()) do
@@ -178,21 +186,41 @@ hook.Add("Move", "TFALeanThink", function(ply)
 end)
 
 hook.Add( "PlayerButtonUp", "ButtonUpLeanController", function( ply, button )
-	if button == ply:GetNWInt("leanleftKey",81) then
+	--[[if button == ply:GetNWInt("leanleftKey",81) then
         ply.leftBool = false 
     end
     if button == ply:GetNWInt("leanrightKey",82) then
         ply.rightBool = false
     end
+	--]]
 end)
 
 hook.Add( "PlayerButtonDown", "ButtonUpLeanController", function( ply, button )
-	if button == ply:GetNWInt("leanleftKey",81) then
+	--[[if button == ply:GetNWInt("leanleftKey",81) then
         ply.leftBool = true 
     end
     if button == ply:GetNWInt("leanrightKey",82) then
         ply.rightBool = true
-    end
+    end--]]
+	if !GAMEMODE.LeanEnabled then return end 
+	if (ply.LeanCD or 0) <= CurTime() then
+		ply.LeanCD = CurTime() + 1.75
+		if button == ply:GetNWInt("leanleftKey",81) then
+			if ply.leftBool == true then
+				ply.leftBool = false 
+			else 
+				ply.rightBool = false 
+				ply.leftBool = true 
+			end
+		elseif button == ply:GetNWInt("leanrightKey",82) then 
+			if ply.rightBool == true then
+				ply.rightBool = false 
+			else 
+				ply.leftBool = false 
+				ply.rightBool = true 
+			end
+		end
+	end
 end)
 
 if SERVER and not game.SinglePlayer() then

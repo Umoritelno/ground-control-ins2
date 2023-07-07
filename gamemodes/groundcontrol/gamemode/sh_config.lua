@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 local pl = FindMetaTable("Player")
 
-function pl:GetSteamPData( name, default )
+function pl:GetSteamIDPData( name, default )
 
 	name = Format( "%s[%s]", self:SteamID(), name )
 	local val = sql.QueryValue( "SELECT value FROM playerpdata WHERE infoid = " .. SQLStr( name ) .. " LIMIT 1" )
@@ -12,14 +12,14 @@ function pl:GetSteamPData( name, default )
 
 end
 
-function pl:SetSteamPData( name, value )
+function pl:SetSteamIDPData( name, value )
 
 	name = Format( "%s[%s]", self:SteamID(), name )
 	return sql.Query( "REPLACE INTO playerpdata ( infoid, value ) VALUES ( " .. SQLStr( name ) .. ", " .. SQLStr( value ) .. " )" ) ~= false
 
 end
 
-function pl:RemoveSteamPData( name )
+function pl:RemoveSteamIDPData( name )
 
 	name = Format( "%s[%s]", self:SteamID(), name )
 	return sql.Query( "DELETE FROM playerpdata WHERE infoid = " .. SQLStr( name ) ) ~= false
@@ -62,7 +62,17 @@ function GM:parseARC9Weapon(data)
     return output
 end
 
-GM.NewGolosArgs = {"gc_roles_enable","gc_crippling"}
+GM.NewGolosArgs = {
+{helptext = "Enable class system?",cvar = "gc_roles_enable"},
+{helptext = "Enable crippling mechanic?",cvar = "gc_crippling"},
+{helptext = "Enable NVGs?",cvar = "gc_nvg_enable"},
+{helptext = "Draw ammo for CW 2.0 weapon more realistic(or stupid)",cvar = "gc_ammotextOverride_enable"},
+{helptext = "Enable special rounds?",cvar = "gc_specround_enable"},
+{helptext = "Enable abilities for classes?(Wont work without classes enable)",cvar = "gc_abil_enable"}, 
+{helptext = "Enable team damage?",cvar = "gc_team_damage"},
+{helptext = "Enable leaning?",cvar = "gc_lean_enable"},
+{helptext = "Enable stun mechanic?",cvar = "gc_stun_enable"},
+} --
 
 --[[
 	if you wish to setup specific things for the gamemode SHARED (clientside and serverside), you should do it here

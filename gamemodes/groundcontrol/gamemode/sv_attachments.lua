@@ -135,23 +135,23 @@ function PLAYER:sendUnlockedAttachmentSlots()
 end
 
 function PLAYER:loadUnlockedAttachmentSlots()
-	local slots = self:GetPData("GroundControlUnlockedAttachmentSlots") or 0
+	local slots = self:GetSteamIDPData("GroundControlUnlockedAttachmentSlots") or 0
 	
 	self.unlockedAttachmentSlots = tonumber(slots)
 end
 
 function PLAYER:saveUnlockedAttachmentSlots()
-	self:SetPData("GroundControlUnlockedAttachmentSlots", self.unlockedAttachmentSlots)
+	self:SetSteamIDPData("GroundControlUnlockedAttachmentSlots", self.unlockedAttachmentSlots)
 end
 
 function PLAYER:loadExperience()
-	local exp = self:GetPData("GroundControlExperience") or 0
+	local exp = self:GetSteamIDPData("GroundControlExperience") or 0
 	
 	self.experience = tonumber(exp)
 end
 
 function PLAYER:saveExperience()
-	self:SetPData("GroundControlExperience", self.experience)
+	self:SetSteamIDPData("GroundControlExperience", self.experience)
 end
 
 function PLAYER:sendExperience()

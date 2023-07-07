@@ -29,7 +29,7 @@ function PLAYER:setStamina(amount, dontSend)
 end
 
 function PLAYER:resetStaminaData()
-	self:setStamina(GAMEMODE.InitialStamina)
+	self:setStamina((self.plclass and self.plclass.MaxStamina) or GAMEMODE.MaxStamina)
 	self.staminaDrainTime = 0
 	self.staminaRegenTime = 0
 	self.staminaDrainMultiplier = 1
@@ -54,7 +54,7 @@ function PLAYER:getMaxStaminaDecreaseFromHealth()
 end
 
 function PLAYER:getMaxStamina()
-	return GAMEMODE.MaxStamina - self:getMaxStaminaDecreaseFromHealth()
+	return (self.plclass and self.plclass.MaxStamina) or GAMEMODE.MaxStamina - self:getMaxStaminaDecreaseFromHealth()
 end
 
 if SERVER then

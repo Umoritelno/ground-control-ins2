@@ -174,6 +174,9 @@ function GM:endRound(winningTeam)
 			self:startVoteMap()
 		end
 	else
+		if self.RoundsPlayed == self.RoundsPerMap - 3 then
+			self:StartNewVote()
+		end
 		if self.RoundsPlayed == self.RoundsPerMap - 2 then
 			self:StartWeaponBaseVote()
 		end
@@ -344,7 +347,6 @@ else
 	net.Start("SpecRoundUpdate")
 	net.WriteInt(-1,32)
 	net.WriteInt(self.GlobalSpecRound,31)
-	net.WriteBool(true)
 	net.Broadcast()
 end 
 

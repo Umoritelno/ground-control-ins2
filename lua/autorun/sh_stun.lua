@@ -10,3 +10,5 @@ for i = 1,5 do
         vignetteTable[i] = Material(path)
     end
 end
+
+maxStun = 100

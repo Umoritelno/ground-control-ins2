@@ -3,7 +3,7 @@
 local plym = FindMetaTable("Player")
 util.AddNetworkString("AbilityHUD")
 util.AddNetworkString("HUDRemove")
-util.AddNetworkString("HUDDestroy")
+util.AddNetworkString("AbilityDebug")
 util.AddNetworkString("AbilityUse")
 util.AddNetworkString("InitPost")
 util.AddNetworkString("ClientUse")
@@ -12,10 +12,12 @@ util.AddNetworkString("ActiveState")
 
 function AbilityDebug(ply)
     for k,v in pairs(debugtable) do
-        if timer.Exists(v..ply:EntIndex()) then
-            timer.Remove(v..ply:EntIndex())
+        if timer.Exists(v..ply:SteamID64()) then
+            timer.Remove(v..ply:SteamID64())
         end
     end
+    net.Start("AbilityDebug")
+    net.Send(ply)
 end
 
 function plym:GiveAbility(int) 
@@ -63,7 +65,7 @@ function plym:UseAbilityServer()
         net.Start("ActiveState")
         net.WriteBool(true)
         net.Send(self)
-        timer.Create("AbilityUse"..self:EntIndex(),origAbility.usetime,1,function()
+        timer.Create("AbilityUse"..self:SteamID64(),origAbility.usetime,1,function()
             self.Ability.active = false 
             net.Start("ActiveState")
             net.WriteBool(false)

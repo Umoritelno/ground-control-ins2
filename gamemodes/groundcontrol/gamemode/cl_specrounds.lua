@@ -15,13 +15,6 @@ end )
 net.Receive("SpecRoundUpdate",function()
     local roundid = net.ReadInt(32)
     local roundcount = net.ReadInt(31)
-    local serverbool = net.ReadBool()
-
-    if serverbool then
-        GAMEMODE.specRoundEnabled = false
-    else 
-        GAMEMODE.specRoundEnabled = true
-    end
 
     GAMEMODE.GlobalSpecRound = roundcount
 

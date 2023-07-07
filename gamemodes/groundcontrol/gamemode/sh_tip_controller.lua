@@ -74,7 +74,7 @@ if CLIENT then
 	function GM.tipController:displayEvent(event)
 		self.shownEvents[event] = (self.shownEvents[event] or 0) + 1
 		local eventData = self.events[event]
-		local text = eventData.text
+		local text = GetCurLanguage().tips[event] or "Error" -- eventData.text
 		
 		if eventData.formatFunc then
 			text = eventData.formatFunc(text)

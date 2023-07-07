@@ -1,24 +1,28 @@
 print("Shared loaded!")
 AddCSLuaFile("includes/circles.lua") -- add squid module(thx)
 abilities = {}
-nets = {}
-debugtable = {
-    "BerserkKD",
-    "SkanDeath",
-    "doorblockdeath",
-    "DisquiseKD",
-    "AbilityCD",
-    "SilentStepTimer",
-    "AbilityUse",
-}
+if SERVER then 
+    debugtable = {
+        "AbilityUse",
+    }
+end 
 
-function AddSkill(data) 
-    local name = data.name 
-    data.id = table.Count(abilities) + 1
-    abilities[table.Count(abilities) + 1] = data 
+local curMap = string.lower(game.GetMap())
+
+function AddSkill(data)
+    local count = #abilities 
+    data.id = count + 1
+    if (data.whitelist and !data.whitelist[curMap]) or (data.blacklist and data.blacklist[curMap]) then
+        return 
+    end
+    abilities[count + 1] = data 
     if SERVER then
-        for key,nt in pairs(data.nets) do
+        for key,nt in pairs(data.nets or {}) do
             util.AddNetworkString(nt)
+        end
+
+        for i,tim in pairs(data.timers or {}) do
+            debugtable[#debugtable + 1] = tim 
         end
     end
  end 
@@ -33,7 +37,7 @@ function AddSkill(data)
                   "SkanDeath"},
          use = function(ply)
              net.Start("SkanAbility")
-             net.Send(ply)
+             net.Send(team.GetPlayers(ply:Team()))
          end,
          death = function(ply,bool)
             net.Start("SkanDeath")
@@ -78,6 +82,7 @@ AddSkill(
      {   name = "DoorBlock",
          icon = "doorblock/doorblock.jpg",
          description = "Вы блокируете дверь перед собой",
+         whitelist = {"cs_assault"},
          cooldown = 30,
          usetime = 10,
          nets = {},
@@ -100,6 +105,11 @@ AddSkill(
                     ent:Fire("Unlock")
                    end)
                  else 
+                    ply.Ability.PlyCooldown = CurTime() + 5
+                    net.Start("AbilityUse")
+                    net.WriteFloat(5)
+                    net.WriteFloat(0)
+                    net.Send(ply)
                     print("Я не могу дотянуться")
                  end 
                 else
@@ -135,16 +145,17 @@ AddSkill(
          cooldown = 90,
          usetime = 15,
          nets = {},
+         timers = {"BerserkKD"},
          active = false,
          use = function(ply)
             ply:ScreenFade( SCREENFADE.IN, Color( 255, 0, 0, 120), 15, 0 )
-            timer.Create("BerserkKD"..ply:EntIndex(),15,1,function()
+            timer.Create("BerserkKD"..ply:SteamID64(),15,1,function()
                 ply:Kill()
             end)
          end,
          death = function(ply,bool)
-            if timer.Exists("BerserkKD"..ply:EntIndex()) then
-                timer.Remove("BerserkKD"..ply:EntIndex())
+            if timer.Exists("BerserkKD"..ply:SteamID64()) then
+                timer.Remove("BerserkKD"..ply:SteamID64())
             end
          end,
          customUse = false,
@@ -158,18 +169,19 @@ AddSkill(
          cooldown = 90,
          usetime = 30,
          nets = {"Disquise"},
+         timers = {"DisquiseKD"},
          models = {
-            [2] = {
-            "models/player/riot.mdl",
-            "models/player/swat.mdl",
-            "models/player/urban.mdl",
-            "models/player/gasmask.mdl"
-        },
         [1] = {
             "models/player/leet.mdl",
             "models/player/phoenix.mdl",
             "models/player/guerilla.mdl",
             "models/player/arctic.mdl",
+        },
+        [2] = {
+            "models/player/riot.mdl",
+            "models/player/swat.mdl",
+            "models/player/urban.mdl",
+            "models/player/gasmask.mdl"
         },
         [3] = {
             "models/player/group01/male_03.mdl",
@@ -183,14 +195,11 @@ AddSkill(
             else 
                 ply:SetModel(ply.Ability.models[ply:Team()][math.random(1,table.Count(ply.Ability.models[ply:Team()]))])
             end
-            timer.Create("DisquiseKD"..ply:EntIndex(),30,1,function()
+            timer.Create("DisquiseKD"..ply:SteamID64(),30,1,function()
                 ply:SetModel(ply.defaultModel)
             end)
          end,
          death = function(ply,bool)
-            if timer.Exists("DisquiseKD"..ply:EntIndex()) then
-                 timer.Remove("DisquiseKD"..ply:EntIndex())
-            end
          end,
          customUse = false,
      }
