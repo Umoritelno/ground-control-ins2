@@ -160,8 +160,10 @@ function PLAYER:sendExperience()
 	umsg.End()
 end
 
-function PLAYER:addExperience(amount, event)
-	self:SetNWInt("GC_SCORE", self:GetNWInt("GC_SCORE") + amount)
+function PLAYER:addExperience(amount, event,silent)
+	if !silent then
+		self:SetNWInt("GC_SCORE", self:GetNWInt("GC_SCORE") + amount)
+	end
 	
 	if not self:canUnlockMoreSlots() then
 		return

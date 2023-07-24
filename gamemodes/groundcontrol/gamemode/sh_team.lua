@@ -78,6 +78,9 @@ function GM:attemptJoinTeam(ply, targetTeam)
 	--	SendUserMessage("GC_RETRYTEAMSELECTION", ply)
 	--	return false
 	--end
+	if ply:Team() != TEAM_SPECTATOR then
+		ply:RoleReRoll()
+	end
 	
 	ply:joinTeam(targetTeam)
 	

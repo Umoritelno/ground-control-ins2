@@ -39,11 +39,11 @@ GM:registerEvent("TOOK_DRUGS", "Took drugs")
 GM:registerEvent("BLEED_OUT_KILL", "Enemy bled out")
 GM:registerEvent("TEAMMATE_UNCRIPPLED", "Teammate uncrippled")
 GM:registerEvent("TEAMMATE_HEALED", "Teammate healed")
+GM:registerEvent("ACHIV_EARNED","Achievment earned")
 
---[[if SERVER then
+if SERVER then
 	util.AddNetworkString("GC_EVENT")
 end
---]]
 
 GM.EventData = {}
 

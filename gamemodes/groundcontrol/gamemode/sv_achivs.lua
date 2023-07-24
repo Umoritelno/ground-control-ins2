@@ -4,8 +4,8 @@ local PLAYER = FindMetaTable("Player")
 util.AddNetworkString("GetAchiv")
 util.AddNetworkString("AchievementsMaster")
 util.AddNetworkString("AchievementsProgress")
-sql.Query("CREATE TABLE IF NOT EXISTS lhns_achievements_onetime (SteamID STRING, AchievementID STRING)")
-sql.Query("CREATE TABLE IF NOT EXISTS lhns_achievements_progress (SteamID STRING, AchievementID STRING, Progress INT)")
+sql.Query("CREATE TABLE IF NOT EXISTS gc_achievements_onetime (SteamID STRING, AchievementID STRING)")
+sql.Query("CREATE TABLE IF NOT EXISTS gc_achievements_progress (SteamID STRING, AchievementID STRING, Progress INT)")
 
 function GM:PlayerNotifyAchievement(ply, id)
     net.Start("GetAchiv")
@@ -22,7 +22,7 @@ function PLAYER:ProcessAchievements()
 
     -- Get from SQL
     for id, ach in pairs(GAMEMODE.Achievements) do
-        local result = sql.Query("SELECT * FROM lhns_achievements_" .. (ach.Goal and "progress" or "onetime") .. " WHERE SteamID = '" .. self:SteamID() .. "' AND AchievementID = '" .. id .. "'")
+        local result = sql.Query("SELECT * FROM gc_achievements_" .. (ach.Goal and "progress" or "onetime") .. " WHERE SteamID = '" .. self:SteamID() .. "' AND AchievementID = '" .. id .. "'")
 
         -- Result will return nil if there's no sql entry
         if result then
@@ -68,7 +68,7 @@ function PLAYER:GiveAchievement(id)
     -- Check if achievement was already earned
     if self.Achs[id] then return end
     -- Insert into SQL
-    sql.Query("INSERT INTO lhns_achievements_onetime VALUES('" .. self:SteamID() .. "', '" .. id .. "')")
+    sql.Query("INSERT INTO gc_achievements_onetime VALUES('" .. self:SteamID() .. "', '" .. id .. "')")
     -- Process achievements
     self:ProcessAchievements()
     -- Notify
@@ -88,9 +88,9 @@ function PLAYER:GiveAchievementProgress(id, count)
 
     -- Update or insert values
     if self.Achs[id] > 0 then
-        sql.Query("UPDATE lhns_achievements_progress SET SteamID = SteamID, AchievementID = AchievementID, Progress = " .. math.Clamp(self.Achs[id] + count, 0, GAMEMODE.Achievements[id].Goal) .. " WHERE SteamID = '" .. self:SteamID() .. "' AND AchievementID = '" .. id .. "'")
+        sql.Query("UPDATE gc_achievements_progress SET SteamID = SteamID, AchievementID = AchievementID, Progress = " .. math.Clamp(self.Achs[id] + count, 0, GAMEMODE.Achievements[id].Goal) .. " WHERE SteamID = '" .. self:SteamID() .. "' AND AchievementID = '" .. id .. "'")
     else
-        sql.Query("INSERT INTO lhns_achievements_progress VALUES('" .. self:SteamID() .. "', '" .. id .. "', " .. math.Clamp(count, 0, GAMEMODE.Achievements[id].Goal) .. ")")
+        sql.Query("INSERT INTO gc_achievements_progress VALUES('" .. self:SteamID() .. "', '" .. id .. "', " .. math.Clamp(count, 0, GAMEMODE.Achievements[id].Goal) .. ")")
     end
 
     -- Cache
@@ -108,4 +108,11 @@ function PLAYER:GiveAchievementProgress(id, count)
     -- Update
     self:ProcessAchievements()
 end
+
+hook.Add("AchievementEarned","GroundControl_AchievmentEarned",function(ply,id)
+    local reward = GAMEMODE.Achievements[id].Reward
+    ply:addCash(reward.cash)
+    ply:addExperience(reward.exp,nil,true)
+    GAMEMODE:sendEvent(ply, "ACHIV_EARNED", reward)
+end)
 
