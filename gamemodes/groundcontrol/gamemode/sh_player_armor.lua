@@ -60,6 +60,12 @@ function GM:getArmorWeight(category, id)
 	return data and data.weight or 0
 end
 
+function GM:getHelmetStunReduce(id)
+	local data = self.Armor["helmet"][id]
+	
+	return data and data.stunReduce or 1
+end
+
 -------------------------------------------
 -- vests
 -------------------------------------------
@@ -123,6 +129,7 @@ steelHelmet.id = "steel_helmet"
 steelHelmet.displayName = "Steel Helmet"
 steelHelmet.weight = 1.2 -- in KG
 steelHelmet.protection = 10
+steelHelmet.stunReduce = 0.8
 steelHelmet.protectionAreas = {[HITGROUP_HEAD] = true}
 steelHelmet.protectionDeltaToDamageDecrease = 0.008
 steelHelmet.damageDecrease = 0.5 -- up to .45 acp
@@ -139,6 +146,7 @@ kevlarHelmet.id = "kevlar_helmet"
 kevlarHelmet.displayName = "ACH Helmet"
 kevlarHelmet.weight = 1.35 -- in KG
 kevlarHelmet.protection = 14 -- up to .44 magnum
+kevlarHelmet.stunReduce = 0.9
 kevlarHelmet.protectionAreas = {[HITGROUP_HEAD] = true}
 kevlarHelmet.protectionDeltaToDamageDecrease = 0.01
 kevlarHelmet.damageDecrease = 0.5

@@ -9,6 +9,10 @@ local pl = FindMetaTable("Player")
 
 function pl:AddStun(stun,regendelay)
     if not self.stun then return end 
+    local helmetProt = GAMEMODE:getHelmetStunReduce(self:getDesiredHelmet())
+    if stun > 0 then
+        stun = stun * helmetProt
+    end
     self.stun.stunamount = math.Clamp(self.stun.stunamount + stun,0,maxStun)
     self:SetNWFloat("stunamount",self.stun.stunamount)
     if regendelay and self.stun.regendelay - CurTime() <= regendelay then
