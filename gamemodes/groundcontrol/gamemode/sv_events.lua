@@ -5,8 +5,7 @@ function GM:sendEvent(ply, event, additionalData)
 	self.EventData.eventId = eventData.eventId
 	self.EventData.eventData = additionalData or self.EmptyTable
 	
-	--[[net.Start("GC_EVENT")
+	net.Start("GC_EVENT")
 		net.WriteTable(self.EventData)
 	net.Send(ply)
-	--]]
 end

@@ -21,6 +21,32 @@ function pl:ResetClassInfo()
    net.Send(self)
 end 
 
+function GM:ReRollRoles(tbl,role,replaceRole,amount)
+	local index = 0 
+	for k,v in pairs(tbl) do
+	 if index >= amount then
+		 break 
+	 end
+	 if !v:Alive() then 
+        continue 
+	 end 
+	   if player_manager.GetPlayerClass(v) == replaceRole then
+		  player_manager.SetPlayerClass(replaceRole)
+		  v:ResetClassInfo()
+		  index = index + 1
+	   end
+	end
+ end 
+ 
+ function pl:RoleReRoll() -- when player disconnecting or changing team
+	 local rl = player_manager.GetPlayerClass(self)
+	if rl == "cmd" then
+	   GAMEMODE:ReRollRoles(team.GetPlayers(self:Team()),"soldier","cmd",1)
+	elseif rl == "spec" then
+	   GAMEMODE:ReRollRoles(team.GetPlayers(self:Team()),"soldier","spec",1)
+	end
+ end 
+
 
 util.AddNetworkString("NewVote_Get")
 util.AddNetworkString("NewVote_Start")
@@ -105,7 +131,7 @@ net.Receive("NewVote_Get",function(len,ply)
 end)
 
 hook.Add("PlayerDisconnected","NewVoteDisconnect",function(ply)
-	if !self.NewVoteOnline then return end 
+	if !GAMEMODE.NewVoteOnline then return end 
 	if GAMEMODE.NewVotedPlayers[ply:SteamID64()] == false then
 		GAMEMODE.NewVotedPlayers[ply:SteamID64()] = nil 
 		GAMEMODE.VotePlayersCount = GAMEMODE.VotePlayersCount - 1

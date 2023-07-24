@@ -603,7 +603,7 @@ function OpenMainMenu()
           panel.Paint = function(me,w,h)
             draw.RoundedBox(0,0,0,w,h,Color(63,59,59))
             --surface.DrawOutlinedRect(0,0,w,h,1.1)
-            draw.SimpleText(ach.Name,"AchievsTitle",w * 0.5,h * 0.25,Color(255,255,255),TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+            draw.SimpleText(ach.Name,"AchievsTitle",w * 0.5,h * 0.25,Color(255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
             if panel.Done then
                 draw.SimpleText("+","MMSimple",w * 0.1,h / 2,Color(255,255,255),TEXT_ALIGN_CENTER,TEXT_ALIGN_CENTER)
             end

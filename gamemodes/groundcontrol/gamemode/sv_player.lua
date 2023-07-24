@@ -673,6 +673,10 @@ function GM:PlayerDisconnected(ply)
 	if self.curGametype.playerDisconnected then
 		self.curGametype:playerDisconnected(ply)
 	end
+
+	if self:isPreparationPeriod() and GAMEMODE.rolesenable then
+		ply:RoleReRoll()
+	end
 	
 	self:removePlayerObjectFromReportedDeadList(ply)
 	

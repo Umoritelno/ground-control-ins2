@@ -7,6 +7,9 @@ function GM:DisplayEvent(ply, data)
 	local addData = data.eventData
 	
 	local eventData = self:getEventById(id)
+	 if eventData.eventName == "ENEMY_KILLED" or eventData.eventName == "KILL_ASSIST" or eventData.eventName == "CLOSE_CALL" or eventData.eventName == "SPOT_KILL" or eventData.eventName == "HEADSHOT" then
+		return -- one man army will be displayed
+	 end
 	event.topText = eventData.display
 	event.displayTime = 2 + math.min(3, #self.EventElements) * 0.5
 	event.alpha = 0
@@ -45,9 +48,8 @@ function GM:AddTextToEvent(eventData, text)
 	eventData.bottomColor = self.HUDColors.green
 end
 
---[[net.Receive("GC_EVENT", function(a, b)
+net.Receive("GC_EVENT", function(a, b)
 	local ply = LocalPlayer()
 	local data = net.ReadTable()
 	GAMEMODE:DisplayEvent(ply, data)
 end)
---]]
