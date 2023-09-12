@@ -22,6 +22,8 @@ end
 
 function plym:GiveAbility(skillid) 
     self:DeathAbility(true)
+    local abilreqtbl = GAMEMODE:getGametype().AbilityGive
+    if abilreqtbl and !abilreqtbl[self:Team()] then return end
     if !self:Alive() then return end 
     if abilities[skillid] != nil then
        local origAbility = table.Copy(abilities[skillid])

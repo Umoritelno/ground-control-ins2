@@ -863,7 +863,7 @@ ghettoDrugBust.blueGuyPer = 2.3 -- for every 3rd player, 1 will be a red dude
 ghettoDrugBust.blueGuyPerFists = 4.5
 ghettoDrugBust.chancePerTimesNotCop = 10 -- per every time someone was spawned in as a ghetto team member, their chance to spawn as a cop next round increases by this much %
 ghettoDrugBust.ClassGive = {[ghettoDrugBust.regularTeam] = false,[ghettoDrugBust.loadoutTeam] = true}
-ghettoDrugBust.AbilityGive = {[ghettoDrugBust.regularTeam] = true,[ghettoDrugBust.loadoutTeam] = true }
+ghettoDrugBust.AbilityGive = {[ghettoDrugBust.regularTeam] = false ,[ghettoDrugBust.loadoutTeam] = true}
 ghettoDrugBust.voiceOverride = {[ghettoDrugBust.regularTeam] = "ghetto"}
 ghettoDrugBust.objectives = {}
 ghettoDrugBust.teamTracking = {} -- table where object is player, value is amount of times said player was not on the loadout team
