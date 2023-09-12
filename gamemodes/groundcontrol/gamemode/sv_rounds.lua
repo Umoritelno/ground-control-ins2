@@ -266,6 +266,7 @@ function GM:startGameTypeVote()
 end 
 
 function GM:StartWeaponBaseVote()
+	if self.wepbaseLocked then return end 
     local bases = {}
 	for num,base in pairs(GAMEMODE.WepBases) do
 		table.insert(bases,base.name)
@@ -281,7 +282,7 @@ function GM:StartWeaponBaseVote()
 			umsg.String(text)
 		umsg.End()
 	end, self.VoteBaseID)
-
+    
 end 
 
 function GM:specCount(num) 
@@ -323,7 +324,7 @@ function GM:restartRound()
 	self:setupRoundPreparation()
 
 
-if self.specRoundEnabled then 
+if GetGlobalBool("SpecRoundEnabled") then 
 	self.GlobalSpecRound = self.GlobalSpecRound - 1
 
 	if self.GlobalSpecRound <= -1 then
@@ -354,11 +355,16 @@ end
 	--print(self:GetSpecRound())
 
 --end
-if self.rolesenable then
-	for k,v in pairs(team.GetPlayers(1002)) do
+if GetGlobalBool("RolesEnabled") then
+	for k,v in pairs(team.GetPlayers(TEAM_SPECTATOR)) do
 		player_manager.SetPlayerClass( v, "soldier" )
 	end
 	for i = 1,2 do
+		local classcheck = self:getGametype().ClassGive
+		local classoverride
+		if classcheck and !classcheck[i] then
+			classoverride = "soldier"
+		end
 		local maxcommander = 1
 		local maxspec = self:specCount(team.NumPlayers(i))
 		local maxdemo = 1 
@@ -366,6 +372,10 @@ if self.rolesenable then
 		local specamount = 0
 		local commanderamount = 0
 		for k,v in RandomPairs(team.GetPlayers(i)) do
+			if classoverride then
+				player_manager.SetPlayerClass( v, classoverride )
+				continue 
+			end
 			local randomdemo = math.random(1,7)
 			if maxcommander > commanderamount  then
 				player_manager.SetPlayerClass( v, "cmd" )
@@ -397,7 +407,6 @@ end
 --SendUserMessage("GC_NEW_ROUND")
 
 --self:resetKillcountData()
-
 	for key, obj in pairs(player.GetAll()) do
 		obj:Spawn()
 	end

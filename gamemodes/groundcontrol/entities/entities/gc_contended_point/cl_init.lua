@@ -15,6 +15,7 @@ ENT.colorByTeam = {[TEAM_RED] = Color(124, 185, 255, 255),
 
 function ENT:drawHUD()
 	local pos = self:GetPos()
+	local lang = GetCurLanguage().gametypes.Drugbust
 	pos.z = pos.z + 32
 	
 	local coords = pos:ToScreen()
@@ -45,7 +46,7 @@ function ENT:drawHUD()
 		local white, black = GAMEMODE.HUDColors.white, GAMEMODE.HUDColors.black
 		white.a = 255 * alpha
 		black.a = 255 * alpha
-		draw.ShadowText("Capture", "CW_HUD14", coords.x, coords.y - 16, white, black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.ShadowText(lang["Capture"], "CW_HUD14", coords.x, coords.y - 16, white, black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		white.a = 255
 		black.a = 255
 	end

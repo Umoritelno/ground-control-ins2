@@ -588,7 +588,55 @@ function GM:postInitEntity()
 	m9.weight = 1.105
 	m9.penetration = 12
 	m9.stun = 1.1
-    self:registerSecondaryWeapon(m9)
+    self:registerSecondaryWeapon(m9) -- tfa_ins2_fnp45
+
+	local m45 = {}
+	m45.weaponClass = "tfa_ins2_colt_m45"
+	m45.weight = 1.3
+	m45.penetration = 13.1
+	m45.stun = 1.25
+
+    self:registerSecondaryWeapon(m45)
+
+	local fnp = {}
+	fnp.weaponClass = "tfa_ins2_fnp45"
+	fnp.weight = 1
+	fnp.penetration = 11.7
+	fnp.stun = 0.9
+
+    self:registerSecondaryWeapon(fnp)
+
+	local rev = {}
+	rev.weaponClass = "tfa_ins2_mr96"
+	rev.weight = 1.7
+	rev.penetration = 14.35
+	rev.stun = 2
+
+    self:registerSecondaryWeapon(rev)
+
+	local pernach = {}
+	pernach.weaponClass = "tfa_ins2_ots_33_pernach"
+	pernach.weight = 1.4
+	pernach.penetration = 10.5
+	pernach.stun = 0.5
+
+    self:registerSecondaryWeapon(pernach)
+
+	local bigrev = {}
+	bigrev.weaponClass = "tfa_ins2_s&w_500"
+	bigrev.weight = 2.1
+	bigrev.penetration = 17
+	bigrev.stun = 4
+
+    self:registerSecondaryWeapon(bigrev)
+
+	local walthersdick = {}
+	walthersdick.weaponClass = "tfa_ins2_walther_p99"
+	walthersdick.weight = 1
+	walthersdick.penetration = 11.1
+	walthersdick.stun = 1
+
+    self:registerSecondaryWeapon(walthersdick)
 
 	local rook = {}
 	rook.weaponClass = "devl_rook"
@@ -1134,7 +1182,8 @@ function GM:postInitEntity()
 	end
 	
 	self:registerCaliberWeight("7.62x51MM", 25.4)
-	self:registerCaliberWeight("7.62x39MM", 16.3)
+	self:registerCaliberWeight("7.62x39MM", 16.3) --
+	self:registerCaliberWeight("7.62x54MMR", 36.7)
 	self:registerCaliberWeight("5.45x39MM", 10.7)
 	self:registerCaliberWeight("5.56x45MM", 11.5)
 	self:registerCaliberWeight("9x19MM", 8.03)
@@ -1148,6 +1197,17 @@ function GM:postInitEntity()
 	self:registerCaliberWeight("5.7x28MM", 6.15)
 	self:registerCaliberWeight("9x18MM", 8)
 	self:registerCaliberWeight("4.6x30MM", 6.5)
+	self:registerCaliberWeight("357", 15.5)
+	self:registerCaliberWeight("5.56x45mm", 11.5)
+	self:registerCaliberWeight(".300", 30.1)
+	self:registerCaliberWeight("smg1", 9.9)
+	self:registerCaliberWeight("7.62x51mm", 25.4)
+	self:registerCaliberWeight("9x19mm", 8.03)
+	self:registerCaliberWeight("9x39mm", 24.2) 
+	self:registerCaliberWeight("4.6x30mm", 24.2) --7.62x39mm
+	self:registerCaliberWeight("7.62x39mm", 16.3) --Pistol
+	self:registerCaliberWeight("pistol", 8.1) --9x21mm
+	self:registerCaliberWeight("9x21mm", 6.5)
 	
 	hook.Call("GroundControlPostInitEntity", nil)
 	

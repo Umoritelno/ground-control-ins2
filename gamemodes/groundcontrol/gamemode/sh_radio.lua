@@ -136,6 +136,7 @@ GM:registerRadioCommandCategory(9, "special", true)
 
 local command = {}
 command.id = "enemy_spotted"
+command.VManipAnim = {"metka"}
 command.tipId = "MARK_ENEMIES"
 command.variations = {us = {{sound = "ground_control/radio/us/contact.mp3", text = "Contact!"}, 
 	{sound = "ground_control/radio/us/contacts.mp3", text = "Contacts!"}, 
@@ -250,6 +251,7 @@ GM:registerRadioCommand(command)
 
 local command = {}
 command.id = "enemy_down"
+command.VManipAnim = {"metka"}
 command.variations = {us = {{sound = "ground_control/radio/us/enemydown.mp3", text = "Enemy down."}, 
 	{sound = "ground_control/radio/us/tangodown.mp3", text = "Tango down."},  
 	{sound = "ground_control/radio/us/killconfirmed.mp3", text = "Kill confirmed."}},
@@ -338,6 +340,8 @@ GM:registerRadioCommand(command)
 
 local command = {}
 command.id = "affirmative"
+command.VManipAnim = {"okayhand"}
+command.VManipDirect = true -- will play anim only if player see teammate
 command.variations = {us = {{sound = "ground_control/radio/us/affirmative.mp3", text = "Affirmative."}, 
 	{sound = "ground_control/radio/us/copythat.mp3", text = "Copy that."}, 
 	{sound = "ground_control/radio/us/icopy.mp3", text = "I copy."}},
@@ -380,6 +384,8 @@ GM:registerRadioCommand(command)
 
 local command = {}
 command.id = "negative"
+command.VManipAnim = {"fuckoff"}
+command.VManipDirect = true
 command.variations = {us = {{sound = "ground_control/radio/us/nocando.mp3", text = "No can do."}, 
 	{sound = "ground_control/radio/us/negative.mp3", text = "Negative."}, 
 	{sound = "ground_control/radio/us/negative2.mp3", text = "Negative."}, 
@@ -422,6 +428,8 @@ command.category = GM.RadioCategories.Reply
 GM:registerRadioCommand(command)
 
 local command = {}
+command.VManipAnim = {"nicework"}
+command.VManipDirect = true
 command.variations = {us = {{sound = "ground_control/radio/us/muchappreciated.mp3", text = "Much appreciated."}, 
 	{sound = "ground_control/radio/us/thanks.mp3", text = "Thanks."},
 	{sound = "ground_control/radio/us/thankyou.mp3", text = "Thank you."},
@@ -543,6 +551,7 @@ command.category = GM.RadioCategories.Reply
 GM:registerRadioCommand(command)
 
 local command = {}
+command.VManipAnim = {"metka"}
 command.variations = {us = {{sound = "ground_control/radio/us/suppressthisposition.mp3", text = "Suppress this position!"}, 
 	{sound = "ground_control/radio/us/weneedtosuppressthisposition.mp3", text = "We need to suppress this position!"}},
 	
@@ -599,6 +608,7 @@ GM:registerRadioCommand(command)
 
 local command = {}
 command.id = "defend"
+command.VManipAnim = {"metka"}
 command.variations = {us = {{sound = "ground_control/radio/us/defendthisposition.mp3", text = "Defend this position."}, 
 	{sound = "ground_control/radio/us/weneedtodefendthisposition.mp3", text = "We need to defend this position."}},
 
@@ -657,6 +667,8 @@ GM:registerRadioCommand(command)
 
 local command = {}
 command.id = "followme"
+command.VManipAnim = {"followme"}
+command.VManipDirect = true
 command.variations = {us = {{sound = "ground_control/radio/us/followme.mp3", text = "Follow me."},
 	{sound = "ground_control/radio/us/onme.mp3", text = "On me."}},
 

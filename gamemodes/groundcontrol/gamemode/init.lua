@@ -7,6 +7,7 @@
 GM.currentPlayerList = {}
 GM.defaultDoorMoveSpeed = 350 -- the default door move speed to set
 GM.defaultRounds = 10 -- how many rounds to play per map?
+GM.nvgloadout = "Splinter Cell"
 
 CreateConVar("gc_door_move_speed", GM.defaultDoorMoveSpeed, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "time in seconds that a player can remain without any input before we kick him out")
 CreateConVar("gc_rounds", GM.defaultRounds, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "rounds per level before map change")
@@ -14,6 +15,7 @@ CreateConVar("gc_ghetto_cum_chance", 10, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "chance 
 CreateConVar("gc_ghetto_fists_only_chance", 20, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "chance that a round in Ghetto Drug Bust will start with \"Fists only\" for the defenders, with vastly reduced attackers count")
 CreateConVar("gc_ghetto_knife_chance", 30, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "chance that a defender in Ghetto Drug Bust will receive a knife instead of fists")
 CreateConVar("gc_crippling", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "is the crippling gameplay mechanic enabled?")
+CreateConVar("gc_block_wepbase_vote",0,{FCVAR_ARCHIVE, FCVAR_NOTIFY},"Block weapon base vote?")
 
 CreateConVar("gc_ghetto_backcompat_maps", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "enabling this will add all cs_ and de_ maps to Ghetto Drug Bust's map rotation (requires level change to come into effect after changing)")
 
@@ -51,6 +53,10 @@ end)
 
 GM:registerAutoUpdateConVar("gc_crippling", function(cvarName, oldValue, newValue)
 	GAMEMODE.cripplingEnabled = tonumber(newValue) > 0
+end)
+
+GM:registerAutoUpdateConVar("gc_block_wepbase_vote", function(cvarName, oldValue, newValue)
+	GAMEMODE.wepbaseLocked = tonumber(newValue) > 0
 end)
 
 include("sv_player.lua")
@@ -105,6 +111,7 @@ include("sh_specrounds.lua")
 include("sv_nvgs.lua")
 include("sh_nvgs.lua")
 include("sh_lean.lua")
+include("sv_dynamicblood.lua")
 
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("cl_gui_scoreboard.lua")
@@ -129,6 +136,11 @@ AddCSLuaFile("cum_splat_controller.lua")
 AddCSLuaFile("cl_achiv.lua") -- achivki client
 AddCSLuaFile("cl_specrounds.lua")
 AddCSLuaFile("cl_nvgs.lua")
+-- VGUI Start
+AddCSLuaFile("vgui/dmainmenu.lua")
+AddCSLuaFile("vgui/dnewvote.lua")
+AddCSLuaFile("vgui/dcheckboxmanual.lua")
+-- VGUI End
 
 GM.MemeRadio = true -- hehe, set to true for very funny memes
 CreateConVar("gc_meme_radio_chance", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- in 1000
@@ -145,6 +157,7 @@ function GM:InitPostEntity()
 	timer.Simple(1, function()
 		self:resetStartingPoints()
 	end)
+	GetConVar("NVGBASE_DEFAULTLOADOUT"):SetString(self.nvgloadout)
 	
 	self:verifyAutoDownloadMap()
 	

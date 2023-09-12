@@ -12,3 +12,15 @@ for i = 1,5 do
 end
 
 maxStun = 100
+
+hook.Add("TFA_Attachment_Attached","TFA_Suppressed",function(wep,ID,attTbl,category)
+    if attTbl.WeaponTable.Silenced then
+        wep.Suppressed = true
+    end
+end)
+
+hook.Add("TFA_Attachment_Detached","TFA_Suppressed",function(wep,ID,attTbl,category)
+    if attTbl.WeaponTable.Silenced then
+        wep.Suppressed = false
+    end
+end)

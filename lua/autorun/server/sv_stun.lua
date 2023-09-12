@@ -1,6 +1,3 @@
---Entity(1):SetModel("models/cultist/humans/goc/head/helmet_1.mdl")
---Entity(1):SetDSP(33,false )
-
 util.AddNetworkString("StunReplace")
 local explosionDistance = 65000 -- Max distance for explosion stun
 local bulletDistance = 7000 -- Max distance for bullet stun 
@@ -30,15 +27,16 @@ end)
 
 hook.Add("EntityFireBullets","Stun",function(ent,bl)
     if !ent:IsPlayer() or !ent.stun then return end
-    if !GAMEMODE.StunEnabled then
+    if !GetGlobalBool("StunEnabled") then
         net.Start("StunReplace")
         net.Send(ent)
         return 
     end 
-    local activestun = ent:GetActiveWeapon().stun
+    local weap = ent:GetActiveWeapon()
+    local activestun = weap.stun
     if !activestun then return end 
-    --local supressed = ent:GetActiveWeapon():GetSuppressed() 
-    if supressed then
+    local suppressed = weap.Suppressed or weap.dt.Suppressed
+    if suppressed then
         activestun = activestun / 2
     end
     ent:AddStun(activestun,2.5)
@@ -48,13 +46,13 @@ hook.Add("EntityFireBullets","Stun",function(ent,bl)
         local distance = sourcepos:DistToSqr(entpos)
         if v:IsPlayer() and v.stun and distance <= bulletDistance then
             local percent = 1 -(distance / bulletDistance)
-            v:AddStun(activestun * percent,2.5 * percent)
+            v:AddStun(activestun * percent,3.5 * percent)
         end
     end
 end) 
 
 hook.Add("FinishMove","StunController",function(ply,mv) 
-    if !ply.stun or !GAMEMODE.StunEnabled then return end 
+    if !ply.stun or !GetGlobalBool("StunEnabled") then return end 
     if ply.stun.stunamount < 25 then 
         ply:SetDSP(1,false)
     elseif ply.stun.stunamount <= 50 then
@@ -71,11 +69,11 @@ hook.Add("FinishMove","StunController",function(ply,mv)
 end)
 
 hook.Add("OnDamagedByExplosion", "StunExplosion", function(ply,dmginfo)
-    if !GAMEMODE.StunEnabled then return end 
+    if !GetGlobalBool("StunEnabled") then return end 
 	local dmgsrc = dmginfo:GetDamagePosition()
     local dist = dmgsrc:DistToSqr(ply:GetPos())
     if dist <= explosionDistance then
         local stunperc = 1 - (dist / explosionDistance)
-        ply:AddStun(50 * stunperc,7.5 * stunperc)
+        ply:AddStun(50 * stunperc,15 * stunperc)
     end
 end )

@@ -99,7 +99,7 @@ function GM:HUDPaint()
 	local midX, midY = scrW * 0.5, scrH * 0.5
 
 	if alive then
-		local hpPerc = (ply:Health()/ply:GetMaxHealth() * 100)
+		local hpPerc = math.floor((ply:Health()/ply:GetMaxHealth() * 100))
 		healthText = math.max(0, hpPerc) .. "% HEALTH"
 		
 		surface.SetFont(self.HealthDisplayFont)
@@ -124,7 +124,7 @@ function GM:HUDPaint()
 		
 		draw.ShadowText(healthText, self.HealthDisplayFont, scrW - textX, scrH - baseOffset - overallTextHeight, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 		draw.ShadowText(bandageText, self.BandageDisplayFont, scrW - textX, scrH - baseOffset + bandageOff - overallTextHeight, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
-		if self.specRoundEnabled then
+		if GetGlobalBool("SpecRoundEnabled") then
 			local font = "SpecRoundReplace"
 			if self.Language == "english" then
 				font = "CW_HUD20"
@@ -141,12 +141,14 @@ function GM:HUDPaint()
 
 		    local CurSpecRoundText = string_format(lang.curSpecRound,CurSpecRound)
 
-			draw.ShadowText(CurSpecRoundText, font, scrW * 0.055, scrH * 0.12, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-			draw.ShadowText(SpecCountText, font, scrW * 0.054, scrH * 0.1, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.ShadowText(CurSpecRoundText, font, scrW * 0.0027, scrH * 0.12, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+			draw.ShadowText(SpecCountText, font, scrW * 0.0027, scrH * 0.1, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 		end
 		--draw.ShadowText(ply.stamina, self.BandageDisplayFont, 55, scrH - 200, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-		
-		local baseX = scrW - _S(145)
+		local baseX = self.BaseHUDX - _S(1435)
+		if self.BaseHUDX == 80 then -- self.BaseHUDX + _S(1715)
+			baseX = scrW - _S(145)
+		end
 		local offset = _S(90)
 		local baseY = scrH - _S(50)
 		baseX = baseX + self:drawArmor(ply, baseX, baseY)
@@ -324,6 +326,7 @@ function GM:HUDPaint()
 		draw.ShadowText(string_format(bindlang.TeamBind,self:getKeyBind(self.TeamSelectionKey)), font, xOff, _S(55), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
 		draw.ShadowText(string_format(bindlang.LoadoutBind,self:getKeyBind(self.LoadoutMenuKey)), font, xOff, _S(80), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
 		draw.ShadowText(string_format(bindlang.VoiceBind,self:getKeyBind(self.RadioMenuKey)), font, xOff, _S(105), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+		draw.ShadowText(string_format(bindlang.MainMenuBind,self:getKeyBind(self.MainMenuKey)), font, xOff, _S(130), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
 		
 		if self.curGametype.deadDraw then
 			self.curGametype:deadDraw(scrW, scrH)
@@ -343,7 +346,7 @@ function GM:HUDPaint()
 	-- instead of blasting team.GetPlayers every frame, just use the table that gets filled in cl_render.lua
 	for key, obj in ipairs(self.teamPlayers) do
 		--if obj.withinPVS then -- only draw the player if we can see him, GMod has no clientside ways of checking whether the player is in PVS, check cl_render.lua for the second part of this
-		if self.rolesenable then
+		if GetGlobalBool("RolesEnabled") and GetGlobalBool("CommanderVisibility") then
 			if obj ~= ply and obj:Alive() and ply.plclass and ply.plclass.DisplayName == "Commander" then
 				local pos = obj:GetBonePosition(obj:LookupBone("ValveBiped.Bip01_Head1"))
 				
@@ -548,7 +551,6 @@ function GM:createRoundOverDisplay(winTeam, actionType)
 	self.roundOverTime = CurTime() + GAMEMODE.RoundRestartTime - 1
 	
 	local popup = vgui.Create("GCRoundOver")
-	popup:SetSize(_S(350), _S(50))
 	popup:SetRestartTime(GAMEMODE.RoundRestartTime)
 	
 	if winTeam then
@@ -580,6 +582,8 @@ function GM:createRoundOverDisplay(winTeam, actionType)
 			popup:SetBottomText(lang.round_switch)
 		end
 	end
+
+	popup:SetSize(_S(popup.MaxLength.x * 1.2), _S(50))
 	
 	popup:Center()
 	
@@ -598,7 +602,10 @@ function GM:createRoundPreparationDisplay(preparationTime)
 		
 	local result = vgui.Create("GCRoundPreparation")
 	result:SetPrepareTime(preparationTime - CurTime())
-	result:SetSize(_S(310), _S(50))
+
+    
+	result:SetSize(_S(result.MaxLength.x * 1.4), _S(50))
+	
 	result:Center()
 	
 	local x, y = result:GetPos()

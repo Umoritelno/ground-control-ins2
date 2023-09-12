@@ -25,6 +25,7 @@ function ENT:Draw()
 end
 
 function ENT:drawHUD()
+	local lng = GetCurLanguage().gametypes.Drugbust
 	local ply = LocalPlayer()
 	
 	if ply:Team() == GAMEMODE.curGametype.loadoutTeam then
@@ -44,7 +45,7 @@ function ENT:drawHUD()
 	local text = nil
 	
 	if ply.hasDrugs and not self.dt.HasDrugs then
-		text = self.DeliverText
+		text = lng["Return"]
 		alpha = alpha * (0.2 + 0.8 * math.flash(CurTime(), 2))
 	end
 		

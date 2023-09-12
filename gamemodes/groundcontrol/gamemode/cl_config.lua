@@ -176,7 +176,7 @@ local filter = CreateClientConVar("BlueFilter",0,true,false,"Will filter work?",
 local filterRed = CreateClientConVar("gc_filter_red","0",true,false,"The add color's red value. 0 (black) means no change.",0,0.05)
 local filterGreen = CreateClientConVar("gc_filter_green","0",true,false,"The add color's green value. 0 (black) means no change.",0,0.05)
 local filterBlue = CreateClientConVar("gc_filter_blue","0",true,false,"The add color's blue value. 0 (black) means no change.",0,0.05)
-local filterColour = CreateClientConVar("gc_filter_colour","0",true,false,"The saturation value. Setting this to 0 will turn the image to grey-scale. 1 means no change.",1,2.25)
+local filterColour = CreateClientConVar("gc_filter_colour","0",true,false,"The saturation value. Setting this to 0 will turn the image to grey-scale. 1 means no change.",1,1.6)
 -- filter rgb elements end 
 
 GM.FilterColor = Color(filterRed:GetFloat(),filterGreen:GetFloat(),filterBlue:GetFloat(),filterColour:GetFloat())
@@ -397,17 +397,30 @@ end
 
 
 net.Receive("classinfo",function()
-	local classtable = table.Copy(player_manager.GetPlayerClasses()[player_manager.GetPlayerClass(LocalPlayer())])
+	local class = net.ReadString()
+	--local playerclass = player_manager.GetPlayerClass(LocalPlayer())
+	local classtable = table.Copy(player_manager.GetPlayerClasses()[class])
 	LocalPlayer().plclass = classtable
-	LocalPlayer():ShowRole(classtable.Desc)
+	if GetGlobalBool("RolesEnabled") then
+		LocalPlayer():ShowRole(GetCurLanguage().classes[class].Desc)
+	end
 end)
 
-hook.Add("TFA_InspectVGUI_Start", "Kill TFA customization", function()
+--[[hook.Add("TFA_InspectVGUI_Start", "Kill TFA customization", function()
     return CurTime() < GAMEMODE.PreparationTime
+end)--]]
+
+hook.Add("TFA_DrawCrosshair", "TFA_Crosshair", function()
+    return GetGlobalBool("CrosshairEnabled") == true
+end)
+
+hook.Add("TFA_DrawHUDAmmo", "TFA_3D2D", function()
+    return GetGlobalBool("AmmoTextDisabled") == true
 end)
 
 CustomizableWeaponry.callbacks:addNew("adjustViewmodelPosition", "GroundControl_adjustViewmodelPosition2", function(self, targetPos, targetAng)
-	if self.dt.State == 0 then
+	if self.GlobalDelay > CurTime() then return end
+	if self.dt.State == CW_IDLE then
 		targetPos.y = targetPos.y + GAMEMODE.CW_Y
 	    targetPos.z = targetPos.z + GAMEMODE.CW_Z
 		targetPos.x = targetPos.x + GAMEMODE.CW_X
@@ -417,7 +430,7 @@ CustomizableWeaponry.callbacks:addNew("adjustViewmodelPosition", "GroundControl_
 end)
 
 CustomizableWeaponry.callbacks:addNew("overrideReserveAmmoText", "GroundControl_AmmoTextOverride", function(self)
-	if !GAMEMODE.AmmoTextChanged then return end 
+	if !GetGlobalBool("AmmoTextChanged") then return end 
 	local ammoCount = self.Owner:GetAmmoCount(self.Primary.Ammo)
 	local magAmount = math.ceil(ammoCount/self.Primary.ClipSize_Orig)
 	local finalstring = magAmount.." Mag(s)"
@@ -431,77 +444,6 @@ net.Receive("killnotification",function()
 end)
 
 
-
-local PANEL = {}
-
-function PANEL:addItem( tbl )
-	local RulePanel = self.scroll:Add( "DPanel" )
-	RulePanel.Cvr = tbl.cvar -- Create container for this item
-	RulePanel:Dock( TOP ) -- Dock it
-	RulePanel:DockMargin( 0, 1, 0, 0 ) -- Add 1 pixel spacing in between each item
-
-	table.insert(self.ChildPo,RulePanel)
-
-
-	local ImageCheckBox = RulePanel:Add( "ImageCheckBox" ) -- Create checkbox with image
-	ImageCheckBox:SetMaterial( "icon16/accept.png" ) -- Set its image
-	ImageCheckBox:SetWidth( 24 ) -- Make the check box a bit wider than the image so it looks nicer
-	ImageCheckBox:Dock( LEFT ) -- Dock it
-	ImageCheckBox:SetChecked( false )
-	RulePanel.ImageCheckBox = ImageCheckBox -- Add reference to call
-
-	local DLabel = RulePanel:Add( "DLabel" ) -- Create text
-	DLabel:SetText( tbl.helptext ) -- Set the text
-	DLabel:Dock( FILL ) -- Dock it
-	DLabel:DockMargin( 5, 0, 0, 0 ) -- Move the text to the right a little
-	DLabel:SetTextColor( Color( 0, 0, 0 ) ) -- Set text color to black
-end
-
-function PANEL:Init()
-   self.ChildPo = {}
-   self:SetSize(ScrW() * 0.25,ScrH() * 0.375)
-   self:Center()
-   self:MakePopup()
-   self:SetTitle("")
-   local scroll = self:Add("DScrollPanel")
-   scroll:Dock(FILL)
-   self.scroll = scroll
-   for k,v in pairs(GAMEMODE.NewGolosArgs) do
-	self:addItem(v)
-   end
-   timer.Create("VotePanelRemove",30,1,function()
-	if IsValid(self) then
-		self:Close()
-	end
-   end)
-   self.Apply = vgui.Create("DButton",self)
-   self.Apply:SetText("Sent to server")
-   self.Apply:Dock(BOTTOM)
-   self.Apply:SetTextColor(GAMEMODE.HUDColors.white)
-   self.Apply.DoClick = function()
-	self:Close()
-   end
-   self.Apply.Paint = function(s,w,h)
-	surface.SetDrawColor(192,190,190)
-	surface.DrawOutlinedRect(0,0,w,h,1)
-   end
-end 
-
-function PANEL:OnClose()
-	if timer.Exists("VotePanelRemove") then
-		timer.Remove("VotePanelRemove")
-	end
-	local cvarsTbl = {}
-	for k,v in pairs(self.ChildPo) do
-		cvarsTbl[v.Cvr] = v.ImageCheckBox:GetChecked() == true
-	end
-	net.Start("NewVote_Get")
-	net.WriteTable(cvarsTbl)
-	net.SendToServer()
-end
-
-vgui.Register("NewVotePanel",PANEL,"DFrame")
-
 net.Receive("NewVote_Start",function()
-	vgui.Create("NewVotePanel")
+	vgui.Create("NewVote")
 end)

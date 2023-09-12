@@ -2,15 +2,11 @@ AddCSLuaFile()
 
 local pl = FindMetaTable("Player")
 
---local oldfunc = pl:NVGBASE_ToggleGoggleAnim
 
 function pl:NVGBASE_ToggleGoggle(loadout,silent,force) 
 	local toggled = self:NVGBASE_IsGoggleActive();
-	if (!self:Alive() or !GAMEMODE.NVGEnabled) and !toggled then return end
+	if (!self:Alive() or !GetGlobalBool("NVGEnabled")) and !toggled then return end
 
-	-- Failsafe if the goggle has changed to one that we don't have access to. A good example
-	-- of this would be a gamemode where player model whitelisting is on and the player has
-	-- switched teams mid game. The new model or team might not have access to the last goggle he used.
 	if (_G:NVGBASE_IsWhitelistOn() && !toggled && !self:NVGBASE_IsWhitelisted(loadout, self:GetNWInt("NVGBASE_CURRENT_GOGGLE", 1))) then
 		self:NVGBASE_SwitchToNextGoggle(loadout);
 	end
@@ -28,7 +24,7 @@ function pl:NVGBASE_ToggleGoggle(loadout,silent,force)
 		if (!toggled) then if (goggle.Sounds.ToggleOn != nil) then self:EmitSound(goggle.Sounds.ToggleOn, 75, 100, 1, CHAN_ITEM); end
 		else if (goggle.Sounds.ToggleOff != nil) then self:EmitSound(goggle.Sounds.ToggleOff, 75, 100, 1, CHAN_ITEM); end end
 	end
-end 
+end
 
 local GC_NVG = {}
 GC_NVG.Settings = {
@@ -131,4 +127,4 @@ GC_NVG[1] = {
 	end
 }
 
-NVGBASE.Register("Ground Control", GC_NVG)
+--NVGBASE.Register("Ground Kontrol", GC_NVG)

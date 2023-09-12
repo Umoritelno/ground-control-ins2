@@ -1,5 +1,5 @@
 Language = {
-    id = "english",
+    id = "English",
     match_start = "New match start",
     round_prepare = "Prepare for new round",
     round_start = "Round starts in %s second(s)",
@@ -16,13 +16,20 @@ Language = {
         LoadoutBind =  "%s - loadout menu",
         VoiceBind = "%s - voice selection menu",
         SpectateBind = "%s - change spectate target",
+        MainMenuBind = "%s - gamemode's main menu"
+    },
+    loadoutmenu = {
+        Bandages = "Bandages",
+        SpareAmmo = "Spare ammo",
     },
     settings = {
         VisualCollap = "Visual",
         OtherCollap = "Other",
         GameplayCollap = "Gameplay",
-        Headshot = "Headshot",
+        Headshot = "HEADSHOT",
         Language = "Current language: ",
+        Crosshair = "Enable crosshair rendering for CW 2.0 Default",
+        HudFlipped = "Mirror HUD?",
         Legs = "Enable legs rendering in 1st person?",
         Toytown = "Enable toytown effect?",
         BloomBool = "Enable bloom effect?",
@@ -63,8 +70,31 @@ Language = {
         MaxPen = "Max penetration value: %s",
         TraumReduc = "Penetration damage reduction: %s",
         DamReduc = "Penetration damage reduction: %s",
+        StunReduc = "Stun reduction: %s",
         Bleeding = "Bleeding will occur from any shot.",
         NoArmor = "No armor selected.",
+        Actual = {
+            ["steel_helmet"] = {
+                Name = "Steel Helmet",
+                Desc = "Provides type II protection against projectiles.",
+            },
+            ["kevlar_helmet"] = {
+                Name = "ACH Helmet",
+                Desc = "Provides type IIIA protection against projectiles.",
+            },
+            ["dyneema_vest"] = {
+                Name = "Dyneema Vest",
+                Desc = "Provides type II protection against projectiles.",
+            },
+            ["kevlar_vest"] = {
+                Name = "Kevlar Vest",
+                Desc = "Provides type IIIA protection against projectiles.",
+            },
+            ["spectra_vest"] = {
+                Name = "SPECTRA Vest",
+                Desc = "Provides type III protection against projectiles.",
+            },
+        }
     },
     slots = {
         SlotId = "Slot %s", -- example: "Slot 3"
@@ -77,6 +107,91 @@ Language = {
         LeftClick = "Left-click to unlock specialization for $%s",
         Level = "Level: %s/%s",
         CashHave = "(You have $%s)",
+        Actual = {
+            ["war_hardened"] = {
+              Name = "War hardened",
+              Desc = {
+                {
+                    t = "You've undergone extensive training to operate efficiently in high stress situations.", 
+                },
+                {
+                    t = "Decreases adrenaline duration and increase speed by %s per each level.", 
+                },
+                {
+                    t = "Current adrenaline duration and increase speed reduction: -CURRENT%",
+                }
+              }
+
+            },
+            ["conditioned"] = {
+                Name = "Conditioned",
+                Desc = {
+                  {
+                      t = "You've undergone extensive physical preparation to become more endurant.", 
+                  },
+                  {
+                      t = "Decreases stamina drain from sprinting and jumping by %s per each level.", 
+                  },
+                  {
+                      t = "Current sprint stamina drain reduction: -CURRENT%",
+                  }
+                }
+  
+            },
+            ["medic"] = {
+                Name = "Medic",
+                Desc = {
+                  {
+                      t = "You've undergone extensive medical training to treat wounds efficiently.", 
+                  },
+                  {
+                      t = "Each level increases healing proficiency with the Medkit.", 
+                  },
+                  {
+                      t = "Can uncripple team mates.",
+                  }
+                }
+  
+            },
+            ["will_to_live"] = {
+                Name = "Will to Live",
+                Desc = {
+                  {
+                      t = "Your will to live is unmatched - you overcome pain and shock that would have had killed others.", 
+                  },
+                  {
+                      t = "Allows to restore a small amount of health passively every %s seconds.", 
+                  },
+                  {
+                      t = "Each level increases health restored by %s points.",
+                  },
+                  {
+                    t = "Current maximum health restored: +CURRENT%", 
+                  }
+                }
+  
+            },
+            ["covert_ops"] = {
+                Name = "Covert Ops",
+                Desc = {
+                  {
+                      t = "You've undergone extensive stealth training to sneak quicker while maintaining combat readiness.", 
+                  },
+                  {
+                      t = "Increases crouched movement speed by %s%% per level.", 
+                  },
+                  {
+                      t = "Current crouch-move speed increase: +CURRENT%",
+                  }
+                }
+  
+            },
+        }
+    },
+    gadgets = {
+     ["spareammo"] = {
+      Display = "RESUPPLY",
+     },
     },
     weapon = {
      NoSelect = "None selected",
@@ -95,7 +210,7 @@ Language = {
     weight = {
      StamDrain = "Stamina drain: +%s",
      NoiseFact = "Noise factor: +%s",
-     Weight = "Weight: %s/%sKG",
+     Weight = "Weight: %s/%s KG",
      CurWeight = "The weight of your current loadout.",
      HighWeight = "A high weight will increase movement noise and stamina drain from sprinting and jumping.",
      Deselect = "You can always deselect primary/secondary/tertiary weapons by right-clicking on them.",
@@ -108,7 +223,7 @@ Language = {
      Fail = "Can't attach, requires: ",
      Conflict = "Can't attach, conflicts with: %s",
      LeftClick = "Left-click to assign attachment.",
-     RightCLick = "Right-click to un-assign attachment.",
+     RightClick = "Right-click to un-assign attachment.",
      Title = "Assign attachment",
      None = "None",
      Slot = "Slot %s",
@@ -139,8 +254,10 @@ Language = {
      THROW_FRAGS_NEW = "Hold USE_KEY and press PRIMARY_ATTACK_KEY, or press QUICKNADEKEY to throw frag grenades.",
      LOUD_LANDING = "The higher your loadout weight, the lesser the distance required to make a noisy landing.",
      WEAPON_CUSTOMIZATION = "Press C_MENU_KEY to open the weapon interaction menu at the start of a round.",
+     ACHIV_EARNED = "You can earn money and experience by earning achievements.",
     },
     MVPs = {
+        Title = "Most Valuable Players",
         ["kills"] = {name = "Bounty hunter",desc = "Most kills",formatText = function(self,amount)
             if amount == 1 then
                 return "1 kill"
@@ -186,9 +303,85 @@ Language = {
     death = {
         Unknown = "Unknown death cause",
         Suicide = "Suicide!",
-        Random = "A headbutt, maybe?",
+        Random = {"A headbutt, maybe?"},
         KilledBy = "Killed by ",
     },
     lastManStatus = "Last man standing",
     lastManPhrases = {"Good Luck"},
+    gametypes = {
+        Drugbust = {
+            ["Retrieve&Protect"] = "Retrieve & protect",
+            ["Protect"] = "Protect",
+            ["Attack&Capture"] = "Attack & capture",
+            ["Capture"] = "Capture",
+            ["Drugs"] = "Drugs",
+            ["DrugPoint"] = "Drug drop point",
+            ["Deliver"] = "Capture drugs",
+            ["PreventCapture"] = "Prevent capture",
+            ["Return"] = "Return drugs",
+        },
+        Rush = {
+         ["Capture"] = "Capture ",
+         ["Protect"] = "Protect ",
+         ["Capture&Protect"] = {
+            [true] = "Capture ",
+            [false] = "Protect ",
+         },
+         ["Speed"] = "SPEED: x",
+          ["Status"] = {
+           [true] = "Capturing ",
+           [false] = "Defending ",
+          },
+        },
+        Assault = {
+          ["Warning"] = {
+            [true] = "You're too far away! You have TIME second(s) to get back to the playing area!",
+            [false] = "Where are you going? You have TIME second(s) to get back to the playing area!",
+          },
+        },
+        Urban = {
+         ["CaptureStatus"] = "Capturing ",
+         ["Cooldown"] = "Capture cooldown TIME",
+         ["Sides"] = {
+          ["US"] = "US: ",
+          ["Enemy"] = "ENEMY: ",
+         },
+        },
+    },
+    classes = {
+        ["soldier"] = {
+            Name = "Soldier",
+            Desc = "You are soldier. Stay close to the squad and follow the orders of the commander.",
+        },
+        ["cmd"] = {
+            Name = "Commander",
+            Desc = "You are commander of your squad. Lead your squad.",
+        },
+        ["spec"] = {
+            Name = "Specialist",
+            Desc = "You are specialist. Use your gear to complete the task.",
+        },
+        ["demo"] = {
+            Name = "Demoman",
+            Desc = "You are demoman. Use your weapon to wipe enemies off the face of the earth",
+        },
+        ["rookie"] = {
+            Name = "Rookie",
+            Desc = "You are rookie. You have been demoted and have been stripped of your equipment",
+        },
+    },
+    achivs = {
+     ["headshot"] = {
+        Name = "Headshot",
+        Desc = "Get your first headshot",
+     },
+     ["dlan"] = {
+        Name = "It's a bird! It's a plane! It's RPG-7!",
+        Desc = "What are you waiting for? Just kill enemy by RPG-7",
+     },
+     ["spec"] = {
+        Name = "Specialist",
+        Desc = "Use your ability 25 times",
+     },
+    },
 }
