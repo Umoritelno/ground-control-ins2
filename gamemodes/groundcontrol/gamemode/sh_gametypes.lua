@@ -185,6 +185,7 @@ oneSideRush.stopCountdown = true
 oneSideRush.objectiveCounter = 0
 oneSideRush.spawnDuringPreparation = true
 oneSideRush.ClassGive = {[oneSideRush.attackerTeam] = true,[oneSideRush.defenderTeam] = true}
+oneSideRush.AbilityGive = {[oneSideRush.attackerTeam] = true,[oneSideRush.defenderTeam] = true}
 
 if SERVER then
 	oneSideRush.mapRotation = GM:getMapRotation("one_side_rush")
@@ -350,6 +351,7 @@ assault.attackersPerDefenders = 3
 assault.objectiveCounter = 0
 assault.spawnDuringPreparation = true
 assault.ClassGive = {[assault.defenderTeam] = true,[assault.attackerTeam] = true}
+assault.AbilityGive = {[assault.defenderTeam] = true,[assault.attackerTeam] = true}
 assault.objectiveEnts = {}
 
 if SERVER then
@@ -574,7 +576,8 @@ urbanwarfare.startingTickets = 100 -- the amount of tickets that a team starts w
 urbanwarfare.ticketsPerPlayer = 2.5 -- amount of tickets to increase per each player on server
 urbanwarfare.capturePoint = nil -- the entity responsible for a bulk of the gametype logic, the reference to it is assigned when it is initialized
 urbanwarfare.waveWinReward = {cash = 50, exp = 50}
-urbanwarfare.ClassGive = {[TEAM_BLUE] = true,[TEAM_RED] = true}
+urbanwarfare.ClassGive = {[TEAM_BLUE] = false,[TEAM_RED] = false}
+urbanwarfare.AbilityGive = {[TEAM_BLUE] = false,[TEAM_RED] = false}
 
 if SERVER then
 	urbanwarfare.mapRotation = GM:getMapRotation("urbanwarfare_maps")
@@ -860,6 +863,7 @@ ghettoDrugBust.blueGuyPer = 2.3 -- for every 3rd player, 1 will be a red dude
 ghettoDrugBust.blueGuyPerFists = 4.5
 ghettoDrugBust.chancePerTimesNotCop = 10 -- per every time someone was spawned in as a ghetto team member, their chance to spawn as a cop next round increases by this much %
 ghettoDrugBust.ClassGive = {[ghettoDrugBust.regularTeam] = false,[ghettoDrugBust.loadoutTeam] = true}
+ghettoDrugBust.AbilityGive = {[ghettoDrugBust.regularTeam] = true,[ghettoDrugBust.loadoutTeam] = true }
 ghettoDrugBust.voiceOverride = {[ghettoDrugBust.regularTeam] = "ghetto"}
 ghettoDrugBust.objectives = {}
 ghettoDrugBust.teamTracking = {} -- table where object is player, value is amount of times said player was not on the loadout team
