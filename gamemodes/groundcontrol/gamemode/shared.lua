@@ -139,6 +139,8 @@ local sharedCVar = FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED
 
 CreateConVar("gc_lean_enable",1,sharedCVar,"Enable leaning?")
 CreateConVar("gc_ammotextOverride_enable",1,sharedCVar,"Override ammo text for CW 2.0 weapons?")
+CreateConVar("gc_ammotextHide_enable",0,sharedCVar,"Hide ammo text for weapons?")
+CreateConVar("gc_crosshair_sv_enable",0,sharedCVar,"Draw crosshair for CW 2.0 Default & TFA weapons?")
 CreateConVar("gc_specround_enable",1,sharedCVar,"Will special rounds work?")
 CreateConVar("gc_crippling", 1, sharedCVar, "is the crippling gameplay mechanic enabled?")
 CreateConVar("gc_round_prep_time", GM.RoundPreparationTime, sharedCVar, "how much time players spend in the preparation stage of the new round")
@@ -152,6 +154,8 @@ CreateConVar("gc_roles_enable",1,sharedCVar,"Will roles and work?")
 CreateConVar("gc_abil_enable",1,sharedCVar,"Will abilities work?")
 CreateConVar("gc_nvg_enable",1,sharedCVar,"Will NVG work?")
 CreateConVar("gc_stun_enable",1,sharedCVar,"Will stun work?")
+CreateConVar("gc_commander_visibility",0,sharedCVar,"Give only the commander the opportunity to distinguish allies?")
+CreateConVar("gc_vmanip_enable",1,sharedCVar,"Enable VManip animations?")
 
 --GM.CurWepBase = GetConVar("gc_wepbase"):GetInt() or 1
 if GM.WepBases[GetConVar("gc_wepbase"):GetInt()] then
@@ -168,102 +172,105 @@ local function getCvarNumber(new, old)
 	return tonumber(new) and new or old
 end
 
-GM:registerAutoUpdateConVar("gc_stun_enable", function(name, old, new,isAuto)
-	local bool = tonumber(new) and tonumber(new) > 0
-	GAMEMODE.StunEnabled = bool
-	if !isAuto then 
-	  if !bool then
-		for k,v in pairs(GAMEMODE.currentPlayerList) do
-			v:AddStun(-100)
-		 end
-	  end
-	  net.Start("updateclientcvar")
-	  net.WriteString("StunEnabled")
-	  net.WriteBool(bool)
-	  net.Broadcast() 
-	end
-end)
+if SERVER then
 
-GM:registerAutoUpdateConVar("gc_ammotextOverride_enable", function(name, old, new,isAuto)
-	local bool = tonumber(new) and tonumber(new) > 0
-	GAMEMODE.AmmoTextChanged = bool
-	if !isAuto then 
-	  net.Start("updateclientcvar")
-	  net.WriteString("AmmoTextChanged")
-	  net.WriteBool(bool)
-	  net.Broadcast()
-	end 
-end)
+	GM:registerAutoUpdateConVar("gc_vmanip_enable", function(name, old, new,isAuto)
+		local bool = tonumber(new) and tonumber(new) > 0
+		SetGlobalBool("VManipEnabled",bool)
+	end)
 
-GM:registerAutoUpdateConVar("gc_lean_enable", function(name, old, new,isAuto)
-	local bool = tonumber(new) and tonumber(new) > 0
-	GAMEMODE.LeanEnabled = bool
-	if !isAuto then 
-	  net.Start("updateclientcvar")
-	  net.WriteString("LeanEnabled")
-	  net.WriteBool(bool)
-	  net.Broadcast()
-	end 
-end)
-
-GM:registerAutoUpdateConVar("gc_nvg_enable", function(name, old, new,isAuto)
-	local bool = tonumber(new) and tonumber(new) > 0
-	GAMEMODE.NVGEnabled = bool
-	if !isAuto and !bool then 
-		for k,pl in pairs(GAMEMODE.currentPlayerList) do
-	       if pl:NVGBASE_IsGoggleActive() then
-
-			 local loadout = pl:NVGBASE_GetLoadout();
-	         if (loadout == nil) then return; end
-
-			 pl:NVGBASE_ToggleGoggle(loadout,nil)
-		   end
+	GM:registerAutoUpdateConVar("gc_commander_visibility", function(name, old, new,isAuto)
+		local bool = tonumber(new) and tonumber(new) > 0
+		SetGlobalBool("CommanderVisibility",bool)
+	end)
+	
+	GM:registerAutoUpdateConVar("gc_stun_enable", function(name, old, new,isAuto)
+		local bool = tonumber(new) and tonumber(new) > 0
+		SetGlobalBool("StunEnabled",bool)
+		if !isAuto then 
+		  if !bool then
+			for k,v in pairs(GAMEMODE.currentPlayerList) do
+				v:AddStun(-100)
+			 end
+		  end
 		end
-	end
-end)
+	end)
+	
+	GM:registerAutoUpdateConVar("gc_ammotextOverride_enable", function(name, old, new,isAuto)
+		local bool = tonumber(new) and tonumber(new) > 0
+		SetGlobalBool("AmmoTextChanged",bool)
+	end)
 
-GM:registerAutoUpdateConVar("gc_specround_enable", function(name, old, new,isAuto)
-	local bool = tonumber(new) and tonumber(new) > 0
-	GAMEMODE.specRoundEnabled = bool
-	if !isAuto then 
-	  net.Start("updateclientcvar")
-	  net.WriteString("specRoundEnabled")
-	  net.WriteBool(bool)
-	  net.Broadcast()
-	end 
-end)
+	GM:registerAutoUpdateConVar("gc_ammotextHide_enable", function(name, old, new,isAuto)
+		local bool = tonumber(new) and tonumber(new) > 0
+		SetGlobalBool("AmmoTextDisabled",bool)
+	end)
 
-GM:registerAutoUpdateConVar("gc_abil_enable", function(name, old, new)
-	GAMEMODE.abilityEnabled = tonumber(new) and tonumber(new) > 0
-end)
+	GM:registerAutoUpdateConVar("gc_crosshair_sv_enable", function(name, old, new,isAuto)
+		local bool = tonumber(new) and tonumber(new) > 0
+		SetGlobalBool("CrosshairEnabled",bool)
+	end)
+	
+	GM:registerAutoUpdateConVar("gc_lean_enable", function(name, old, new,isAuto)
+		local bool = tonumber(new) and tonumber(new) > 0
+		SetGlobalBool("LeanEnabled",bool)
+	end)
+	
+	GM:registerAutoUpdateConVar("gc_nvg_enable", function(name, old, new,isAuto)
+		local bool = tonumber(new) and tonumber(new) > 0
+		SetGlobalBool("NVGEnabled",bool)
+		if !isAuto and !bool then 
+			for k,pl in pairs(GAMEMODE.currentPlayerList) do
+			   if pl:NVGBASE_IsGoggleActive() then
+	
+				 local loadout = pl:NVGBASE_GetLoadout();
+				 if (loadout == nil) then return; end
+	
+				 pl:NVGBASE_ToggleGoggle(loadout,nil)
+			   end
+			end
+		end
+	end)
+	
+	GM:registerAutoUpdateConVar("gc_specround_enable", function(name, old, new,isAuto)
+		local bool = tonumber(new) and tonumber(new) > 0
+		SetGlobalBool("SpecRoundEnabled",bool)
+	end)
+	
+	GM:registerAutoUpdateConVar("gc_abil_enable", function(name, old, new)
+		GAMEMODE.abilityEnabled = tonumber(new) and tonumber(new) > 0
+	end)
+	
+	GM:registerAutoUpdateConVar("gc_crippling", function(name, old, new)
+		GAMEMODE.cripplingEnabled = tonumber(new) and tonumber(new) > 0
+	end)
+	
+	GM:registerAutoUpdateConVar("gc_roles_enable", function(name, old, new)
+		local bool = tonumber(new) and tonumber(new) > 0
+		SetGlobalBool("RolesEnabled",bool)
+	end)
+	
+	GM:registerAutoUpdateConVar("gc_round_prep_time", function(name, old, new)
+		GAMEMODE.RoundPreparationTime = getCvarNumber(new, GAMEMODE.RoundPreparationTime)
+	end)
+	
+	GM:registerAutoUpdateConVar("gc_round_restart_time", function(name, old, new)
+		GAMEMODE.RoundRestartTime = getCvarNumber(new, GAMEMODE.RoundRestartTime)
+	end)
+	
+	GM:registerAutoUpdateConVar("gc_runspeed", function(name, old, new)
+		GAMEMODE.BaseRunSpeed = getCvarNumber(new, GAMEMODE.BaseRunSpeed)
+	end)
+	
+	GM:registerAutoUpdateConVar("gc_walkspeed", function(name, old, new)
+		GAMEMODE.BaseWalkSpeed = getCvarNumber(new, GAMEMODE.BaseWalkSpeed)
+	end)
+	
+	GM:registerAutoUpdateConVar("gc_damage_scale", function(cvarName, old, new)	
+		GAMEMODE.DamageMultiplier = getCvarNumber(new, GAMEMODE.defaultDamageScale)
+	end)
+end
 
-GM:registerAutoUpdateConVar("gc_crippling", function(name, old, new)
-	GAMEMODE.cripplingEnabled = tonumber(new) and tonumber(new) > 0
-end)
-
-GM:registerAutoUpdateConVar("gc_roles_enable", function(name, old, new)
-	GAMEMODE.rolesenable = tonumber(new) and tonumber(new) > 0
-end)
-
-GM:registerAutoUpdateConVar("gc_round_prep_time", function(name, old, new)
-	GAMEMODE.RoundPreparationTime = getCvarNumber(new, GAMEMODE.RoundPreparationTime)
-end)
-
-GM:registerAutoUpdateConVar("gc_round_restart_time", function(name, old, new)
-	GAMEMODE.RoundRestartTime = getCvarNumber(new, GAMEMODE.RoundRestartTime)
-end)
-
-GM:registerAutoUpdateConVar("gc_runspeed", function(name, old, new)
-	GAMEMODE.BaseRunSpeed = getCvarNumber(new, GAMEMODE.BaseRunSpeed)
-end)
-
-GM:registerAutoUpdateConVar("gc_walkspeed", function(name, old, new)
-	GAMEMODE.BaseWalkSpeed = getCvarNumber(new, GAMEMODE.BaseWalkSpeed)
-end)
-
-GM:registerAutoUpdateConVar("gc_damage_scale", function(cvarName, old, new)	
-	GAMEMODE.DamageMultiplier = getCvarNumber(new, GAMEMODE.defaultDamageScale)
-end)
 
 function GM:Initialize()
 	self.BaseClass.Initialize(self)
@@ -271,7 +278,7 @@ end
 
 if CLIENT then
 	CustomizableWeaponry.callbacks:addNew("suppressHUDElements", "GroundControl_suppressHUDElements", function(self)
-		return true , true , false -- 3rd argument is whether the weapon interaction menu should be hidden
+		return true  , true , false -- 3rd argument is whether the weapon interaction menu should be hidden
 	end)	
 end
 

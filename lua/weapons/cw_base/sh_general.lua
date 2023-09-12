@@ -911,11 +911,11 @@ function SWEP:getMagCapacity()
 		text = "Empty"
 	end
 
-	if mag > self.Primary.ClipSize_Orig and !GAMEMODE.AmmoTextChanged then -- and !GAMEMODE.AmmoTextChanged
+	if mag > self.Primary.ClipSize_Orig and !GetGlobalBool("AmmoTextChanged") then -- and !GAMEMODE.AmmoTextChanged
 		return self.Primary.ClipSize_Orig .. " + " .. mag - self.Primary.ClipSize_Orig
 	end
 
-	if GAMEMODE.AmmoTextChanged then
+	if GetGlobalBool("AmmoTextChanged") then
 		return text 
 	else 
 		return mag 

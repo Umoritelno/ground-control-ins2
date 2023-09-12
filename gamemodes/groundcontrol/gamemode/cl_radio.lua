@@ -42,6 +42,18 @@ function GM:PlayRadioCommand(category, commandId, voiceVariant, sender, seed)
 	if commandData.tipId and not senderIsLocalPlayer then
 		GAMEMODE.tipController:handleEvent(commandData.tipId)
 	end
+
+	if senderIsLocalPlayer then
+		if commandData.VManipAnim then 
+		   if commandData.VManipDirect then
+			VManip:PlayAnimInsidePVS(table.Random(commandData.VManipAnim),team.GetPlayers(LocalPlayer():Team()))
+		   else 
+			VManip:PlayAnim(table.Random(commandData.VManipAnim))
+		   end
+		elseif commandData.VManipOverride then
+		   commandData.VmanipOverride()
+		end 
+	end
 	
 	math.randomseed(seed) -- set seed to CurTime so that the variant of the voice command is synced with everyone else
 	local variation = variations[math.random(1, #variations)]

@@ -5,19 +5,25 @@ util.AddNetworkString("updateclientcvar")
 local pl = FindMetaTable("Player")
 
 function pl:ResetClassInfo()
-   self.plclass = player_manager.GetPlayerClasses()[player_manager.GetPlayerClass(self)]
-   if GAMEMODE.abilityEnabled then
-	 if self.plclass.DisplayName == "Commander" then
-		self:GiveAbility(1)
-	   elseif self.plclass.DisplayName == "Specialist" then 
-		self:GiveAbility(math.random(2,table.Count(abilities)))
+	local class = player_manager.GetPlayerClass(self)
+    --[[if !self.classcheckcomplete then
+		print("Players class was changed cus class check isnt completed")
+		class = "soldier"
+	end--]]
+   self.plclass = player_manager.GetPlayerClasses()[class]
+    if GAMEMODE.abilityEnabled then
+	   if self.plclass.AbilityTable then
+		self:GiveAbility(table.Random(self.plclass.AbilityTable))
+	   elseif self.plclass.RandomAbility then 
+		self:GiveAbility(table.Random(abilities))
 	   else 
 		self:DeathAbility(true)
-	 end
+	   end
 	else
 		self:DeathAbility(true)
-   end
+    end
    net.Start("classinfo")
+   net.WriteString(class)
    net.Send(self)
 end 
 
@@ -92,7 +98,7 @@ function GM:StartNewVote()
       net.Start("NewVote_Start")
 	  net.Send(v)
    end 
-   timer.Create("VoteTimer",35,1,function()
+   timer.Create("VoteTimer",self.NewVoteTime + 5,1,function()
 	self:EndNewVote()
    end)
    
@@ -142,7 +148,7 @@ end)
 hook.Add("ShutDown","NewVoteBeforeShutDown",function()
 	for cvar,bool in pairs(ShutDownCVars) do
 		GetConVar(cvar):SetInt(bool)
-		print("Mega geistvo")
+		--print("Mega geistvo")
 	end
 end)
 

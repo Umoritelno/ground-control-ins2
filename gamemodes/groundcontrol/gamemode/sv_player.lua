@@ -674,7 +674,7 @@ function GM:PlayerDisconnected(ply)
 		self.curGametype:playerDisconnected(ply)
 	end
 
-	if self:isPreparationPeriod() and GAMEMODE.rolesenable then
+	if self:isPreparationPeriod() and GetGlobalBool("RolesEnabled") then
 		ply:RoleReRoll()
 	end
 	

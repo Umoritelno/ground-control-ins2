@@ -310,10 +310,26 @@ function SWEP:DrawHUD()
 	
 	local disableCrosshair, disableCustomHUD, disableTabDisplay = CustomizableWeaponry.callbacks.processCategory(self, "suppressHUDElements", customHUD)
 	
-	if not disableCrosshair then
-		if self.CrosshairEnabled and GetConVarNumber("cw_crosshair") > 0 then
+	--if not disableCrosshair then
+		if self.CrosshairEnabled and GetConVarNumber("gc_crosshair_enable") > 0 and GetGlobalBool("CrosshairEnabled") then
 			lp = self.Owner:ShouldDrawLocalPlayer()
+			local muzzleorient = self:getMuzzlePosition()
+			local muzzlepos,muzzleang = muzzleorient.Pos,muzzleorient.Ang
+			muzzlepos = muzzlepos + muzzleang:Forward() * 150 -- forward bonus
+			--muzzlepos = muzzlepos + muzzleang:Up() * -0.7-- forward bonus
+
+		    if self.dt.State == CW_AIMING or self.dt.State == CW_RUNNING or self.GlobalDelay > CurTime() then
+				self.CrossAlpha = math.Approach(self.CrossAlpha,0,FT * 750)
+			else
+				self.CrossAlpha = math.Approach(self.CrossAlpha,255,FT * 1500)
+			end
+
+			local muzzlevector2 = muzzlepos:ToScreen()
 			
+			draw.RoundedBox(0,muzzlevector2.x,muzzlevector2.y,5,2,Color(255,255,255,self.CrossAlpha))--]]
+			draw.RoundedBox(0,muzzlevector2.x + 25,muzzlevector2.y,25,1,Color(255,255,255,self.CrossAlpha))--]]
+			draw.RoundedBox(0,muzzlevector2.x - 45,muzzlevector2.y,25,1,Color(255,255,255,self.CrossAlpha))--]] 
+			--[[
 			if lp or self.freeAimOn then
 				td.start = self.Owner:GetShootPos()
 				td.endpos = td.start + (self.Owner:EyeAngles() + self.Owner:GetPunchAngle()):Forward() * 16384
@@ -396,9 +412,9 @@ function SWEP:DrawHUD()
 			
 			if self.CrosshairParts.lower then
 				surface.DrawRect(x2, y2 + crossThickBg + 1 + crossAmt, crossThick, crossLength) -- lower cross
-			end
+			end]]
 		end
-	end
+	--end
 	
 	if not disableCustomHUD then
 		local customHUD = GetConVarNumber("cw_customhud") >= 1

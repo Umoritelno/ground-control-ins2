@@ -42,6 +42,7 @@ local horizontalBoundary, verticalBoundary = 75, 75
 
 function ENT:drawHUD()
 	local x, y = ScrW(), ScrH()
+	local lang = GetCurLanguage().gametypes
 	local midX = x * 0.5
 	
 	local topSize = _S(self.topSize)
@@ -104,7 +105,7 @@ function ENT:drawHUD()
 		
 		white.a = 255 * alpha
 		black.a = 255 * alpha
-		draw.ShadowText("Capture " .. self.PointName[self.dt.PointID], "GC_HUD14", baseX, baseY - sixteenScaled, white, black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.ShadowText(lang.Rush["Capture"] .. self.PointName[self.dt.PointID], "GC_HUD14", baseX, baseY - sixteenScaled, white, black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		white.a = 255
 		black.a = 255
 	end
@@ -116,9 +117,9 @@ function ENT:drawHUD()
 		local finalText = nil 
 		
 		if CurTime() < self.dt.Cooldown then
-			finalText = string.easyformatbykeys(self.cooldownText, "TIME", os.date("%M:%S", self.dt.Cooldown - CurTime()))
+			finalText = string.easyformatbykeys(lang.Urban["Cooldown"], "TIME", os.date("%M:%S", self.dt.Cooldown - CurTime()))
 		else
-			finalText = self.captureText .. self.PointName[self.dt.PointID]
+			finalText = lang.Urban["CaptureStatus"] .. self.PointName[self.dt.PointID]
 		end
 		
 		draw.ShadowText(finalText, "GC_HUD24", midX, midY, white, black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -136,7 +137,7 @@ function ENT:drawHUD()
 		surface.DrawRect(midX + twoScaled - capBarWidth * 0.5, midY + _S(17), (capBarWidth - fourScaled) * percentage, capBarHeight - fourScaled)
 		
 		if self.dt.CaptureSpeed ~= 0 then
-			draw.ShadowText("SPEED: x" .. math.Round(self.dt.CaptureSpeed, 2), "GC_HUD24", midX, midY + capBarHeight + draw.GetFontHeight("GC_HUD24") + _S(5), white, black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.ShadowText(lang.Rush["Speed"] .. math.Round(self.dt.CaptureSpeed, 2), "GC_HUD24", midX, midY + capBarHeight + draw.GetFontHeight("GC_HUD24") + _S(5), white, black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		end
 	end
 	
@@ -184,6 +185,6 @@ function ENT:drawHUD()
 	surface.DrawRect(midX + _S(59), baseY + twoScaled, length, sixteenScaled)
 	
 	local scaled25 = _S(25)
-	draw.ShadowText("US: " .. ourTickets, "GC_HUD20", midX - _S(60), scaled25, GAMEMODE.HUDColors.white, GAMEMODE.HUDColors.black, 1, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
-	draw.ShadowText("ENEMY: " .. enemyTickets, "GC_HUD20", midX + _S(62), scaled25, GAMEMODE.HUDColors.white, GAMEMODE.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	draw.ShadowText(lang.Urban["Sides"]["US"] .. ourTickets, "GC_HUD20", midX - _S(60), scaled25, GAMEMODE.HUDColors.white, GAMEMODE.HUDColors.black, 1, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+	draw.ShadowText(lang.Urban["Sides"]["Enemy"] .. enemyTickets, "GC_HUD20", midX + _S(62), scaled25, GAMEMODE.HUDColors.white, GAMEMODE.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end

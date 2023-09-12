@@ -116,3 +116,7 @@ hook.Add("AchievementEarned","GroundControl_AchievmentEarned",function(ply,id)
     GAMEMODE:sendEvent(ply, "ACHIV_EARNED", reward)
 end)
 
+hook.Add("PlayerAbilityUse","AchivsAbilityUse",function(ply)
+    ply:GiveAchievementProgress("spec",1)
+end)
+

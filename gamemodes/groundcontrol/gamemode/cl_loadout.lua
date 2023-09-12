@@ -67,6 +67,8 @@ function GM:toggleLoadoutMenu()
 		return
 	end
 	
+	local lang = GetCurLanguage().loadoutmenu
+	
 	RunConsoleCommand("gc_request_data")
 	
 	local panel = vgui.Create("GCFrame")
@@ -91,7 +93,11 @@ function GM:toggleLoadoutMenu()
 	local primaryWeapon = vgui.Create("GCCurWeaponPanel", panel)
 	primaryWeapon:SetPos(5, 30)
 	primaryWeapon:SetSize(elementWidth, 65)
+
 	primaryWeapon:SetConVar("gc_primary_weapon", true)
+	if primaryWeapon.TFAWep then
+		primaryWeapon.weaponStats:SetHeight(35)
+	end
 	
 	self.PrimaryWeaponDisplay = primaryWeapon
 	
@@ -99,6 +105,9 @@ function GM:toggleLoadoutMenu()
 	secondaryWeapon:SetPos(5, 100)
 	secondaryWeapon:SetSize(elementWidth, 65)
 	secondaryWeapon:SetConVar("gc_secondary_weapon", false)
+	if secondaryWeapon.TFAWep then
+		secondaryWeapon.weaponStats:SetHeight(35)
+	end
 	secondaryWeapon:setRandomColorOffset(0.75)
 	
 	self.SecondaryWeaponDisplay = secondaryWeapon
@@ -125,7 +134,7 @@ function GM:toggleLoadoutMenu()
 	
 	local bandageText = vgui.Create("DLabel", panel)
 	bandageText:SetFont("CW_HUD20")
-	bandageText:SetText("Bandages")
+	bandageText:SetText(lang.Bandages)
 	bandageText:SetPos(560, 30)
 	bandageText:SetTextColor(self.HUDColors.white)
 	bandageText:SizeToContents()
@@ -140,8 +149,10 @@ function GM:toggleLoadoutMenu()
 	
 	local bandageText = vgui.Create("DLabel", panel)
 	bandageText:SetFont("CW_HUD20")
-	bandageText:SetText("Spare ammo")
-	bandageText:SetPos(542, 70)
+	bandageText:SetText(lang.SpareAmmo)
+	surface.SetFont("CW_HUD20")
+	bandageText.TextSize = surface.GetTextSize(bandageText:GetText())
+	bandageText:SetPos(640 - (bandageText.TextSize * 1.1), 70)
 	bandageText:SetTextColor(self.HUDColors.white)
 	bandageText:SizeToContents()
 	

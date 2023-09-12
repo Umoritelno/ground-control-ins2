@@ -52,11 +52,11 @@ function GM:drawArmor(ply, baseX, baseY)
 			if data.alpha > 0 then
 				white.a, black.a = white.a * data.alpha, black.a * data.alpha
 				
-				--urface.SetDrawColor(255, 255 - data.red, 255 - data.red, 255 * data.alpha)
-				--surface.SetTexture(data.armorData.icon)
-				--surface.DrawTexturedRect(curPos, baseY - iconOffsetY, iconSize, iconSize)
+				surface.SetDrawColor(255, 255 - data.red, 255 - data.red, 255 * data.alpha)
+				surface.SetTexture(data.armorData.icon)
+				surface.DrawTexturedRect(curPos, baseY - iconOffsetY, iconSize, iconSize)
 				
-				--draw.ShadowText(math.max(math.Round(data.health / data.armorData.health * 100), 0) .. "%", self.GadgetDisplayFont, curPos + spacing * 0.5 - textOff, baseY, white, black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				draw.ShadowText(math.max(math.Round(data.health / data.armorData.health * 100), 0) .. "%", self.GadgetDisplayFont, curPos + spacing * 0.5 - textOff, baseY, white, black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			end
 			
 			offset = offset - spacing

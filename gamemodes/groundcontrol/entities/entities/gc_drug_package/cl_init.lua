@@ -26,6 +26,7 @@ end
 local white, black = Color(255, 255, 255, 255), Color(0, 0, 0, 255)
 
 function ENT:Draw()
+	local lng = GetCurLanguage().gametypes.Drugbust
 	self:DrawModel()
 	
 	local ply = LocalPlayer()
@@ -47,7 +48,7 @@ function ENT:Draw()
 		surface.SetDrawColor(clrs.r, clrs.g, clrs.b, clrs.a)
 		surface.DrawRect(-self.halfBaseHorSize, 0, self.baseHorSize, self.vertFontSize)
 		
-		draw.ShadowText("Drugs", baseFont, 0, self.halfVertFontSize, white, black, 2, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.ShadowText(lang["Drugs"], baseFont, 0, self.halfVertFontSize, white, black, 2, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	cam.End3D2D()
 end
 
@@ -56,6 +57,7 @@ local horizontalBoundary, verticalBoundary = 75, 75
 local point = surface.GetTextureID("ground_control/hud/point_of_interest")
 
 function ENT:drawHUD()
+	local lng = GetCurLanguage().gametypes.Drugbust
 	if not self.inRange then
 		local ply = LocalPlayer()
 		
@@ -71,10 +73,10 @@ function ENT:drawHUD()
 		local alpha = ply.hasDrugs and 0.4 or 1
 			
 		if self.dt.Dropped then
-			text = team == gametype.loadoutTeam and self.CaptureText or self.RetrieveAndProtect
+			text = team == gametype.loadoutTeam and lng["Capture"] or lng["Retrieve&Protect"]
 			alpha = alpha * (0.25 + 0.75 * math.flash(CurTime(), 1.5))
 		else
-			text = team == gametype.loadoutTeam and self.AttackAndCapture or self.ProtectText
+			text = team == gametype.loadoutTeam and lng["Attack&Capture"] or lng["Protect"]
 		end
 
 		local baseX, baseY = math.Clamp(screen.x, _S(horizontalBoundary), w - _S(horizontalBoundary)), math.Clamp(screen.y, _S(verticalBoundary), h - _S(200))

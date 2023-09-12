@@ -126,7 +126,7 @@ function HudAbility(name,desc,icon)
 end
 
 net.Receive("AbilityHUD",function()
-    local id = net.ReadInt(32)
+    local id = net.ReadString()
 
     local origAbility = abilities[id]
     LocalPlayer().Ability = {}
@@ -154,7 +154,6 @@ net.Receive("SkanDeath",function()
 end)
 
 net.Receive("SkanAbility",function()
-    print("Test")
     timer.Simple(2,function()
 
         for k,v in ipairs(ents.FindInSphere(LocalPlayer():GetPos(),5000)) do

@@ -176,6 +176,7 @@ function spareAmmo:shouldRemove(ply, gadgetData)
 end
 
 function spareAmmo:draw(x, y)
+	local lang = GetCurLanguage().gadgets["spareammo"]
 	local offseterinos = _S(50)
 	
 	surface.SetDrawColor(255, 255, 255, 255)
@@ -184,7 +185,7 @@ function spareAmmo:draw(x, y)
 	
 	local textXOff = _S(25)
 	
-	draw.ShadowText(GAMEMODE:getKeyBind(self.useKey) .. " " .. self.display, GAMEMODE.GadgetDisplayFont, x + textXOff, y, GAMEMODE.HUDColors.white, GAMEMODE.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	draw.ShadowText(GAMEMODE:getKeyBind(self.useKey) .. " " .. lang.Display, GAMEMODE.GadgetDisplayFont, x + textXOff, y, GAMEMODE.HUDColors.white, GAMEMODE.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	draw.ShadowText("x" .. self.uses, GAMEMODE.GadgetDisplayFont, x + textXOff, y + _S(15), GAMEMODE.HUDColors.white, GAMEMODE.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 end
 

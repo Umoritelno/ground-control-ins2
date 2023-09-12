@@ -171,7 +171,7 @@ hook.Add("Move", "TFALeanThink", function(ply)
 		end
 	end
 	--]]
-    if !GAMEMODE.LeanEnabled then
+    if !GetGlobalBool("LeanEnabled") then
 		ply:SetNW2Int("TFALean", 0)
 		return 
 	else 
@@ -202,7 +202,7 @@ hook.Add( "PlayerButtonDown", "ButtonUpLeanController", function( ply, button )
     if button == ply:GetNWInt("leanrightKey",82) then
         ply.rightBool = true
     end--]]
-	if !GAMEMODE.LeanEnabled then return end 
+	if !GetGlobalBool("LeanEnabled") then return end 
 	if (ply.LeanCD or 0) <= CurTime() then
 		ply.LeanCD = CurTime() + 1.75
 		if button == ply:GetNWInt("leanleftKey",81) then

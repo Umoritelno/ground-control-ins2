@@ -455,13 +455,17 @@ function gcWeaponPanel:OnCursorEntered()
 		if self.descboxType == 1 then
 			local w, h = self:GetSize()
 			self.weaponStats = vgui.Create("GCWeaponStats")
-			self.weaponStats:SetSize(250, 185)
 			self.weaponStats:SetPos(x + w, y + h)
 			self.weaponStats:SetWeapon(self.weaponData, self.weaponID)
+			if self.weaponStats.TFAWep then
+				self.weaponStats:SetSize(250, 100)
+			else 
+				self.weaponStats:SetSize(250, 185)
+			end
 			--self.weaponStats:SetZPos(110)
 			self.weaponStats:SetDrawOnTop(true)
 			self.weaponStats:SetThoroughDescription(true)
-			self.weaponStats:SetBarGap(110)
+			self.weaponStats:SetBarGap(150)
 			self.weaponStats:AdjustBarSizeReduction()
 			GAMEMODE:ClampVGUIPosition(self.weaponStats)
 		else
@@ -730,6 +734,9 @@ function curWeaponPanel:UpdateWeapon(wepId)
 	self:SetModel(self.weaponData.weaponObject.WorldModel)
 	self:SetDistance()
 	self.weaponStats:SetWeapon(self.weaponData, self.weaponID)
+	if self.weaponStats.TFAWep then
+		self.TFAWep = true
+	end
 	self.Entity.shouldDraw = true
 	self.acknowledged = false
 	
@@ -821,8 +828,8 @@ end
 vgui.Register("GCCurWeaponPanel", curWeaponPanel, "GCWeaponPanel")
 
 local weaponStats = {}
-weaponStats.barGap = 70
-weaponStats.barSizeReduction = 40
+weaponStats.barGap = 120
+weaponStats.barSizeReduction = 0
 
 function weaponStats:Init()
 	self.largestTextSize = 0
@@ -837,6 +844,9 @@ function weaponStats:SetWeapon(weaponData, id)
 	self.weaponID = id
 	self.weaponData = weaponData
 	self.weaponObject = self.weaponData.weaponObject
+	if string.find(self.weaponObject.Base,"tfa") then
+		self.TFAWep = true
+	end
 	
 	local targetTable = nil
 	
@@ -907,6 +917,21 @@ function weaponStats:Paint()
 	    surface.DrawRect(1, 1, w - 2, h - 2) 
 	
 	local White, Black = GAMEMODE.HUDColors.white, GAMEMODE.HUDColors.black
+
+	if self.TFAWep then
+		if wepClass then
+		   self:DrawStatBar(lang.Damage, math.Round(self.displayDamage or 25 * GAMEMODE.DamageMultiplier) .. "x" .. self.displayShots, self.displayDamage * self.displayShots, targetTable.damage, 10, w)
+		   self:DrawStatBar(lang.Recoil, "x" .. math.Round(self.displayRecoil, 1), self.displayRecoil, targetTable.recoil, 25, w)
+	    end
+	
+	  if self.thoroughDescription then
+		self:DrawStatBar(lang.Hip, 100 - math.Round(wepClass.HipSpread * 1000) .. "%", targetTable.hipSpread, wepClass.HipSpread, 40, w)
+		self:DrawStatBar(lang.Weight, math.Round(wepClass.weight, 2) .. "KG", wepClass.weight, targetTable.weight, 55, w)
+		self:DrawStatBar(lang.MagWeight, math.Round(wepClass.magWeight, 2) .. "KG", wepClass.magWeight, targetTable.magWeight, 70, w)
+		self:DrawStatBar(lang.Pen, wepClass.penetrationValue, wepClass.penetrationValue, targetTable.penetrationValue, 85, w)
+	  end
+	  return
+	end
 	
 	
 	if wepClass then
@@ -1667,32 +1692,48 @@ end
 vgui.Register("GCGenericDescbox", genericDescbox, "Panel")
 
 local roundOver = {}
-local lang = GetCurLanguage()
-roundOver.bottomText = lang.round_end
 roundOver.font = "GC_HUD24"
 
 function roundOver:Init()
+	local lang = GetCurLanguage()
 	self.alpha = 0
 	self.existTime = 0
+    self.topText = lang.round_win
+    self.bottomText = lang.round_end
+	self.MaxLength = {
+		x = 0,
+		y = 0,
+	}
 	
 	if IsValid(GAMEMODE.lastPopup) then
 		GAMEMODE.lastPopup:Remove()
 	end
 end
 
+function roundOver:CheckTextLength()
+	surface.SetFont(self.font)
+	local x1 = surface.GetTextSize(self.winningTeamName or self.topText)
+	local x2 = surface.GetTextSize(self.bottomText)
+	print(self.bottomText)
+	self.MaxLength.x = math.max(x1,x2)
+end
+
 function roundOver:SetWinningTeam(winTeam)
 	self.winningTeam = winTeam
-	self.winningTeamName = string_format(GetCurLanguage().round_win,team.GetName(winTeam))
+	self.winningTeamName = string_format(self.topText,team.GetName(winTeam))
+	self:CheckTextLength()
 	self:stretchToText(self.winningTeamName)
 end
 
 function roundOver:SetTopText(text)
 	self.winningTeamName = text
+	self:CheckTextLength()
 	self:stretchToText(self.winningTeamName)
 end
 
 function roundOver:SetBottomText(text)
 	self.bottomText = text
+	self:CheckTextLength()
 	self:stretchToText(self:GetFinalBottomText())
 end
 
@@ -1738,8 +1779,18 @@ vgui.Register("GCRoundOver", roundOver, "GCGenericPopup")
 local roundPrepare = {}
 
 function roundPrepare:Init()
+	local lang = GetCurLanguage()
+	self.prepareText = lang.round_prepare
+	self.roundStartText = lang.round_start
 	self.alpha = 0
 	self.existTime = 0
+	surface.SetFont(GAMEMODE.PopupFont)
+	local x1,y1 = surface.GetTextSize(self.prepareText)
+	local x2,y2 = surface.GetTextSize(self.roundStartText)
+    self.MaxLength = {
+	 x = math.max(x1,x2),
+	 y = math.max(y1,y2),
+    }
 end
 
 function roundPrepare:SetPrepareTime(time)
@@ -1747,7 +1798,6 @@ function roundPrepare:SetPrepareTime(time)
 end
 
 function roundPrepare:Paint()
-	local lang = GetCurLanguage()
 	if CurTime() > self.existTime then
 		self.alpha = math.Approach(self.alpha, 0, FrameTime() * 8)
 		
@@ -1769,9 +1819,9 @@ function roundPrepare:Paint()
 	surface.DrawRect(0, 0, w, h)
 	
 	local yOff = _S(12)
-	draw.ShadowText(lang.round_prepare, GAMEMODE.PopupFont, w * 0.5, yOff, White, Black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-	draw.ShadowText(string_format(lang.round_start,math.ceil(self.existTime + 1 - CurTime())), GAMEMODE.PopupFont, w * 0.5, h - yOff, White, Black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-	
+	draw.ShadowText(self.prepareText, GAMEMODE.PopupFont, w * 0.5, yOff, White, Black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	draw.ShadowText(string_format(self.roundStartText,math.ceil(self.existTime + 1 - CurTime())), GAMEMODE.PopupFont, w * 0.5, h - yOff, White, Black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+
 	White.a = 255
 	Black.a = 255
 end
@@ -1953,13 +2003,16 @@ function gcArmorDisplay:OnCursorEntered()
 		self.descBox:SetDrawOnTop(true)
 		
 		if self.armorData then
-			self.descBox:InsertText(self.armorData.displayName, "CW_HUD28", 0)
-			self.descBox:InsertText(self.armorData.description, "CW_HUD20", 0)
+			self.descBox:InsertText(stats.Actual[self.armorData.id].Name, "CW_HUD28", 0)
+			self.descBox:InsertText(stats.Actual[self.armorData.id].Desc, "CW_HUD20", 0)
 			self.descBox:InsertText(string_format(stats.Integrity,self.armorData.health), "CW_HUD20", 0)
 			self.descBox:InsertText(string_format(stats.Weight,self.armorData.weight), "CW_HUD16", 0)
 			self.descBox:InsertText(string_format(stats.MaxPen,self.armorData.protection), "CW_HUD16", 0)
 			self.descBox:InsertText(string_format(stats.TraumReduc,math.Round(self.armorData.damageDecrease * 100, 1)) .. " %", "CW_HUD16", 0)
 			self.descBox:InsertText(string_format(stats.DamReduc,math.Round(self.armorData.damageDecreasePenetration * 100, 1)) .. " %", "CW_HUD16", 0)
+			if self.armorData.stunReduce then
+				self.descBox:InsertText(string_format(stats.StunReduc,1 - self.armorData.stunReduce) .. " %", "CW_HUD16", 0)
+			end
 		else
 			self.descBox:InsertText(stats.NoArmor, "CW_HUD20", 0)
 			self.descBox:InsertText(stats.Bleeding, "CW_HUD20", 0)
@@ -2189,12 +2242,13 @@ function gcTraitPanel:OnCursorEntered(w, h)
 		
 		local traitLevel = ply.traits and ply.traits[self.traitData.id] or 0
 		local active = self:IsTraitActive()
+		local traitTrans = lang.Actual[self.traitData.id]
 		
 		if traitLevel > 0 and not active then
-			self.descBox:InsertText(self.traitData.display .. "("..lang.Inactive")", "CW_HUD28", 0)
+			self.descBox:InsertText(traitTrans.Name .. "("..lang.Inactive..")", "CW_HUD28", 0)
 			self.descBox:InsertText(lang.ActivateTip, "CW_HUD20", 0)
 		else
-			self.descBox:InsertText(self.traitData.display, "CW_HUD28", 0)
+			self.descBox:InsertText(traitTrans.Name, "CW_HUD28", 0)
 		end
 		
 		local levelText = string_format(lang.Level,(traitLevel and traitLevel or 0),self.traitData.maxLevel) --(traitLevel and traitLevel or 0) .. "/" .. self.traitData.maxLevel
@@ -2212,8 +2266,11 @@ function gcTraitPanel:OnCursorEntered(w, h)
 			unlockText = unlockText .. string_format(lang.CashHave,ply.cash)
 			self.descBox:InsertText(unlockText, "CW_HUD20")
 		end
-		
-		self.descBox:SetText(self.traitData.description)
+		if !traitTrans.Desc.Completed then
+			table.InheritLoop(traitTrans.Desc,self.traitData.description,{})
+			traitTrans.Desc.Completed = true 
+		end
+		self.descBox:SetText(traitTrans.Desc) --self.traitData.description
 		
 		GAMEMODE.traitDescBox = self.descBox
 	end
@@ -2336,7 +2393,7 @@ function gcKillerDisplay:SetKillData(killer, inflictorData)
 			self.teamKill = killer:Team() == lply:Team()
 			
 			if math.random(1, 100) <= 25 then
-				self.killerText = lang.Random
+				self.killerText = table.Random(lang.Random)
 			end
 		end
 	else

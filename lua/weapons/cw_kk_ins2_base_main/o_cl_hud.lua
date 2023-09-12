@@ -24,11 +24,11 @@ function SWEP:getMagCapacity()
 		return mag
 	end
 
-	if mag > self.Primary.ClipSize_Orig and !GAMEMODE.AmmoTextChanged then -- and !GAMEMODE.AmmoTextChanged
+	if mag > self.Primary.ClipSize_Orig and !GetGlobalBool("AmmoTextChanged") then -- and !GAMEMODE.AmmoTextChanged
 		return self.Primary.ClipSize_Orig .. " + " .. mag - self.Primary.ClipSize_Orig
 	end
 
-	if GAMEMODE.AmmoTextChanged then
+	if GetGlobalBool("AmmoTextChanged") then
 		return text 
 	else 
 		return mag 
@@ -61,6 +61,7 @@ SWEP.HUD_3D2d_ReserveColor = Color(255, 255, 255, 255)
 local bullet = surface.GetTextureID("cw2/gui/bullet")
 
 function SWEP:draw3D2DHUD()
+	if GetGlobalBool("AmmoTextDisabled") then return end 
 	local att = self:getMuzzlePosition()
 	local ang = EyeAngles()
 	ang:RotateAroundAxis(ang:Right(), 90)

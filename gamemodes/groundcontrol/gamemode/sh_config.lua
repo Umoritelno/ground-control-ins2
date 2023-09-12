@@ -62,16 +62,23 @@ function GM:parseARC9Weapon(data)
     return output
 end
 
+
+GM.NewVoteTime = 35
 GM.NewGolosArgs = {
 {helptext = "Enable class system?",cvar = "gc_roles_enable"},
 {helptext = "Enable crippling mechanic?",cvar = "gc_crippling"},
 {helptext = "Enable NVGs?",cvar = "gc_nvg_enable"},
-{helptext = "Draw ammo for CW 2.0 weapon more realistic(or stupid)",cvar = "gc_ammotextOverride_enable"},
+{helptext = "Draw ammo for CW 2.0 weapon more realistic or stupid(Wont work with holographic HUD disabled)",cvar = "gc_ammotextOverride_enable"},
+{helptext = "Hide holographic ammo HUD for weapons?",cvar = "gc_ammotextHide_enable"},
+{helptext = "Draw crosshair for weapons?",cvar = "gc_crosshair_sv_enable"},
 {helptext = "Enable special rounds?",cvar = "gc_specround_enable"},
 {helptext = "Enable abilities for classes?(Wont work without classes enable)",cvar = "gc_abil_enable"}, 
 {helptext = "Enable team damage?",cvar = "gc_team_damage"},
 {helptext = "Enable leaning?",cvar = "gc_lean_enable"},
 {helptext = "Enable stun mechanic?",cvar = "gc_stun_enable"},
+{helptext = "Give only the commander the opportunity to distinguish allies?",cvar = "gc_commander_visibility"},
+{helptext = "Enable VManip animations?",cvar = "gc_vmanip_enable"},
+{helptext = "Enable ability to hear only teammates?",cvar = "gc_proximity_voicechat"}, --gc_proximity_voicechat
 } --
 
 --[[

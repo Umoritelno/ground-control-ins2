@@ -870,6 +870,7 @@ function SWEP:getShouldDrawAmmoText()
 end
 
 function SWEP:draw3D2DHUD()
+	if GetGlobalBool("AmmoTextDisabled") then return end 
 	local att = self:getMuzzlePosition()
 	
 	if not att then
@@ -911,11 +912,11 @@ function SWEP:draw3D2DHUD()
 			self.HUD_3D2D_MagColor.a = self.HUD_3D2DAlpha
 			
 			-- only show the reload progress if we're reloading
-			if reloadProgress then
-				draw.ShadowText("RELOADING " .. reloadProgress .. "%", "CW_HUD60", 90, 50, self.HUD_3D2D_MagColor, self.HUDColors.black, 2, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
-			else
-				draw.ShadowText(self:getMagCapacity() .. " / " .. self:getReserveAmmoText(), "CW_HUD60", 90, 50, self.HUD_3D2D_MagColor, self.HUDColors.black, 2, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
-			end
+			 if reloadProgress then
+				 draw.ShadowText("RELOADING " .. reloadProgress .. "%", "CW_HUD60", 90, 50, self.HUD_3D2D_MagColor, self.HUDColors.black, 2, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+			 else
+				 draw.ShadowText(self:getMagCapacity() .. " / " .. self:getReserveAmmoText(), "CW_HUD60", 90, 50, self.HUD_3D2D_MagColor, self.HUDColors.black, 2, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+			 end
 			
 			if self.BulletDisplay and self.BulletDisplay > 0 then
 				local bulletDisplayAlpha = self.HUD_3D2DAlpha

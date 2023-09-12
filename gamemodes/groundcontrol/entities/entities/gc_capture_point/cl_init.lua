@@ -42,6 +42,7 @@ local horizontalBoundary, verticalBoundary = 75, 75
 function ENT:drawHUD()
 	local x, y = ScrW(), ScrH()
 	local midX = x * 0.5
+	local lang = GetCurLanguage().gametypes.Rush
 	
 	local topSize = _S(self.topSize)
 	local topSizeSpaced = _S(self.topSize + self.spacing)
@@ -102,7 +103,7 @@ function ENT:drawHUD()
 		white.a = 255 * alpha
 		black.a = 255 * alpha
 		
-		draw.ShadowText((sameTeam and "Capture " or "Protect ") .. self.PointName[self.dt.PointID], "GC_HUD14", baseX, baseY - _S(16), white, black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.ShadowText(lang["Capture&Protect"][sameTeam] .. self.PointName[self.dt.PointID], "GC_HUD14", baseX, baseY - _S(16), white, black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		
 		white.a = 255
 		black.a = 255
@@ -112,7 +113,7 @@ function ENT:drawHUD()
 	
 	if ply:Alive() and ply:GetPos():Distance(pos) <= self.dt.CaptureDistance then
 		local midX, midY = x * 0.5, y * 0.5 + _S(150)
-		local desiredText = sameTeam and self.captureText or self.defendText
+		local desiredText = lang["Status"][sameTeam]
 		draw.ShadowText(desiredText .. self.PointName[self.dt.PointID], "GC_HUD24", midX, midY, white, black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		
 		local capBarWidth = _S(self.capBarWidth)
@@ -129,7 +130,7 @@ function ENT:drawHUD()
 		surface.DrawRect(midX + twoScaled - capBarWidth * 0.5, midY + _S(17), (capBarWidth - fourScaled) * percentage, capBarHeight - fourScaled)
 		
 		if self.dt.CaptureSpeed ~= 0 then
-			draw.ShadowText("SPEED: x" .. math.Round(self.dt.CaptureSpeed, 2), "GC_HUD24", midX, midY + capBarHeight + draw.GetFontHeight("GC_HUD24") + _S(5), white, black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.ShadowText(lang["Speed"] .. math.Round(self.dt.CaptureSpeed, 2), "GC_HUD24", midX, midY + capBarHeight + draw.GetFontHeight("GC_HUD24") + _S(5), white, black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		end
 	end
 end

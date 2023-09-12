@@ -67,8 +67,8 @@ if CLIENT then
 		
 		local panel = vgui.Create("GCPanel")
 		panel:SetFont("GC_HUD20")
-		panel:SetText("Most Valuable Players")
-		panel:SetSize(_S(GAMEMODE.MVPPanelWidth), panelHeight)
+		panel:SetText(GetCurLanguage().MVPs.Title)
+		panel:SetSize(_S(GAMEMODE.MVPPanelWidth), panelHeight) --
 		panel:CenterHorizontal()
 		
 		local x, y = panel:GetPos()

@@ -5,24 +5,39 @@ local correctLanguageId = "english.lua" -- language we will use as example for f
 
 local languagesTable = file.Find("localization/*.lua","LUA")
 
+function table.InheritLoop(t,base,filter,keepfilteronchildren)
+    if !filter then
+        filter = {}
+    end
+    --[[local args = {...}
+    for _,val in pairs(args) do -- idea with filter table better then VarArgs I quess
+        args[val] = true 
+        val = nil 
+    end]]
+
+    for k, v in pairs( base ) do
+		if ( t[ k ] == nil ) then 
+            t[ k ] = v 
+            --print("Replaced slot["..k.."] using correct language")
+        elseif istable(t[k]) and !filter[k] then
+            if keepfilteronchildren then
+                table.InheritLoop(t[k],v,filter,true)
+            else
+                table.InheritLoop(t[k],v)
+            end 
+        end
+	end
+
+
+	return t
+end
+
 local function CheckLanguageCorrect(langtbl)
    if !correctLanguage then
       ErrorNoHalt("Correct language not found and can cause visual bugs(text drawing fails and etc). Report me for fixes")
       return 
    end
-
-   for k,v in pairs(correctLanguage) do
-    if !langtbl[k] or (istable(langtbl[k]) and table.IsEmpty(langtbl[k])) then
-        langtbl[k] = v
-    elseif istable(langtbl[k]) and k != "lastManPhrases" then 
-        local ktbl = langtbl[k]
-        for id,val in pairs(correctLanguage[k]) do
-            if !ktbl[id] then
-                ktbl[id] = val
-            end
-        end
-    end
-   end
+    table.InheritLoop(langtbl,correctLanguage,{"lastManPhrases","fontReplace","Random"},true)
 end 
 
 if table.HasValue(languagesTable,correctLanguageId) then
@@ -66,7 +81,7 @@ if CLIENT then
         shadow = false,
     })
 
-    local function CheckFontByLanguage()
+    function CheckFontByLanguage()
         local G = GM or GAMEMODE
         local replacetbl = GetCurLanguage().fontReplace
         if replacetbl then

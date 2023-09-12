@@ -33,6 +33,7 @@ end
 
 function ENT:drawHUD()
 	local ply = LocalPlayer()
+	local lang = GetCurLanguage().gametypes.Drugbust
 	
 	local pos = nil
 	
@@ -49,7 +50,7 @@ function ENT:drawHUD()
 	
 	if ply:Team() == GAMEMODE.curGametype.regularTeam then
 		if self.showDefendText then
-			text = self.PreventCaptureText
+			text = lang["PreventCapture"]
 			skipVisCheck = true
 			alpha = alpha * (0.2 + 0.8 * math.flash(CurTime(), 2))
 		else
@@ -57,11 +58,11 @@ function ENT:drawHUD()
 		end
 	else
 		if ply.hasDrugs then
-			text = self.DeliverText
+			text = lang["Deliver"]
 			skipVisCheck = true
 			alpha = alpha * (0.2 + 0.8 * math.flash(CurTime(), 2))
 		else
-			text = self.CaptureText
+			text = lang["DrugPoint"]
 		end
 	end
 	
