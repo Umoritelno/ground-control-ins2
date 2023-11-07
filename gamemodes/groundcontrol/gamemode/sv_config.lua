@@ -92,8 +92,8 @@ GM:ClearNewOption()
 function GM:StartNewVote()
 	if self.NewVoteOnline then return end 
 	self.NewVoteOnline = true
-	self.VotePlayersCount = #player.GetAll()
-   for k,v in pairs(player.GetAll()) do
+	self.VotePlayersCount = #player.GetHumans()
+   for k,v in pairs(player.GetHumans()) do
 	  self.NewVotedPlayers[v:SteamID64()] = false
       net.Start("NewVote_Start")
 	  net.Send(v)

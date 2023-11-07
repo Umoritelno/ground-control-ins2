@@ -616,7 +616,7 @@ function GM:ScalePlayerDamage(ply, hitGroup, dmgInfo)
 end
 
 function GM:PlayerSwitchFlashlight(ply)
-	return true
+	return false
 end
 
 function GM:SetupPlayerVisibility(ply, viewEnt)

@@ -101,8 +101,8 @@ function GM:checkRoundOverPossibility(teamId, ignoreDisplay)
 		if not ignoreDisplay then
 			self:createLastManStandingDisplay(teamId)
 		end
-		end
 	end
+end
 
 function GM:canRestartRound()
 	if GetConVarNumber("gc_randomly_pick_gametype_and_map") >= 1 then

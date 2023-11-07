@@ -1714,7 +1714,6 @@ function roundOver:CheckTextLength()
 	surface.SetFont(self.font)
 	local x1 = surface.GetTextSize(self.winningTeamName or self.topText)
 	local x2 = surface.GetTextSize(self.bottomText)
-	print(self.bottomText)
 	self.MaxLength.x = math.max(x1,x2)
 end
 
