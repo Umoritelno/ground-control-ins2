@@ -61,7 +61,7 @@ function GM:GetIDByName(name)
 		end
 	end
 	return id
-end 
+end
 
 --[[function GM:SetWeaponBaseID(id)
 	local wepvar = GetConVar("gc_wepbase")

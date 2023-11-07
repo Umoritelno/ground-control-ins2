@@ -1,11 +1,72 @@
+-- menu stuff start
+
 local creditslabels = {
     ["Spy"] = "Ground Control and CW 2.0 Creator",
     ["Knife Kitty"] = "KK Ins2 base creator",
     ["NextOren and RXSend developers"] = "Inspiration",
-    ["Toyka"] = "Insipiration and help with code",
+    ["Toyka"] = "Inspiration and help with code",
     ["LifeMod Developers"] = "Bloom settings and vignettes",
     ["-Spac3-"] = "Pidorasina ebannaya, not RXSend enjoyer",
 }
+local creditvignette = {
+    ["gradient-r"] = Material("vgui/gradient-r"),
+    ["gradient-l"] = Material("vgui/gradient-l"),
+    ["gradient-u"] = Material("vgui/gradient-u"),
+}
+
+local PANEL = {}
+PANEL.BarSpeed = 2
+
+function PANEL:Init()
+    self.BarStatus = 0
+end
+
+function PANEL:Paint(w,h)
+    if self:IsHovered() then
+            self.BarStatus = math.Clamp(self.BarStatus + self.BarSpeed * FrameTime(),0,1)
+        else
+            self.BarStatus = math.Clamp(self.BarStatus - self.BarSpeed * FrameTime(),0,1)
+    end
+    DisableClipping(true)
+    surface.SetDrawColor(48,48,48,self.BarStatus * 255)
+    surface.SetMaterial(creditvignette["gradient-l"])
+    surface.DrawTexturedRect(0,0,w * self.BarStatus,h)
+    draw.RoundedBox(0,5,h,w * self.BarStatus,1,Color(255,255,255))
+    draw.RoundedBox(0,0,2.5,5,h,Color(255,255,255,125))
+    DisableClipping(false)
+end 
+
+vgui.Register("MMButton",PANEL,"DButton")
+
+local PANEL = {}
+PANEL.VignetteSpeed = 2
+
+function PANEL:Init()
+    self.Header.Paint = function(s,w,h)
+        surface.SetDrawColor(64,64,64,self.VignetteStatus * 255)
+        surface.SetMaterial(creditvignette["gradient-u"])
+        DisableClipping(true)
+        surface.DrawTexturedRect(-4,0,w,h)
+        DisableClipping(false)
+    end
+    self.VignetteStatus = 0
+end
+
+function PANEL:Paint(w,h)
+    if self:GetExpanded() then
+        self.VignetteStatus = math.Clamp(self.VignetteStatus + self.VignetteSpeed * FrameTime(),0,1)
+    else
+        self.VignetteStatus = math.Clamp(self.VignetteStatus - self.VignetteSpeed * FrameTime(),0,1)
+    end
+    DisableClipping(true)
+    surface.SetDrawColor(255,255,255)
+    surface.DrawOutlinedRect(-5,0,w,h + 5,1.1)
+    DisableClipping(false)
+end 
+
+vgui.Register("MMCollapsible",PANEL,"DCollapsibleCategory")
+
+-- menu stuff end
 
 local tbl = {}
 tbl.FadeSpeed = 25
@@ -85,6 +146,11 @@ function tbl:Init()
                     credit:Dock(TOP)
                     credit:DockMargin(0,0,0,scrh * 0.01)
                     credit:SetText(k.." ".."-".."  "..v)
+                    credit.Paint = function(s,w,h)
+                        surface.SetMaterial(creditvignette["gradient-r"])
+                        surface.SetDrawColor(64,64,64,120)
+                        surface.DrawTexturedRect(0,0,w,h)
+                    end
                 end
             else
                 if not self.credits.InAnim then 
@@ -220,7 +286,7 @@ function tbl:Init()
                     
                     self.settings.VisualCollap.FilterBool = vgui.Create("DCheckBoxLabel",scroll)
                     self.settings.VisualCollap.FilterBool:SetText(CurLanguage.settings.FilterBool)
-                    self.settings.VisualCollap.FilterBool:SetConVar("BlueFilter")
+                    self.settings.VisualCollap.FilterBool:SetConVar("gc_filter_enable")
                     self.settings.VisualCollap.list:AddItem( self.settings.VisualCollap.FilterBool )
                     self.settings.VisualCollap.FilterColor = {}
 

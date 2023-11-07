@@ -22,7 +22,7 @@ PLAYER.AvoidPlayers			= false 		-- Automatically swerves around other players
 
 player_manager.RegisterClass("gc_base",PLAYER,"player_default")
 
-local PLAYER = {}
+PLAYER = {}
 PLAYER.DisplayName = "Soldier"
 PLAYER.Desc = "You are soldier. Stay close to the squad and follow the orders of the commander."
 PLAYER.SlowWalkSpeed		= 100		-- How fast to move when slow-walking (+WALK)
@@ -37,7 +37,7 @@ PLAYER.StartHealth			= 100		-- How much health we start with
 
 player_manager.RegisterClass("soldier",PLAYER,"gc_base")	
 
-local PLAYER = {}
+PLAYER = {}
 PLAYER.DisplayName = "Specialist"
 PLAYER.Desc = "You are specialist. Use your gear to complete the task."
 PLAYER.SlowWalkSpeed		= 100		-- How fast to move when slow-walking (+WALK)
@@ -53,7 +53,7 @@ PLAYER.RandomAbility = true
 
 player_manager.RegisterClass("spec",PLAYER,"gc_base")
 
-local PLAYER = {}
+PLAYER = {}
 PLAYER.DisplayName = "Commander"
 PLAYER.Desc = "You are commander of your squad. Lead your squad."
 PLAYER.SlowWalkSpeed		= 100		-- How fast to move when slow-walking (+WALK)
@@ -69,7 +69,7 @@ PLAYER.AbilityTable = {"skan"}
 
 player_manager.RegisterClass("cmd",PLAYER,"gc_base")	
 
-local PLAYER = {}
+PLAYER = {}
 PLAYER.DisplayName = "Demoman"
 PLAYER.Desc = "You are demoman. Use your weapon to wipe enemies off the face of the earth"
 PLAYER.SlowWalkSpeed		= 100		-- How fast to move when slow-walking (+WALK)
@@ -81,9 +81,10 @@ PLAYER.JumpPower			= 215		-- How powerful our jump should be
 PLAYER.MaxHealth			= 105		-- Max health we can have
 PLAYER.MaxStamina           = 75
 PLAYER.StartHealth			= 105		-- How much health we start with
+
 player_manager.RegisterClass("demo",PLAYER,"gc_base")	
 
-local PLAYER = {}
+PLAYER = {}
 PLAYER.DisplayName = "Rookie"
 PLAYER.Desc = "You are rookie. You have been demoted and have been stripped of your equipment"
 PLAYER.SlowWalkSpeed		= 70		-- How fast to move when slow-walking (+WALK)
@@ -95,5 +96,6 @@ PLAYER.JumpPower			= 150		-- How powerful our jump should be
 PLAYER.MaxHealth			= 70		-- Max health we can have
 PLAYER.MaxStamina           = 50
 PLAYER.StartHealth			= 70		-- How much health we start with
+
 player_manager.RegisterClass("rookie",PLAYER,"gc_base")
 

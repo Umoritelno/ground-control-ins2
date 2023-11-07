@@ -171,7 +171,7 @@ end)
 -- bloom end 
 
 
-local filter = CreateClientConVar("BlueFilter",0,true,false,"Will filter work?",0,1)
+local filter = CreateClientConVar("gc_filter_enable",0,true,false,"Will filter work?",0,1)
 -- filter rgb elements start
 local filterRed = CreateClientConVar("gc_filter_red","0",true,false,"The add color's red value. 0 (black) means no change.",0,0.05)
 local filterGreen = CreateClientConVar("gc_filter_green","0",true,false,"The add color's green value. 0 (black) means no change.",0,0.05)
