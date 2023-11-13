@@ -123,7 +123,7 @@ end
 
 
 net.Receive("NewVote_Get",function(len,ply)
-	if !GAMEMODE.NewVoteOnline then ErrorNoHalt("Vote isnt online") return end 
+	if !GAMEMODE.NewVoteOnline then ErrorNoHalt("[Ground Control] !Error!\nReason:'Trying to get vote from player when vote is offline'\n") return end 
 	local cvrs = net.ReadTable()
 	if !GAMEMODE.NewVotedPlayers[ply:SteamID64()] then
 		GAMEMODE.NewVotedPlayers[ply:SteamID64()] = true 
