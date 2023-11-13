@@ -34,7 +34,7 @@ end
 
 local function CheckLanguageCorrect(langtbl)
    if !correctLanguage then
-      ErrorNoHalt("Correct language not found and can cause visual bugs(text drawing fails and etc). Report me for fixes")
+      ErrorNoHalt("[Ground Control] !Error!\nReason:'Correct language not found and can cause visual bugs(text drawing fails and etc). Report me for fixes'\n")
       return 
    end
     table.InheritLoop(langtbl,correctLanguage,{"lastManPhrases","fontReplace","Random"},true)

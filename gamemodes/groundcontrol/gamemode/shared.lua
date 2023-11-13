@@ -34,10 +34,10 @@ GM.HeavyLandingVelocityToWeight = 0.03 -- multiply velocity by this much, if the
 GM.CurMap = string.lower(game.GetMap())
 GM.DefBase = 2
 GM.WepBases = {
-	[1] = {
-		class = "cw_base",
-		name = "CW 2.0 Default",
-	  },
+  [1] = {
+	class = "cw_base",
+	name = "CW 2.0 Default",
+  },
   [2] = {
 	class = "cw_kk",
 	name = "CW 2.0 Insurgency",
