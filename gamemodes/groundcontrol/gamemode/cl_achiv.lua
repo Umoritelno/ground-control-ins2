@@ -1,3 +1,9 @@
+local achivchatcolors = {
+    ["nick"] = Color(63,48,150),
+    ["standard"] = Color(150, 197, 255, 255),
+    ["achivname"] =  Color(125, 255, 125),
+}
+
 net.Receive("AchievementsMaster", function()
     local ply = net.ReadEntity()
     ply.AchMaster = true
@@ -18,20 +24,15 @@ end)
 -- Receive an achievement
 net.Receive("GetAchiv", function()
     local ply = net.ReadEntity()
+    if !ply or !ply:IsPlayer() or !IsValid(ply) then
+        return
+    end
     local id = net.ReadString()
     local localizedversion = GetCurLanguage().achivs[id]
-    local finalname = GAMEMODE.Achievements[id].Name
+    local finalname = GAMEMODE.Achievements[id] and GAMEMODE.Achievements[id].Name or "ERROR"
     if localizedversion and localizedversion.Name then
         finalname = localizedversion.Name
     end
     -- Chat
-    chat.AddText(Color(150, 197, 255, 255), "[", "Ground Control", "] ",Color(25,0,255), ply, COLOR_WHITE, " has earned ", Color(125, 255, 125), finalname, COLOR_WHITE, ".")
-    -- Sound
-    --ply:EmitSound("misc/achievement_earned.wav")
-    -- Create particles
-    --ParticleEffectAttach("bday_confetti", PATTACH_ABSORIGIN_FOLLOW, ply, 0)
-    --local data = EffectData()
-    --data:SetOrigin(ply:GetPos())
-    --util.Effect("PhyscannonImpact", data)
-
+    chat.AddText(achivchatcolors.standard, "[Ground Control] ",achivchatcolors.nick, ply , achivchatcolors.standard, " has earned ", achivchatcolors.achivname, finalname , achivchatcolors.standard, ".")
 end)
