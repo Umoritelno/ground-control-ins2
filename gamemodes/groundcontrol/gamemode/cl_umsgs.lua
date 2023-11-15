@@ -169,14 +169,15 @@ end
 usermessage.Hook("GC_AUTOBALANCED_TO_TEAM", GC_AUTOBALANCED_TO_TEAM)
 
 local function GC_NEW_TEAM(um)
+	local lang = GetCurLanguage()
 	if GAMEMODE.teamSwitchPopup then
 		GAMEMODE.teamSwitchPopup:Remove()
 		GAMEMODE.teamSwitchPopup = nil
 	end
 	
 	local popup = vgui.Create("GCGenericPopup")
-	popup:SetSize(_S(310), _S(50))
-	popup:SetText("You are now on " .. team.GetName(um:ReadShort()), "Acknowledge your new objectives.")
+	popup:SetSize(_S(310), _S(50))--
+	popup:SetText(string.format(lang.round_new_team_title,team.GetName(um:ReadShort())), lang.round_new_team_subtitle)
 	popup:SetExistTime(7)
 	popup:Center()
 	

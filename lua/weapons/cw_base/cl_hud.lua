@@ -41,6 +41,7 @@ local surface = surface
 local math = math
 local draw = draw
 local dst = draw.SimpleText
+local tl = util.TraceLine
 
 SWEP.HUD_HealthTextColor = Color(255, 255, 255, 255)
 SWEP.HUD_MagTextColor = Color(255, 255, 255, 255)
@@ -311,18 +312,22 @@ function SWEP:DrawHUD()
 	local disableCrosshair, disableCustomHUD, disableTabDisplay = CustomizableWeaponry.callbacks.processCategory(self, "suppressHUDElements", customHUD)
 	
 	--if not disableCrosshair then
-		if self.CrosshairEnabled and GetConVarNumber("gc_crosshair_enable") > 0 and GetGlobalBool("CrosshairEnabled") then
+		if self.CrosshairEnabled and GetConVarNumber("gc_crosshair_enable") > 0 and GetGlobalBool("CrosshairEnabled") then -- it get called with first equip in kk ins base for second
 			lp = self.Owner:ShouldDrawLocalPlayer()
 			local muzzleorient = self:getMuzzlePosition()
 			local muzzlepos,muzzleang = muzzleorient.Pos,muzzleorient.Ang
 			muzzlepos = muzzlepos + muzzleang:Forward() * 150 -- forward bonus
-			--muzzlepos = muzzlepos + muzzleang:Up() * -0.7-- forward bonus
 
 		    if self.dt.State == CW_AIMING or self.dt.State == CW_RUNNING or self.GlobalDelay > CurTime() then
 				self.CrossAlpha = math.Approach(self.CrossAlpha,0,FT * 750)
 			else
 				self.CrossAlpha = math.Approach(self.CrossAlpha,255,FT * 1500)
 			end
+
+			--[[muzzlepos = tl{
+				start = muzzleorient.Pos,
+				endpos = muzzlepos,
+			}.HitPos--]]
 
 			local muzzlevector2 = muzzlepos:ToScreen()
 			

@@ -11,8 +11,6 @@ local cv_autolean = CreateReplConVar("sv_tfa_lean_automatic", 1, "Automatically 
 if CLIENT then
     local lean1 = CreateClientConVar("gc_lean_left","81",true,true,"Button for left lean",1,159)
     local lean2 = CreateClientConVar("gc_lean_right","82",true,true,"Button for right lean",1,159)
-    --LocalPlayer():SetNWInt("leanleftKey",lean1:GetInt())
-    --LocalPlayer():SetNWInt("leanrightKey",lean2:GetInt())
 
     GM:registerAutoUpdateConVar("gc_lean_left",function(cnv,old,new)
         LocalPlayer():SetNWInt("leanleftKey",new)
@@ -185,26 +183,9 @@ hook.Add("Move", "TFALeanThink", function(ply)
 	end
 end)
 
-hook.Add( "PlayerButtonUp", "ButtonUpLeanController", function( ply, button )
-	--[[if button == ply:GetNWInt("leanleftKey",81) then
-        ply.leftBool = false 
-    end
-    if button == ply:GetNWInt("leanrightKey",82) then
-        ply.rightBool = false
-    end
-	--]]
-end)
-
 hook.Add( "PlayerButtonDown", "ButtonUpLeanController", function( ply, button )
-	--[[if button == ply:GetNWInt("leanleftKey",81) then
-        ply.leftBool = true 
-    end
-    if button == ply:GetNWInt("leanrightKey",82) then
-        ply.rightBool = true
-    end--]]
 	if !GetGlobalBool("LeanEnabled") then return end 
 	if (ply.LeanCD or 0) <= CurTime() then
-		ply.LeanCD = CurTime() + 1.75
 		if button == ply:GetNWInt("leanleftKey",81) then
 			if ply.leftBool == true then
 				ply.leftBool = false 
@@ -212,6 +193,7 @@ hook.Add( "PlayerButtonDown", "ButtonUpLeanController", function( ply, button )
 				ply.rightBool = false 
 				ply.leftBool = true 
 			end
+			ply.LeanCD = CurTime() + 1.75
 		elseif button == ply:GetNWInt("leanrightKey",82) then 
 			if ply.rightBool == true then
 				ply.rightBool = false 
@@ -219,6 +201,7 @@ hook.Add( "PlayerButtonDown", "ButtonUpLeanController", function( ply, button )
 				ply.leftBool = false 
 				ply.rightBool = true 
 			end
+			ply.LeanCD = CurTime() + 1.75
 		end
 	end
 end)
