@@ -98,12 +98,22 @@ function tbl:Init()
             draw.RoundedBox(0,0,0,w,h,Color(0,0,0,alpha))
             alpha = math.Clamp(alpha - self.FadeSpeed * FrameTime(),0,255)
         end
-        function self:OnKeyCodePressed(keycode)
+        --[[function self:OnKeyCodePressed(keycode)
             if keycode == 95 then
                 self:Remove()
                 self = nil 
             end
-        end
+        end--]]
+
+        local exitToMenuButton = vgui.Create("MMButton",self)
+            exitToMenuButton:Dock(BOTTOM)
+            exitToMenuButton:DockMargin(scrw * 0.05,0,scrw * 0.75,scrh * 0.05)
+            exitToMenuButton:SetText("OPEN GMOD'S OVERLAY")
+            exitToMenuButton:SetTextColor(Color(255,255,255))
+            exitToMenuButton.DoClick = function(s)
+                gui.ActivateGameUI()
+                self:Remove()
+            end
 
         local exitButton = vgui.Create("MMButton",self)
             exitButton:Dock(BOTTOM)
@@ -634,6 +644,7 @@ function tbl:OnRemove()
             GetConVar(cvar):SetBool(tbl.val)
         end
     end
+    MainMenu = nil
 end 
 --[[function OpenMainMenu()
 end]]

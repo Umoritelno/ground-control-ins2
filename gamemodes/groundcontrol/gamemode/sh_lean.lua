@@ -85,6 +85,7 @@ hook.Add("PlayerSpawn", "TFALeanPlayerSpawn", function(ply)
 	ply:SetNW2Int("TFALean", 0)
 	ply.TFALean = 0
 	ply.LeanCD = 0
+	
 end)
 
 --[[Lean Calculations]]
@@ -143,7 +144,7 @@ end
 
 hook.Add("Move", "TFALeanThink", function(ply)
 	if not ply:Alive() then return end 
-	targ = (ply.leftBool and -1 or ply.rightBool and 1 or 0)
+	targ = (ply:GetNWBool("LeftLean",false) and -1 or ply:GetNWBool("RightLean",false) and 1 or 0)
 	--autolean here(No auto lean here)
 	local wep = ply:GetActiveWeapon()
 
@@ -183,25 +184,25 @@ hook.Add("Move", "TFALeanThink", function(ply)
 	end
 end)
 
-hook.Add( "PlayerButtonDown", "ButtonUpLeanController", function( ply, button )
-	if !GetGlobalBool("LeanEnabled") then return end 
+hook.Add( "PlayerButtonDown", "ButtonUpLeanController", function( ply, button ) 
+	if !GetGlobalBool("LeanEnabled") or !ply:Alive() then return end 
 	if (ply.LeanCD or 0) <= CurTime() then
 		if button == ply:GetNWInt("leanleftKey",81) then
-			if ply.leftBool == true then
-				ply.leftBool = false 
+			if ply:GetNWBool("LeftLean",false) == true then
+				ply:SetNWBool("LeftLean",false)
 			else 
-				ply.rightBool = false 
-				ply.leftBool = true 
+				ply:SetNWBool("RightLean",false)
+				ply:SetNWBool("LeftLean",true)
 			end
-			ply.LeanCD = CurTime() + 1.75
+			ply.LeanCD = CurTime() + GetGlobalFloat("LeanDelay")
 		elseif button == ply:GetNWInt("leanrightKey",82) then 
-			if ply.rightBool == true then
-				ply.rightBool = false 
+			if ply:GetNWBool("RightLean",false) == true then
+				ply:SetNWBool("RightLean",false)
 			else 
-				ply.leftBool = false 
-				ply.rightBool = true 
+				ply:SetNWBool("LeftLean",false)
+				ply:SetNWBool("RightLean",true)
 			end
-			ply.LeanCD = CurTime() + 1.75
+			ply.LeanCD = CurTime() + GetGlobalFloat("LeanDelay")
 		end
 	end
 end)

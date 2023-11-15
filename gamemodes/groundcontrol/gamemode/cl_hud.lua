@@ -326,7 +326,7 @@ function GM:HUDPaint()
 		draw.ShadowText(string_format(bindlang.TeamBind,self:getKeyBind(self.TeamSelectionKey)), font, xOff, _S(55), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
 		draw.ShadowText(string_format(bindlang.LoadoutBind,self:getKeyBind(self.LoadoutMenuKey)), font, xOff, _S(80), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
 		draw.ShadowText(string_format(bindlang.VoiceBind,self:getKeyBind(self.RadioMenuKey)), font, xOff, _S(105), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
-		draw.ShadowText(string_format(bindlang.MainMenuBind,self:getKeyBind(self.MainMenuKey)), font, xOff, _S(130), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+		--draw.ShadowText(string_format(bindlang.MainMenuBind,self:getKeyBind(self.MainMenuKey)), font, xOff, _S(130), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
 		
 		if self.curGametype.deadDraw then
 			self.curGametype:deadDraw(scrW, scrH)

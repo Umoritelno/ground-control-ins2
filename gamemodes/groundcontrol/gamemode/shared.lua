@@ -138,6 +138,7 @@ end
 local sharedCVar = FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED
 
 CreateConVar("gc_lean_enable",1,sharedCVar,"Enable leaning?")
+CreateConVar("gc_lean_delay",1.75,sharedCVar,"Delay after leaning",0)
 CreateConVar("gc_ammotextOverride_enable",1,sharedCVar,"Override ammo text for CW 2.0 weapons?")
 CreateConVar("gc_ammotextHide_enable",0,sharedCVar,"Hide ammo text for weapons?")
 CreateConVar("gc_crosshair_sv_enable",0,sharedCVar,"Draw crosshair for CW 2.0 Default & TFA weapons?")
@@ -214,6 +215,10 @@ if SERVER then
 	GM:registerAutoUpdateConVar("gc_lean_enable", function(name, old, new,isAuto)
 		local bool = tonumber(new) and tonumber(new) > 0
 		SetGlobalBool("LeanEnabled",bool)
+	end)
+
+	GM:registerAutoUpdateConVar("gc_lean_delay", function(name, old, new,isAuto)
+		SetGlobalFloat("LeanDelay",new)
 	end)
 	
 	GM:registerAutoUpdateConVar("gc_nvg_enable", function(name, old, new,isAuto)
@@ -360,56 +365,6 @@ if CLIENT then
 	local zeroVector = Vector(0, 0, 0)
 	local downwardsVector = Vector(0, 0, 0)
 	local downwardsAngle = Vector(-30, 0, -45)
-	
-	--[[CustomizableWeaponry.callbacks:addNew("adjustViewmodelPosition", "GroundControl_adjustViewmodelPosition", function(self, targetPos, targetAng)
-		local gametype = GAMEMODE.curGametype
-		local wepClass = self:GetClass()
-		
-		if gametype.name == "ghettodrugbust" and gametype.regularTeam == LocalPlayer():Team() and gametype.sidewaysHoldingWeapons[wepClass] then
-			if sidewaysHoldingStates[self.dt.State] and not self:isReloading() and not self.isKnife then
-				if self.dt.State ~= CW_CUSTOMIZE then
-					if self.dt.State ~= CW_RUNNING and self.dt.State ~= CW_AIMING then
-						targetAng = targetAng * 1
-						targetAng.z = targetAng.z - 90
-					end
-					
-					if self.dt.State == CW_RUNNING then
-						targetPos = downwardsVector * 1
-						targetAng = downwardsAngle * 1
-					elseif self.dt.State ~= CW_AIMING then
-						targetPos = targetPos * 1
-						targetPos.z = targetPos.z - 3
-						targetPos.x = targetPos.x - 4
-					end
-				end
-				
-				local vm = self.CW_VM
-				local bones = gametype.sidewaysHoldingBoneOffsets[wepClass]
-				
-				if bones then
-					for boneName, offsets in pairs(bones) do
-						offsets.current = LerpVectorCW20(FrameTime() * 15, offsets.current, offsets.target)
-						local bone = vm:LookupBone(boneName)
-						vm:ManipulateBonePosition(bone, offsets.current)
-					end
-				end
-			else
-				local bones = gametype.sidewaysHoldingBoneOffsets[wepClass]
-				
-				if bones then
-					local vm = self.CW_VM
-					
-					for boneName, offsets in pairs(bones) do
-						offsets.current = LerpVectorCW20(FrameTime() * 15, offsets.current, zeroVector)
-						local bone = vm:LookupBone(boneName)
-						vm:ManipulateBonePosition(bone, offsets.current)
-					end
-				end
-			end
-		end
-		
-		return targetPos, targetAng
-	end)--]]
 	
 	GM.attachmentSlotDisplaySize = 60
 	GM.attachmentSlotSpacing = 5
