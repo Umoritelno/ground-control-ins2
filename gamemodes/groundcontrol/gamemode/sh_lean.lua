@@ -11,13 +11,6 @@ local cv_autolean = CreateReplConVar("sv_tfa_lean_automatic", 1, "Automatically 
 if CLIENT then
     local lean1 = CreateClientConVar("gc_lean_left","81",true,true,"Button for left lean",1,159)
     local lean2 = CreateClientConVar("gc_lean_right","82",true,true,"Button for right lean",1,159)
-
-    GM:registerAutoUpdateConVar("gc_lean_left",function(cnv,old,new)
-        LocalPlayer():SetNWInt("leanleftKey",new)
-    end)
-    GM:registerAutoUpdateConVar("gc_lean_right",function(cnv,old,new)
-        LocalPlayer():SetNWInt("leanrightKey",new)
-    end)
 end
 
 --[[Shared]]
@@ -184,28 +177,33 @@ hook.Add("Move", "TFALeanThink", function(ply)
 	end
 end)
 
-hook.Add( "PlayerButtonDown", "ButtonUpLeanController", function( ply, button ) 
-	if !GetGlobalBool("LeanEnabled") or !ply:Alive() then return end 
-	if (ply.LeanCD or 0) <= CurTime() then
-		if button == ply:GetNWInt("leanleftKey",81) then
-			if ply:GetNWBool("LeftLean",false) == true then
-				ply:SetNWBool("LeftLean",false)
-			else 
-				ply:SetNWBool("RightLean",false)
-				ply:SetNWBool("LeftLean",true)
+if SERVER then
+	
+
+	hook.Add( "PlayerButtonDown", "ButtonUpLeanController", function( ply, button ) 
+		if !GetGlobalBool("LeanEnabled") or !ply:Alive() then return end 
+		if (ply.LeanCD or 0) <= CurTime() then
+			if button == ply:GetInfoNum("gc_lean_left",81) then
+				if ply:GetNWBool("LeftLean",false) == true then
+					ply:SetNWBool("LeftLean",false)
+				else 
+					ply:SetNWBool("RightLean",false)
+					ply:SetNWBool("LeftLean",true)
+				end
+				ply.LeanCD = CurTime() + GetGlobalFloat("LeanDelay")
+			elseif button == ply:GetInfoNum("gc_lean_right",82) then 
+				if ply:GetNWBool("RightLean",false) == true then
+					ply:SetNWBool("RightLean",false)
+				else 
+					ply:SetNWBool("LeftLean",false)
+					ply:SetNWBool("RightLean",true)
+				end
+				ply.LeanCD = CurTime() + GetGlobalFloat("LeanDelay")
 			end
-			ply.LeanCD = CurTime() + GetGlobalFloat("LeanDelay")
-		elseif button == ply:GetNWInt("leanrightKey",82) then 
-			if ply:GetNWBool("RightLean",false) == true then
-				ply:SetNWBool("RightLean",false)
-			else 
-				ply:SetNWBool("LeftLean",false)
-				ply:SetNWBool("RightLean",true)
-			end
-			ply.LeanCD = CurTime() + GetGlobalFloat("LeanDelay")
 		end
-	end
-end)
+	end)
+
+end
 
 if SERVER and not game.SinglePlayer() then
 	timer.Create("TFALeanSynch", 0.2, 0, function()
