@@ -19,16 +19,19 @@ function GM:drawTimeLimit()
 		
 		surface.SetDrawColor(0, 0, 0, 150)
 		surface.DrawRect(midX - _S(50), y, _S(100), _S(30))
-		
 		draw.ShadowText(string.ToMinutesSeconds(math.max(self.RoundTime - CurTime(), 0)), self.ObjectiveFont, midX, y + _S(15), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		surface.SetDrawColor(redcolor:Unpack())
-		surface.SetMaterial(leftvignette)
-		surface.DrawTexturedRect(midX + _S(50),y,_S(150),_S(30))
-		draw.ShadowText(lply:Team() == TEAM_RED and teamplayercount or self.AlivePlayers[TEAM_RED],self.ObjectiveFont,midX + _S(65),y + _S(15),self.HUDColors.white,self.HUDColors.black,1,TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
-		surface.SetDrawColor(bluecolor:Unpack())
-		surface.SetMaterial(rightvignette)
-		surface.DrawTexturedRect(midX - _S(200),y,_S(150),_S(30))
-		draw.ShadowText(lply:Team() == TEAM_BLUE and teamplayercount or self.AlivePlayers[TEAM_BLUE],self.ObjectiveFont,midX - _S(65),y + _S(15),self.HUDColors.white,self.HUDColors.black,1,TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
+
+		if !self.curGameType.playerAmountOverride then
+			surface.SetDrawColor(redcolor:Unpack())
+			surface.SetMaterial(leftvignette)
+			surface.DrawTexturedRect(midX + _S(50),y,_S(150),_S(30))
+			draw.ShadowText(lply:Team() == TEAM_RED and teamplayercount or self.AlivePlayers[TEAM_RED],self.ObjectiveFont,midX + _S(65),y + _S(15),self.HUDColors.white,self.HUDColors.black,1,TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+			surface.SetDrawColor(bluecolor:Unpack())
+			surface.SetMaterial(rightvignette)
+			surface.DrawTexturedRect(midX - _S(200),y,_S(150),_S(30))
+			draw.ShadowText(lply:Team() == TEAM_BLUE and teamplayercount or self.AlivePlayers[TEAM_BLUE],self.ObjectiveFont,midX - _S(65),y + _S(15),self.HUDColors.white,self.HUDColors.black,1,TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
+		end
+		
 	end
 end
 
