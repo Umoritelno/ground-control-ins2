@@ -406,7 +406,6 @@ end
 --self:updateServerName()
 --SendUserMessage("GC_NEW_ROUND")
 
---self:resetKillcountData()
 	for key, obj in pairs(player.GetAll()) do
 		obj:Spawn()
 	end
@@ -416,7 +415,6 @@ end
 	SendUserMessage("GC_NEW_ROUND")
 	
 	self:resetKillcountData()
-	--self:StartNewVote()
 end
 
 

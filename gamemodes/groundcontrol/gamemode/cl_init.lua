@@ -164,11 +164,7 @@ end)]]
 
 GM:registerAutoUpdateConVar("gc_hud_flipped", function(cvarName, oldValue, newValue)
 	local bool = tonumber(newValue) and tonumber(newValue) > 0 
-	if bool then
-		GAMEMODE.BaseHUDX = 1650
-	else 
-		GAMEMODE.BaseHUDX = 80
-	end
+	GAMEMODE.BaseHUDX = GAMEMODE.BaseHUDXPreset[bool]
 end)
 
 GM.TeamSelectionKey = "gm_showhelp"

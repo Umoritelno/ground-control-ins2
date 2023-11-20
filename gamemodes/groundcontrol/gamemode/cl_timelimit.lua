@@ -1,5 +1,12 @@
+local leftvignette = Material("vgui/gradient-l")
+local rightvignette = Material("vgui/gradient-r")
+local bluecolor = Color(GM.TeamBlueColor2.r,GM.TeamBlueColor2.g,GM.TeamBlueColor2.b,120)
+local redcolor = Color(GM.TeamRedColor2.r,GM.TeamRedColor2.g,GM.TeamRedColor2.b,120)
+
 function GM:drawTimeLimit()
 	if self.TimeLimit then
+		local lply = LocalPlayer()
+		local teamplayercount = self.aliveTeamPlayersCount
 		local x = _SCRW
 		local midX = x * 0.5
 		local y = _S(10)
@@ -14,6 +21,14 @@ function GM:drawTimeLimit()
 		surface.DrawRect(midX - _S(50), y, _S(100), _S(30))
 		
 		draw.ShadowText(string.ToMinutesSeconds(math.max(self.RoundTime - CurTime(), 0)), self.ObjectiveFont, midX, y + _S(15), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		surface.SetDrawColor(redcolor:Unpack())
+		surface.SetMaterial(leftvignette)
+		surface.DrawTexturedRect(midX + _S(50),y,_S(150),_S(30))
+		draw.ShadowText(lply:Team() == TEAM_RED and teamplayercount or self.AlivePlayers[TEAM_RED],self.ObjectiveFont,midX + _S(65),y + _S(15),self.HUDColors.white,self.HUDColors.black,1,TEXT_ALIGN_LEFT,TEXT_ALIGN_CENTER)
+		surface.SetDrawColor(bluecolor:Unpack())
+		surface.SetMaterial(rightvignette)
+		surface.DrawTexturedRect(midX - _S(200),y,_S(150),_S(30))
+		draw.ShadowText(lply:Team() == TEAM_BLUE and teamplayercount or self.AlivePlayers[TEAM_BLUE],self.ObjectiveFont,midX - _S(65),y + _S(15),self.HUDColors.white,self.HUDColors.black,1,TEXT_ALIGN_RIGHT,TEXT_ALIGN_CENTER)
 	end
 end
 

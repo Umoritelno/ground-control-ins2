@@ -44,6 +44,10 @@ local traceData = {output = GM.traceResultOutput}
 traceData.mask = bit.bor(CONTENTS_SOLID, CONTENTS_OPAQUE, CONTENTS_MOVEABLE, CONTENTS_DEBRIS, CONTENTS_MONSTER, CONTENTS_HITBOX, 402653442, CONTENTS_WATER) -- ignores transparent stuff
 
 GM.BaseHUDX = 80
+GM.BaseHUDXPreset = {
+	[true] = 1650,
+	[false] = 80
+}
 GM.eventElemDisplayCount = 6
 GM.eventSoundDelay = 1
 GM.teamPlayers = {}
@@ -343,6 +347,7 @@ function GM:HUDPaint()
 	
 	self.canTraceForBandaging = false
 	
+	self.aliveTeamPlayersCount = team.GetAlivePlayers(ply:Team())
 	-- instead of blasting team.GetPlayers every frame, just use the table that gets filled in cl_render.lua
 	for key, obj in ipairs(self.teamPlayers) do
 		--if obj.withinPVS then -- only draw the player if we can see him, GMod has no clientside ways of checking whether the player is in PVS, check cl_render.lua for the second part of this

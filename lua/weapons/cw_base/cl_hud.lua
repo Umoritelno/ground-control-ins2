@@ -314,9 +314,9 @@ function SWEP:DrawHUD()
 	--if not disableCrosshair then
 		if self.CrosshairEnabled and GetConVarNumber("gc_crosshair_enable") > 0 and GetGlobalBool("CrosshairEnabled") then -- it get called with first equip in kk ins base for second
 			lp = self.Owner:ShouldDrawLocalPlayer()
-			local muzzleorient = self:getMuzzlePosition()
+			--[[local muzzleorient = self:getMuzzlePosition()
 			local muzzlepos,muzzleang = muzzleorient.Pos,muzzleorient.Ang
-			muzzlepos = muzzlepos + muzzleang:Forward() * 150 -- forward bonus
+			muzzlepos = muzzlepos + muzzleang:Forward() * 150 -- forward bonus--]]
 
 		    if self.dt.State == CW_AIMING or self.dt.State == CW_RUNNING or self.GlobalDelay > CurTime() then
 				self.CrossAlpha = math.Approach(self.CrossAlpha,0,FT * 750)
@@ -327,14 +327,14 @@ function SWEP:DrawHUD()
 			--[[muzzlepos = tl{
 				start = muzzleorient.Pos,
 				endpos = muzzlepos,
-			}.HitPos--]]
+			}.HitPos
 
 			local muzzlevector2 = muzzlepos:ToScreen()
 			
-			draw.RoundedBox(0,muzzlevector2.x,muzzlevector2.y,5,2,Color(255,255,255,self.CrossAlpha))--]]
-			draw.RoundedBox(0,muzzlevector2.x + 25,muzzlevector2.y,25,1,Color(255,255,255,self.CrossAlpha))--]]
+			draw.RoundedBox(0,muzzlevector2.x,muzzlevector2.y,5,2,Color(255,255,255,self.CrossAlpha))
+			draw.RoundedBox(0,muzzlevector2.x + 25,muzzlevector2.y,25,1,Color(255,255,255,self.CrossAlpha))
 			draw.RoundedBox(0,muzzlevector2.x - 45,muzzlevector2.y,25,1,Color(255,255,255,self.CrossAlpha))--]] 
-			--[[
+			
 			if lp or self.freeAimOn then
 				td.start = self.Owner:GetShootPos()
 				td.endpos = td.start + (self.Owner:EyeAngles() + self.Owner:GetPunchAngle()):Forward() * 16384
@@ -384,6 +384,8 @@ function SWEP:DrawHUD()
 			
 			local crossAmt = self.CrossAmount * self.hudScaler
 			surface.SetDrawColor(0, 0, 0, self.CrossAlpha * 0.75) -- BLACK crosshair parts
+
+			draw.RoundedBox(0,x2 - 2.5,y2 - 1,5,crossThickBg,surface.GetDrawColor())
 			
 			if self.CrosshairParts.left then
 				surface.DrawRect(x2 - crossOffsetBg - crossAmt, y2 - 1, crossLengthBg, crossThickBg) -- left cross
@@ -393,15 +395,19 @@ function SWEP:DrawHUD()
 				surface.DrawRect(x2 + crossThickBg + crossAmt, y2 - 1, crossLengthBg, crossThickBg) -- right cross
 			end
 			
-			if self.CrosshairParts.upper then
+			--[[if self.CrosshairParts.upper then
 				surface.DrawRect(x2 - 1, y2 - crossOffsetBg - crossAmt, crossThickBg, crossLengthBg) -- upper cross
 			end
 			
 			if self.CrosshairParts.lower then
 				surface.DrawRect(x2 - 1, y2 + crossThickBg + crossAmt, crossThickBg, crossLengthBg) -- lower cross
-			end
+			end--]]
 			
 			surface.SetDrawColor(255, 255, 255, self.CrossAlpha) -- WHITE crosshair parts
+
+			draw.RoundedBox(0,x2 - 2.5,y2,5,crossThick,surface.GetDrawColor())
+
+			--draw.RoundedBox(0,x2 - 5,y2 - 1,10,5,surface.GetDrawColor())
 			
 			if self.CrosshairParts.left then
 				surface.DrawRect(x2 - crossOffset - crossAmt, y2, crossLength, crossThick) -- left cross
@@ -411,13 +417,13 @@ function SWEP:DrawHUD()
 				surface.DrawRect(x2 + crossThickBg + 1 + crossAmt, y2, crossLength, crossThick) -- right cross
 			end
 			
-			if self.CrosshairParts.upper then
+			--[[if self.CrosshairParts.upper then
 				surface.DrawRect(x2, y2 - crossOffset - crossAmt, crossThick, crossLength) -- upper cross
 			end
 			
 			if self.CrosshairParts.lower then
 				surface.DrawRect(x2, y2 + crossThickBg + 1 + crossAmt, crossThick, crossLength) -- lower cross
-			end]]
+			end--]]
 		end
 	--end
 	
