@@ -184,7 +184,7 @@ function ENT:drawHUD()
 	surface.SetDrawColor(255, 117, 99, 255)
 	surface.DrawRect(midX + _S(59), baseY + twoScaled, length, sixteenScaled)
 	
-	local scaled25 = ply:Alive() and _S(25) or _S(50)
+	local scaled25 = _S(50)
 	draw.ShadowText(lang.Urban["Sides"]["US"] .. ourTickets, "GC_HUD20", midX - _S(60), scaled25, GAMEMODE.HUDColors.white, GAMEMODE.HUDColors.black, 1, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 	draw.ShadowText(lang.Urban["Sides"]["Enemy"] .. enemyTickets, "GC_HUD20", midX + _S(62), scaled25, GAMEMODE.HUDColors.white, GAMEMODE.HUDColors.black, 1, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end
