@@ -18,10 +18,10 @@ function GM:drawTimeLimit()
 		self.HUDColors.white.a, self.HUDColors.black.a = 255, 255
 		
 		surface.SetDrawColor(0, 0, 0, 150)
-		surface.DrawRect(midX - _S(50), y, _S(100), _S(30))
+		surface.DrawRect(midX - _S(50), y, _S(100), _S(30))--
 		draw.ShadowText(string.ToMinutesSeconds(math.max(self.RoundTime - CurTime(), 0)), self.ObjectiveFont, midX, y + _S(15), self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
-		if !self.curGameType.playerAmountOverride then
+		if !self.curGametype.playerAmountOverride then
 			surface.SetDrawColor(redcolor:Unpack())
 			surface.SetMaterial(leftvignette)
 			surface.DrawTexturedRect(midX + _S(50),y,_S(150),_S(30))

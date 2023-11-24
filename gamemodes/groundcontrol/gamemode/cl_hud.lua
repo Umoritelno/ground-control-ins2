@@ -42,17 +42,96 @@ GM.traceResultOutput = {}
 
 local traceData = {output = GM.traceResultOutput}
 traceData.mask = bit.bor(CONTENTS_SOLID, CONTENTS_OPAQUE, CONTENTS_MOVEABLE, CONTENTS_DEBRIS, CONTENTS_MONSTER, CONTENTS_HITBOX, 402653442, CONTENTS_WATER) -- ignores transparent stuff
-
-GM.BaseHUDX = 80
-GM.BaseHUDXPreset = {
-	[true] = 1650,
-	[false] = 80
-}
+GM.BaseHUDX = 1650
 GM.eventElemDisplayCount = 6
 GM.eventSoundDelay = 1
 GM.teamPlayers = {}
 
 local gradient = surface.GetTextureID("cw2/gui/gradient")
+
+-- radar start
+GM.radarobjs = {}
+local radarscale = 0.0001
+local origin = Vector( 0, 0, 0 )
+local radarx,radary = GM.BaseHUDX - _S(1598),_S(715)
+local radarw,radarh = _S(218),_S(200)
+local metkasizew,metkasizeh = _S(15),_S(15)
+
+--[[table.insert(GM.radarobjs,{origin = origin,color = Color(125,15,55),angle = 25,texture = strelka,filter = function(self)
+	self.color = Color(0,255,255)
+	return true
+end})--]]
+
+local function drawRadar(ply,x,y,w,h,scale) -- dont call everytime LocalPlayer cuz its called in HUDPaint 
+	GM = GM or GAMEMODE
+	stepx = stepx or 0
+	local radarcenterx,radarcentery = (x + w / 2),(y + h / 2)
+	draw.RoundedBox(0,x,y,w,h,Color(0,0,0,120)) -- shitty way
+	for i,ent in pairs(GM.radarobjs) do
+		if ent.filter then
+			if ent.filter(ent) == false then
+				continue 
+			elseif ent.filter(ent) == "delete" then
+				table.remove(GM.radarobjs,i)
+				continue 
+			end
+		end
+		local othervec,otherang
+		if IsEntity(ent.origin) then
+			othervec = ent.origin:GetPos()
+			otherang = ent.origin:EyeAngles().y
+		elseif isvector(ent.origin) then 
+			othervec = ent.origin
+			otherang = ent.angle or 0 --
+		else 
+			continue 
+		end
+		otherang = otherang - EyeAngles().y
+		local entVector = othervec - ply:GetShootPos()
+		local tangdeg = math.atan2(
+			entVector.y,
+			entVector.x
+		)
+
+		local outofborderangle = math.deg(tangdeg) - ply:EyeAngles().y
+
+		tangdeg = tangdeg - math.rad(ply:EyeAngles().y) + math.rad(90)
+
+
+		local xoffset = math.cos(tangdeg) * (ply:GetPos():DistToSqr(othervec) * scale) + radarcenterx
+		xoffset = math.Clamp(xoffset,x,x + w)
+		local yoffset = -math.sin(tangdeg) * (ply:GetPos():DistToSqr(othervec) * scale) + radarcentery
+		yoffset = math.Clamp(yoffset,y,y + h)
+		
+		if ent.texture then
+			surface.SetMaterial(ent.texture)
+		else
+			draw.NoTexture()
+		end
+		ent.color = ent.color or Color(255,255,255)
+		surface.SetDrawColor(ent.color)
+
+		--draw.RoundedBox(5,xoffset,yoffset,_S(10),_S(10),ent.color or Color(255,255,255))
+		if (xoffset == x or xoffset == x + w) or (yoffset == y or yoffset == y + h) then
+			otherang = outofborderangle
+			surface.SetMaterial(GM.RadarStrelka)
+		end
+		if ent.drawoverride then
+			ent.drawoverride(xoffset,yoffset,metkasizew,metkasizeh,ent.color,otherang,otherang == outofborderangle)
+			continue 
+		end
+		print(outofborderangle == otherang)
+		surface.DrawTexturedRectRotated(xoffset,yoffset,metkasizew,metkasizeh,otherang)
+	end
+	surface.SetMaterial(GM.RadarStrelka)
+	surface.SetDrawColor(255,166,0)
+	surface.DrawTexturedRect(radarcenterx,radarcentery,_S(15),_S(15))
+end
+
+function GM:AddRadarMarker(data)
+	table.insert(self.radarobjs,data)
+end
+-- radar end 
 
 function GM:HUDPaint()
 	local ply = LocalPlayer()
@@ -124,7 +203,9 @@ function GM:HUDPaint()
 		local overallTextHeight = ySize - _S(7) + bandageOff
 		surface.SetDrawColor(0, 0, 0, 150)
 		local underW = xSize + _S(10)
-		surface.DrawRect(scrW - _S(self.BaseHUDX) - underW, scrH - _S(100) - overallTextHeight, xSize + _S(10), overallTextHeight)
+		local finalx,finaly,finalw,finalh = scrW - _S(self.BaseHUDX) - underW,scrH - _S(100) - overallTextHeight,xSize + _S(10),overallTextHeight
+		surface.DrawRect(finalx, finaly, finalw, finalh)
+		--drawRadar(ply,finalx,finaly - _S(200),finalw,radarh,radarscale) -- yeah its not best place for radar but we need position of health rect for valid radar position
 		
 		draw.ShadowText(healthText, self.HealthDisplayFont, scrW - textX, scrH - baseOffset - overallTextHeight, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 		draw.ShadowText(bandageText, self.BandageDisplayFont, scrW - textX, scrH - baseOffset + bandageOff - overallTextHeight, self.HUDColors.white, self.HUDColors.black, 1, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)

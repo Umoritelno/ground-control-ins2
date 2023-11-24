@@ -15,6 +15,21 @@ function ENT:Initialize()
 	self.baseHorSize = self.baseHorSize + 20
 	self.halfBaseHorSize = self.baseHorSize * 0.5
 	self.halfVertFontSize = self.vertFontSize * 0.5
+	GAMEMODE:AddRadarMarker({origin = Entity(self:EntIndex()),color = Color(255,94,0,175),
+    filter = function(self)
+        if !IsValid(self.origin) then
+			return "delete" 
+        end
+
+        return true
+    end,
+    drawoverride = function(x,y,w,h,color,ang,out)
+		if out then
+			surface.DrawTexturedRectRotated(x,y,w,h,ang)
+		else 
+			draw.RoundedBox(30,x,y,w,h,color)
+		end
+    end})
 end
 
 ENT.displayDistance = 128 -- the distance within which the contents of the box will be displayed
@@ -48,7 +63,7 @@ function ENT:Draw()
 		surface.SetDrawColor(clrs.r, clrs.g, clrs.b, clrs.a)
 		surface.DrawRect(-self.halfBaseHorSize, 0, self.baseHorSize, self.vertFontSize)
 		
-		draw.ShadowText(lang["Drugs"], baseFont, 0, self.halfVertFontSize, white, black, 2, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.ShadowText(lng["Drugs"], baseFont, 0, self.halfVertFontSize, white, black, 2, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	cam.End3D2D()
 end
 

@@ -8,7 +8,6 @@ GM.DrawEntities = {}
 
 --CreateConVar("gc_hud_scale", 1, {FCVAR_ARCHIVE}, "controls the size of the HUD")
 CreateConVar("gc_crosshair_enable", 1, {FCVAR_ARCHIVE}, "Enable crosshair for CW 2.0?")
-CreateConVar("gc_hud_flipped", 0, {FCVAR_ARCHIVE}, "Flip Ground Control HUD?")
 
 GM.Fonts = {}
 GM.DefFonts = {}
@@ -151,6 +150,7 @@ include("sh_specrounds.lua")
 include("cl_nvgs.lua")
 include("sh_nvgs.lua")
 include("sh_lean.lua")
+include("cl_radar.lua")
 --include("sh_postload.lua")
 -- VGUI Start
 include("vgui/dmainmenu.lua")
@@ -161,11 +161,6 @@ include("vgui/dcheckboxmanual.lua")
 --[[GM:registerAutoUpdateConVar("gc_hud_scale", function(cvarName, oldValue, newValue)
 	GAMEMODE:OnScreenSizeChanged()
 end)]]
-
-GM:registerAutoUpdateConVar("gc_hud_flipped", function(cvarName, oldValue, newValue)
-	local bool = tonumber(newValue) and tonumber(newValue) > 0 
-	GAMEMODE.BaseHUDX = GAMEMODE.BaseHUDXPreset[bool]
-end)
 
 GM.TeamSelectionKey = "gm_showhelp"
 GM.LoadoutMenuKey = "gm_showteam"

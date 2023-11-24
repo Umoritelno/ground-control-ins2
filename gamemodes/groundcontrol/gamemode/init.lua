@@ -112,6 +112,7 @@ include("sv_nvgs.lua")
 include("sh_nvgs.lua")
 include("sh_lean.lua")
 include("sv_dynamicblood.lua")
+include("sv_radar.lua")
 
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("cl_gui_scoreboard.lua")
@@ -136,6 +137,7 @@ AddCSLuaFile("cum_splat_controller.lua")
 AddCSLuaFile("cl_achiv.lua") -- achivki client
 AddCSLuaFile("cl_specrounds.lua")
 AddCSLuaFile("cl_nvgs.lua")
+AddCSLuaFile("cl_radar.lua")
 -- VGUI Start
 AddCSLuaFile("vgui/dmainmenu.lua")
 AddCSLuaFile("vgui/dnewvote.lua")

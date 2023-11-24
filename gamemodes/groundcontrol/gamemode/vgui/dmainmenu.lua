@@ -247,10 +247,10 @@ function tbl:Init()
                     self.settings.VisualCollap.Crosshair:SetConVar("gc_crosshair_enable")
                     self.settings.VisualCollap.list:AddItem( self.settings.VisualCollap.Crosshair )
 
-                    self.settings.VisualCollap.HUDMirror  = vgui.Create("DCheckBoxLabel",scroll)
+                    --[[self.settings.VisualCollap.HUDMirror  = vgui.Create("DCheckBoxLabel",scroll)
                     self.settings.VisualCollap.HUDMirror:SetText(CurLanguage.settings.HudFlipped )
                     self.settings.VisualCollap.HUDMirror:SetConVar("gc_hud_flipped")
-                    self.settings.VisualCollap.list:AddItem( self.settings.VisualCollap.HUDMirror )
+                    self.settings.VisualCollap.list:AddItem( self.settings.VisualCollap.HUDMirror )--]]
                     
                     self.settings.VisualCollap.Legs = vgui.Create("DCheckBoxLabel",scroll)
                     self.settings.VisualCollap.Legs:SetText(CurLanguage.settings.Legs)
