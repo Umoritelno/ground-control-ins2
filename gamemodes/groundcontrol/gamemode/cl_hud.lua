@@ -120,7 +120,6 @@ local function drawRadar(ply,x,y,w,h,scale) -- dont call everytime LocalPlayer c
 			ent.drawoverride(xoffset,yoffset,metkasizew,metkasizeh,ent.color,otherang,otherang == outofborderangle)
 			continue 
 		end
-		print(outofborderangle == otherang)
 		surface.DrawTexturedRectRotated(xoffset,yoffset,metkasizew,metkasizeh,otherang)
 	end
 	surface.SetMaterial(GM.RadarStrelka)

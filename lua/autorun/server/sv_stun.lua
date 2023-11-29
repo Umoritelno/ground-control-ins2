@@ -1,6 +1,9 @@
 util.AddNetworkString("StunReplace")
 local explosionDistance = 65000 -- Max distance for explosion stun
 local bulletDistance = 7000 -- Max distance for bullet stun 
+local explosionStun = 50 -- Max stun from explosion
+local explosionStunDelay = 25 -- Time for explosion stun delay regen
+local bulletStunDelay = 6.5 -- Time for bullet stun delay regen
 
 local pl = FindMetaTable("Player")
 
@@ -39,14 +42,14 @@ hook.Add("EntityFireBullets","Stun",function(ent,bl)
     if suppressed then
         activestun = activestun / 2
     end
-    ent:AddStun(activestun,2.5)
+    ent:AddStun(activestun,bulletStunDelay)
     for k,v in pairs(ents.FindInSphere(bl.Src,350)) do
         if v == ent then continue end
         local entpos,sourcepos = v:GetPos(),bl.Src
         local distance = sourcepos:DistToSqr(entpos)
         if v:IsPlayer() and v.stun and distance <= bulletDistance then
             local percent = 1 -(distance / bulletDistance)
-            v:AddStun(activestun * percent,3.5 * percent)
+            v:AddStun(activestun * percent,bulletStunDelay * percent)
         end
     end
 end) 
@@ -74,6 +77,6 @@ hook.Add("OnDamagedByExplosion", "StunExplosion", function(ply,dmginfo)
     local dist = dmgsrc:DistToSqr(ply:GetPos())
     if dist <= explosionDistance then
         local stunperc = 1 - (dist / explosionDistance)
-        ply:AddStun(50 * stunperc,15 * stunperc)
+        ply:AddStun(explosionStun * stunperc,explosionStunDelay * stunperc)
     end
 end )
