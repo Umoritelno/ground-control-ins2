@@ -6,7 +6,6 @@ local creditslabels = {
     ["NextOren and RXSend developers"] = "Inspiration",
     ["Toyka"] = "Inspiration and help with code",
     ["LifeMod Developers"] = "Bloom settings and vignettes",
-    ["-Spac3-"] = "Pidorasina ebannaya, not RXSend enjoyer",
 }
 local creditvignette = {
     ["gradient-r"] = Material("vgui/gradient-r"),
