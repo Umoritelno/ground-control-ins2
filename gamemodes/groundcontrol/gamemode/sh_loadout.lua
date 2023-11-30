@@ -474,121 +474,91 @@ function GM:postInitEntity()
 
 
 	-- cw 2.0 orig end
-	local ebr = {}
-	ebr.weaponClass = "cw_kk_ins2_m14"
-	ebr.weight = 5
-	ebr.penetration = 18
-	ebr.stun = 2.1
-
-	self:registerPrimaryWeapon(ebr)
 	-- arc9 start 
 
 	-- arc9 end 
 
 	-- TFA Start
 
-	local asval = {}
-	asval.weaponClass = "devl_as_val"
-	asval.weight = 3
-	asval.penetration = 17.5
-	asval.stun = 0.1
+	local ak = {}
+	ak.weaponClass = "tfa_ins2_ak103"
+	ak.weight = 4
+	ak.penetration = 16.25
+	ak.stun = 1.85
+	
+	self:registerPrimaryWeapon(ak)
 
-	self:registerPrimaryWeapon(asval)
+	local qbz = {}
+	qbz.weaponClass = "tfa_ins2_norinco_qbz97"
+	qbz.weight = 4.35
+	qbz.penetration = 15.95
+	qbz.stun = 2
+	
+	self:registerPrimaryWeapon(qbz)
 
-	local dvl = {}
-	dvl.weaponClass = "tfa_eft_dvl10"
-	dvl.weight = 7.5
-	dvl.penetration = 21
-	dvl.stun = 2.5
+	local barret = {}
+	barret.weaponClass = "tfa_ins2_barrett_m98_bravo"
+	barret.weight = 8.1
+	barret.penetration = 27.5
+	barret.stun = 25
+	
+	self:registerPrimaryWeapon(barret)
 
-	self:registerPrimaryWeapon(dvl)
+	local sraken = {}
+	sraken.weaponClass = "tfa_ins2_warface_cdxmc_kraken"
+	sraken.weight = 6.09
+	sraken.penetration = 24.3
+	sraken.stun = 15
+	
+	self:registerPrimaryWeapon(sraken)
 
-	local ump = {}
-	ump.weaponClass = "tfa_hkump45"
-	ump.weight = 2
-	ump.penetration = 15
-	ump.stun = 0.2
+	local macm = {}
+	macm.weaponClass = "tfa_ins2_warface_mcmillan_cs5"
+	macm.weight = 5.8
+	macm.penetration = 20
+	macm.stun = 1.1
+	
+	self:registerPrimaryWeapon(macm)
 
-	self:registerPrimaryWeapon(ump)
+	local mg36 = {}
+	mg36.weaponClass = "tfa_ins2_hk_mg36"
+	mg36.weight = 5.5
+	mg36.penetration = 17.1
+	mg36.stun = 2.1
+	
+	self:registerPrimaryWeapon(mg36)
 
-	local m5 = {}
-	m5.weaponClass = "tfa_eft_mp5"
-	m5.weight = 2.75
-	m5.penetration = 15.5
-	m5.stun = 0.2
+	local m870 = {}
+	m870.weaponClass = "tfa_ins2_remington_m870"
+	m870.weight = 4.7
+	m870.penetration = 14.9
+	m870.stun = 0.5
+	
+	self:registerPrimaryWeapon(m870)
 
-	self:registerPrimaryWeapon(m5)
+	local toz = {}
+	toz.weaponClass = "tfa_ins2_toz_194m"
+	toz.weight = 3.1
+	toz.penetration = 14.55
+	toz.stun = 0.45
+	
+	self:registerPrimaryWeapon(toz)
 
-	local m7 = {}
-	m7.weaponClass = "tfa_eft_mp7a1"
-	m7.weight = 2.75
-	m7.penetration = 15.5
-	m7.stun = 0.2
+	local rpk = {}
+	rpk.weaponClass = "tfa_ins2_rpk_74m"
+	rpk.weight = 7.5
+	rpk.penetration = 16.9
+	rpk.stun = 2.1
+	
+	self:registerPrimaryWeapon(rpk)
 
-	self:registerPrimaryWeapon(m7)
-
-	local mpx = {}
-	mpx.weaponClass = "tfa_eft_mpx"
-	mpx.weight = 3.75
-	mpx.penetration = 17
-	mpx.stun = 0.3
-
-	self:registerPrimaryWeapon(mpx)
-
-	local Sig = {}
-	Sig.weaponClass = "tfa_eft_mcx"
-	Sig.weight = 3.75
-	Sig.penetration = 17
-	Sig.stun = 0.5
-
-	self:registerPrimaryWeapon(Sig)
-
-	local t5 = {}
-	t5.weaponClass = "devl_t5000"
-	t5.weight = 6
-	t5.penetration = 22
-	t5.stun = 2.5
-
-	self:registerPrimaryWeapon(t5)
-
-	local snapa = {}
-	snapa.weaponClass = "devl_mjolnir"
-	snapa.weight = 5
-	snapa.penetration = 20
-	snapa.stun = 2.5
-
-	self:registerPrimaryWeapon(snapa)
-
-	local geroin = {}
-	geroin.weaponClass = "tfa_rtx_hk416d"
-	geroin.weight = 4.5
-	geroin.penetration = 18
-	geroin.stun = 3
-
-	self:registerPrimaryWeapon(geroin)
-
-	local alpha = {}
-	alpha.weaponClass = "devl_kalashnikov_alpha"
-	alpha.weight = 5
-	alpha.penetration = 18
-	alpha.stun = 0.25
-
-	self:registerPrimaryWeapon(alpha)
-
-	local m4 = {}
-	m4.weaponClass = "tfa_eft_m4a1"
-	m4.weight = 4.25
-	m4.penetration = 15.5
-	m4.stun = 0.3
-
-	self:registerPrimaryWeapon(m4)
-
-	local m9 = {}
-	m9.weaponClass = "eft_m9a3"
-	m9.weight = 1.105
-	m9.penetration = 12
-	m9.stun = 1.1
-    self:registerSecondaryWeapon(m9) -- tfa_ins2_fnp45
+	local veresk = {}
+	veresk.weaponClass = "tfa_ins2_sr2m_veresk"
+	veresk.weight = 2.75
+	veresk.penetration = 15.81
+	veresk.stun = 0.9
+	
+	self:registerPrimaryWeapon(veresk)
 
 	local m45 = {}
 	m45.weaponClass = "tfa_ins2_colt_m45"
@@ -638,21 +608,15 @@ function GM:postInitEntity()
 
     self:registerSecondaryWeapon(walthersdick)
 
-	local rook = {}
-	rook.weaponClass = "devl_rook"
-	rook.weight = 1.5
-	rook.penetration = 14
-	rook.stun = 1
-    self:registerSecondaryWeapon(rook)
-
-	local sr = {}
-	sr.weaponClass = "devl_sr1mp"
-	sr.weight = 1.25
-	sr.penetration = 13
-	sr.stun = 0.9
-    self:registerSecondaryWeapon(sr)
-
 	-- TFA End
+
+	local ebr = {}
+	ebr.weaponClass = "cw_kk_ins2_m14"
+	ebr.weight = 5
+	ebr.penetration = 18
+	ebr.stun = 2.1
+
+	self:registerPrimaryWeapon(ebr)
 
 	local mini14 = {}
 	mini14.weaponClass = "cw_kk_ins2_mini14"

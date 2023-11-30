@@ -2,7 +2,6 @@
 local ENT = FindMetaTable("Entity")
 
 if !ENT.RealisticBlood_MakeBoneFollower then return end 
-print("hui")
 
 
 function ENT:RealisticBlood_MakeBoneFollower( pos, normal, offset, ang_offset, lifetime, visible )

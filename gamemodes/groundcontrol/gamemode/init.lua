@@ -59,6 +59,7 @@ GM:registerAutoUpdateConVar("gc_block_wepbase_vote", function(cvarName, oldValue
 	GAMEMODE.wepbaseLocked = tonumber(newValue) > 0
 end)
 
+
 include("sv_player.lua")
 include("sv_loop.lua")
 include("sh_language.lua")

@@ -406,9 +406,9 @@ net.Receive("classinfo",function()
 	end
 end)
 
---[[hook.Add("TFA_InspectVGUI_Start", "Kill TFA customization", function()
+hook.Add("TFA_InspectVGUI_Start", "Kill TFA customization", function()
     return CurTime() < GAMEMODE.PreparationTime
-end)--]]
+end)
 
 hook.Add("TFA_DrawCrosshair", "TFA_Crosshair", function()
     return GetGlobalBool("CrosshairEnabled") == true

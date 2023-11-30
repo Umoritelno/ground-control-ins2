@@ -1,4 +1,4 @@
--- thx SneakySquid <3
+ -- thx SneakySquid <3
 if SERVER then return false end
 
 local _R = debug.getregistry()

@@ -89,6 +89,7 @@ end
 GM:setupScaling()
 GM:initFonts()
 
+
 include('shared.lua')
 include("sh_mixins.lua")
 include("sh_language.lua")
