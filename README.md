@@ -1,4 +1,4 @@
-# ground-control-ins2
+# Ground Kontrol
 Версия режима Ground Control, которая ставит перед собой цель увеличить реиграбельность.
 
 Установка:
