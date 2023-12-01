@@ -9,7 +9,7 @@
 --resource.AddWorkshop("1241856556")
 --resource.AddWorkshop("1241859876")
 --resource.AddWorkshop("")
-resource.AddWorkshopCollection("2883863475")
+resource.AddWorkshopCollection({["3099568291"] = true},"2883863475") -- ignore gamemode addon
 
 if PRONE_GETTINGDOWN then
 	resource.AddWorkshop("775573383") -- prone

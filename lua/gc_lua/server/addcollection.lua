@@ -7,7 +7,8 @@
 local CollectionQueue = {} -- All collections are put here to wait for SteamHTTP starting up
 local ADDON, COLLECTION = 0, 2
 
-function resource.AddWorkshopCollection(...)
+function resource.AddWorkshopCollection(blacklist,...)
+    blacklist = blacklist or {}
     local collectionIds = {...}
     local recursive = {}
     if collectionIds == nil then return end
@@ -76,6 +77,7 @@ function resource.AddWorkshopCollection(...)
 
         -- Adding Workshop addons
         for k, id in ipairs(Addons) do
+            if blacklist[id] then continue end
             resource.AddWorkshop(id)
         end
 

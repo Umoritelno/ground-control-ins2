@@ -38,7 +38,7 @@ GM.ExpPerOneManArmy = 5
 GM.CashPerTeamKill = -200
 GM.ExpPerTeamKill = -400
 
-GM.defaultAFKTimerValue = 240 -- default amount of time to wait before kicking someone out for AFK
+
 GM.warnAFKTimeout = 30 -- warn the palyer of AFK if he has this much time until he gets kicked for AFK
 
 GM.jumpPower = 220
@@ -49,64 +49,11 @@ GM.jumpPowerWeightCutoff = 2 -- jump power will not be reduced until the amount 
 util.AddNetworkString("GC_KILLED_BY")
 GM.SendCurrencyAmount = {cash = nil, exp = nil}
 
-GM.defaultTeamDamageScale = 0.5
-
 GM.alwaysDropWeapons = { -- weapon classes the presence of which in the player's inventory will always be dropped upon death
 	cw_flash_grenade = true,
 	cw_frag_grenade = true,
 	cw_smoke_grenade = true
 }
-
-CreateConVar("gc_proximity_voicechat", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- if set to 1, nearby enemies will be able to hear other enemies speak
-CreateConVar("gc_proximity_voicechat_distance", 256, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- distance in source units within which players will hear other players
-CreateConVar("gc_proximity_voicechat_global", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- if set to 1, everybody, including your team mates and your enemies, will only hear each other within the distance specified by gc_proximity_voicechat_distance
-CreateConVar("gc_proximity_voicechat_directional", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- if set to 1, voice chat will be directional 3d sound (as described in the gmod wiki)
-CreateConVar("gc_invincibility_time_period", 3, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- how long should the player be invincible for after spawning (for anti spawn killing in gametypes like urban warfare)
-CreateConVar("gc_team_damage", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- whether team damage is enabled
-CreateConVar("gc_team_damage_scale", GM.defaultTeamDamageScale, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- scale the same-team damage by this much
-CreateConVar("gc_afk_timer", GM.defaultAFKTimerValue, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- time in seconds that a player can remain without any input before we kick him out
-
-GM:registerAutoUpdateConVar("gc_proximity_voicechat", function(cvarName, oldValue, newValue)
-	newValue = tonumber(newValue)
-	GAMEMODE.proximityVoiceChat = newValue >= 1
-end)
-
-GM:registerAutoUpdateConVar("gc_proximity_voicechat_distance", function(cvarName, oldValue, newValue)
-	newValue = tonumber(newValue)
-	GAMEMODE.proximityVoiceChatDistance = newValue
-end)
-
-GM:registerAutoUpdateConVar("gc_proximity_voicechat_global", function(cvarName, oldValue, newValue)
-	newValue = tonumber(newValue)
-	GAMEMODE.proximityVoiceChatGlobal = newValue >= 1
-end)
-
-GM:registerAutoUpdateConVar("gc_proximity_voicechat_directional", function(cvarName, oldValue, newValue)
-	newValue = tonumber(newValue)
-	GAMEMODE.proximityVoiceChatDirectional3D = newValue >= 1
-end)
-
-GM:registerAutoUpdateConVar("gc_invincibility_time_period", function(cvarName, oldValue, newValue)
-	newValue = tonumber(newValue)
-	GAMEMODE.postSpawnInvincibilityTimePeriod = newValue or 3
-end)
-
-GM:registerAutoUpdateConVar("gc_team_damage", function(cvarName, oldValue, newValue)
-	newValue = tonumber(newValue)
-	GAMEMODE.noTeamDamage = newValue <= 0
-end)
-
-GM:registerAutoUpdateConVar("gc_team_damage_scale", function(cvarName, oldValue, newValue)
-	newValue = tonumber(newValue)
-	
-	GAMEMODE.teamDamageScale = newValue or GAMEMODE.defaultTeamDamageScale
-end)
-
-GM:registerAutoUpdateConVar("gc_afk_timer", function(cvarName, oldValue, newValue)
-	newValue = tonumber(newValue) or GAMEMODE.defaultAFKTimerValue
-	
-	GAMEMODE.afkTime = newValue
-end)
 
 local PLAYER = FindMetaTable("Player")
 
@@ -190,11 +137,11 @@ function GM:PlayerSpawn(ply)
 	ply.currentTraits = ply.currentTraits and table.Empty(ply.currentTraits) or {}
 	ply:UnSpectate()
 	ply:sendAttachments()
-	ply:SetHealth(ply.plclass.StartHealth)
-	ply:SetMaxHealth(ply.plclass.MaxHealth)
+	ply:SetHealth(ply.plclass.StartHealth or self.MaxHealth) -- dont sure if it can happen
+	ply:SetMaxHealth(ply.plclass.MaxHealth or self.MaxHealth)
 	ply:AddEFlags(EFL_NO_DAMAGE_FORCES)
-	ply:SetWalkSpeed(ply.plclass.WalkSpeed) --self.BaseWalkSpeed
-	ply:SetRunSpeed(ply.plclass.RunSpeed) --self.BaseRunSpeed
+	ply:SetWalkSpeed((ply.plclass.WalkSpeed or self.BaseWalkSpeed) * self.BaseWalkSpeedMult) --self.BaseWalkSpeed
+	ply:SetRunSpeed(ply.plclass.RunSpeed or self.BaseRunSpeed) --self.BaseRunSpeed
 	ply:resetSpectateData()
 	ply:resetSpawnData()
 	ply:resetBleedData()
@@ -209,7 +156,7 @@ function GM:PlayerSpawn(ply)
 	ply:setBandages(ply:getDesiredBandageCount())
 	ply:SetCanZoom(false)
 	ply:resetLastKillData()
-	ply:SetCrouchedWalkSpeed(self.CrouchedWalkSpeed)
+	ply:SetCrouchedWalkSpeed(ply.plclass.CrouchedWalkSpeed or self.CrouchedWalkSpeed)
 	ply:SetVelocity(ZeroVector) -- fixes movement prediction issues since upon round start we're supposed to stand still
 	ply.hasLanded = true
 	ply.canPickupWeapon = true

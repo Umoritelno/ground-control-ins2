@@ -1,6 +1,6 @@
-GM.Version = "1.10c"
+GM.Version = "1.2.4"
 
-GM.Name 	= "Ground Control " .. GM.Version
+GM.Name 	= "Ground Kontrol " .. GM.Version
 GM.Author 	= "N/A"
 GM.Email 	= "N/A"
 GM.Website 	= "N/A"
@@ -8,9 +8,11 @@ GM.Website 	= "N/A"
 GM.MainDataDirectory = "ground_control"
 
 GM.BaseRunSpeed = 280
+GM.BaseRunSpeedMult = 1
 GM.RunSpeedLossWeightCutoff = 3 -- we will begin to lose movement speed once our weight exceeds this value
 GM.RunSpeedLossPerKG = 2 -- lose this much run speed per each kilogram worth of weight
 GM.BaseWalkSpeed = 130
+GM.BaseWalkSpeedMult = 1
 GM.CrouchedWalkSpeed = 0.6
 GM.CurrentMap = game.GetMap()
 GM.RoundRestartTime = 10 -- how much time to restart a round after it has ended
@@ -26,6 +28,7 @@ GM.NotOnGroundRecoilMultiplier = 6
 GM.NotOnGroundSpreadMultiplier = 16
 GM.JumpStaminaRegenDelay = 1
 GM.DamageMultiplier = 1.55 -- multiplier for the damage when we shot an enemy
+GM.DefaultDamageScale = 1.55
 GM.MaxHealth = 100
 GM.VotePrepTime = 5
 GM.VoteTime = GM.VotePrepTime + 30
@@ -73,7 +76,7 @@ GM.RoundOverAction = {
 	RANDOM_MAP_AND_GAMETYPE = 2
 }
 
-
+include("sh_cvars.lua")
 include("sh_sounds.lua")
 
 -- configure CW 2.0, please do not change this (unless you know what you're doing)
@@ -116,165 +119,6 @@ GM.OnlySidewaysSprintSpeedAffector = 0.25 -- if we're sprinting only sideways (n
 GM.BackwardsSprintSpeedAffector = 0.25 -- if we're sprinting forwards, we take a big hit to our movement speed
 
 GM.MaxLadderMovementSpeed = 20 -- how fast should the player move when using a ladder
-GM.defaultDamageScale = 1.55
-
-GM.AutoUpdateConVars = {}
-
-function GM:registerAutoUpdateConVar(cvarName, onChangedCallback)
-	self.AutoUpdateConVars[cvarName] = onChangedCallback
-	
-	cvars.AddChangeCallback(cvarName, onChangedCallback)
-end
-
-function GM:performOnChangedCvarCallbacks()
-	for cvarName, callback in pairs(self.AutoUpdateConVars) do
-		local curValue = GetConVar(cvarName)
-		local finalValue = curValue:GetFloat() or curValue:GetString() -- we don't know whether the callback wants a string or a number, so if we can get a valid number from it, we will use that if we can't, we will use a string value
-		
-		callback(cvarName, finalValue, finalValue,true)
-	end
-end
-
-local sharedCVar = FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED
-
-CreateConVar("gc_lean_enable",1,sharedCVar,"Enable leaning?")
-CreateConVar("gc_lean_delay",1.75,sharedCVar,"Delay after leaning",0)
-CreateConVar("gc_ammotextOverride_enable",1,sharedCVar,"Override ammo text for CW 2.0 weapons?")
-CreateConVar("gc_ammotextHide_enable",0,sharedCVar,"Hide ammo text for weapons?")
-CreateConVar("gc_crosshair_sv_enable",0,sharedCVar,"Draw crosshair for CW 2.0 Default & TFA weapons?")
-CreateConVar("gc_specround_enable",1,sharedCVar,"Will special rounds work?")
-CreateConVar("gc_crippling", 1, sharedCVar, "is the crippling gameplay mechanic enabled?")
-CreateConVar("gc_round_prep_time", GM.RoundPreparationTime, sharedCVar, "how much time players spend in the preparation stage of the new round")
-CreateConVar("gc_round_restart_time", GM.RoundRestartTime, sharedCVar, "amount of time before the next round starts")
-CreateConVar("gc_walkspeed", GM.BaseWalkSpeed, sharedCVar, "player walk speed (applies on next round)")
-CreateConVar("gc_runspeed", GM.BaseRunSpeed, sharedCVar, "player walk speed (immediately)")
-CreateConVar("gc_damagemult", GM.DamageMultiplier, sharedCVar, "multiplier for dealt weapon damage")
-CreateConVar("gc_damage_scale", GM.defaultDamageScale, sharedCVar, "multiplier for all weapon damage")
-CreateConVar("gc_wepbase",GM.DefBase,sharedCVar,"What weapon base we will use?")
-CreateConVar("gc_roles_enable",1,sharedCVar,"Will roles and work?")
-CreateConVar("gc_abil_enable",1,sharedCVar,"Will abilities work?")
-CreateConVar("gc_nvg_enable",1,sharedCVar,"Will NVG work?")
-CreateConVar("gc_stun_enable",1,sharedCVar,"Will stun work?")
-CreateConVar("gc_commander_visibility",0,sharedCVar,"Give only the commander the opportunity to distinguish allies?")
-CreateConVar("gc_vmanip_enable",1,sharedCVar,"Enable VManip animations?")
-
---GM.CurWepBase = GetConVar("gc_wepbase"):GetInt() or 1
-if GM.WepBases[GetConVar("gc_wepbase"):GetInt()] then
-	GM.CurWepBase = GetConVar("gc_wepbase"):GetInt()
-else
-	print("invalid weapon base. Using default")
-	if SERVER then
-		game.ConsoleCommand("gc_wepbase 2\n")
-	end
-	GM.CurWepBase = 2
-end
-
-local function getCvarNumber(new, old)
-	return tonumber(new) and new or old
-end
-
-if SERVER then
-
-	GM:registerAutoUpdateConVar("gc_vmanip_enable", function(name, old, new,isAuto)
-		local bool = tonumber(new) and tonumber(new) > 0
-		SetGlobalBool("VManipEnabled",bool)
-	end)
-
-	GM:registerAutoUpdateConVar("gc_commander_visibility", function(name, old, new,isAuto)
-		local bool = tonumber(new) and tonumber(new) > 0
-		SetGlobalBool("CommanderVisibility",bool)
-	end)
-	
-	GM:registerAutoUpdateConVar("gc_stun_enable", function(name, old, new,isAuto)
-		local bool = tonumber(new) and tonumber(new) > 0
-		SetGlobalBool("StunEnabled",bool)
-		if !isAuto then 
-		  if !bool then
-			for k,v in pairs(GAMEMODE.currentPlayerList) do
-				v:AddStun(-100)
-			 end
-		  end
-		end
-	end)
-	
-	GM:registerAutoUpdateConVar("gc_ammotextOverride_enable", function(name, old, new,isAuto)
-		local bool = tonumber(new) and tonumber(new) > 0
-		SetGlobalBool("AmmoTextChanged",bool)
-	end)
-
-	GM:registerAutoUpdateConVar("gc_ammotextHide_enable", function(name, old, new,isAuto)
-		local bool = tonumber(new) and tonumber(new) > 0
-		SetGlobalBool("AmmoTextDisabled",bool)
-	end)
-
-	GM:registerAutoUpdateConVar("gc_crosshair_sv_enable", function(name, old, new,isAuto)
-		local bool = tonumber(new) and tonumber(new) > 0
-		SetGlobalBool("CrosshairEnabled",bool)
-	end)
-	
-	GM:registerAutoUpdateConVar("gc_lean_enable", function(name, old, new,isAuto)
-		local bool = tonumber(new) and tonumber(new) > 0
-		SetGlobalBool("LeanEnabled",bool)
-	end)
-
-	GM:registerAutoUpdateConVar("gc_lean_delay", function(name, old, new,isAuto)
-		SetGlobalFloat("LeanDelay",new)
-	end)
-	
-	GM:registerAutoUpdateConVar("gc_nvg_enable", function(name, old, new,isAuto)
-		local bool = tonumber(new) and tonumber(new) > 0
-		SetGlobalBool("NVGEnabled",bool)
-		if !isAuto and !bool then 
-			for k,pl in pairs(GAMEMODE.currentPlayerList) do
-			   if pl:NVGBASE_IsGoggleActive() then
-	
-				 local loadout = pl:NVGBASE_GetLoadout();
-				 if (loadout == nil) then return; end
-	
-				 pl:NVGBASE_ToggleGoggle(loadout,nil)
-			   end
-			end
-		end
-	end)
-	
-	GM:registerAutoUpdateConVar("gc_specround_enable", function(name, old, new,isAuto)
-		local bool = tonumber(new) and tonumber(new) > 0
-		SetGlobalBool("SpecRoundEnabled",bool)
-	end)
-	
-	GM:registerAutoUpdateConVar("gc_abil_enable", function(name, old, new)
-		GAMEMODE.abilityEnabled = tonumber(new) and tonumber(new) > 0
-	end)
-	
-	GM:registerAutoUpdateConVar("gc_crippling", function(name, old, new)
-		GAMEMODE.cripplingEnabled = tonumber(new) and tonumber(new) > 0
-	end)
-	
-	GM:registerAutoUpdateConVar("gc_roles_enable", function(name, old, new)
-		local bool = tonumber(new) and tonumber(new) > 0
-		SetGlobalBool("RolesEnabled",bool)
-	end)
-	
-	GM:registerAutoUpdateConVar("gc_round_prep_time", function(name, old, new)
-		GAMEMODE.RoundPreparationTime = getCvarNumber(new, GAMEMODE.RoundPreparationTime)
-	end)
-	
-	GM:registerAutoUpdateConVar("gc_round_restart_time", function(name, old, new)
-		GAMEMODE.RoundRestartTime = getCvarNumber(new, GAMEMODE.RoundRestartTime)
-	end)
-	
-	GM:registerAutoUpdateConVar("gc_runspeed", function(name, old, new)
-		GAMEMODE.BaseRunSpeed = getCvarNumber(new, GAMEMODE.BaseRunSpeed)
-	end)
-	
-	GM:registerAutoUpdateConVar("gc_walkspeed", function(name, old, new)
-		GAMEMODE.BaseWalkSpeed = getCvarNumber(new, GAMEMODE.BaseWalkSpeed)
-	end)
-	
-	GM:registerAutoUpdateConVar("gc_damage_scale", function(cvarName, old, new)	
-		GAMEMODE.DamageMultiplier = getCvarNumber(new, GAMEMODE.defaultDamageScale)
-	end)
-end
 
 
 function GM:Initialize()
@@ -525,7 +369,7 @@ function GM:Move(ply, moveData)
 	local adrenalineModifier = 1 + ply:getRunSpeedAdrenalineModifier() -- for some reason the value returned by GetMaxSpeed is equivalent to player's run speed - 30
 	local weightVal = CLIENT and ply:calculateWeight(0, 0) or ply.weight -- clients recalculate each frame, server recalculates on change
 		
-	local runSpeed = ((ply.plclass.RunSpeed or self.BaseRunSpeed ) - math.max(0, weightVal - self.RunSpeedLossWeightCutoff) * self.RunSpeedLossPerKG - ply:getStaminaRunSpeedModifier()) * adrenalineModifier * ply:GetDTFloat(0)
+	local runSpeed = ((ply.plclass.RunSpeed or self.BaseRunSpeed) - math.max(0, weightVal - self.RunSpeedLossWeightCutoff) * self.RunSpeedLossPerKG - ply:getStaminaRunSpeedModifier()) * adrenalineModifier * ply:GetDTFloat(0)
 	
 	ply:SetRunSpeed(runSpeed)
 	--ply:attemptClimb(moveData)
@@ -545,7 +389,7 @@ function GM:Move(ply, moveData)
 			finalMult = finalMult - self.BackwardsSprintSpeedAffector
 		end
 		
-		local finalRunSpeed = math.max(math.min(moveData:GetMaxSpeed(), runSpeed) * finalMult, ply.plclass.WalkSpeed) --self.BaseWalkSpeed
+		local finalRunSpeed = math.max(math.min(moveData:GetMaxSpeed(), runSpeed) * self.BaseRunSpeedMult * finalMult, ply.plclass.WalkSpeed) --self.BaseWalkSpeed
 		
 		moveData:SetMaxSpeed(finalRunSpeed)
 		moveData:SetMaxClientSpeed(finalRunSpeed)

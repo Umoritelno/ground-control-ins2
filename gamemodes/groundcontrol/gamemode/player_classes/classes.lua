@@ -43,7 +43,7 @@ PLAYER.Desc = "You are specialist. Use your gear to complete the task."
 PLAYER.SlowWalkSpeed		= 100		-- How fast to move when slow-walking (+WALK)
 PLAYER.WalkSpeed			= 145		-- How fast to move when not running
 PLAYER.RunSpeed				= 315	-- How fast to move when running
-PLAYER.CrouchedWalkSpeed	= 0.6		-- Multiply move speed by this when crouching
+PLAYER.CrouchedWalkSpeed	= 0.7		-- Multiply move speed by this when crouching
 PLAYER.DuckSpeed			= 0.3		-- How fast to go from not ducking, to duckingPLAYER.UnDuckSpeed			= 0.3		-- How fast to go from ducking, to not ducking
 PLAYER.JumpPower			= 220		-- How powerful our jump should be
 PLAYER.MaxHealth			= 120	
@@ -59,7 +59,7 @@ PLAYER.Desc = "You are commander of your squad. Lead your squad."
 PLAYER.SlowWalkSpeed		= 100		-- How fast to move when slow-walking (+WALK)
 PLAYER.WalkSpeed			= 140		-- How fast to move when not running
 PLAYER.RunSpeed				= 300	-- How fast to move when running
-PLAYER.CrouchedWalkSpeed	= 0.6		-- Multiply move speed by this when crouching
+PLAYER.CrouchedWalkSpeed	= 0.8		-- Multiply move speed by this when crouching
 PLAYER.DuckSpeed			= 0.3		-- How fast to go from not ducking, to duckingPLAYER.UnDuckSpeed			= 0.3		-- How fast to go from ducking, to not ducking
 PLAYER.JumpPower			= 220		-- How powerful our jump should be
 PLAYER.MaxHealth			= 110	
