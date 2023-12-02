@@ -61,14 +61,16 @@ end
 
 if CLIENT then
 
-    local lang = CreateClientConVar("gc_language","english",true,false,"Current language")
+    local lang = CreateClientConVar("gc_language","English",true,false,"Current language")
 
-    cvars.AddChangeCallback("gc_language",function(cnv,old,new)
-        if Languages[new] then
+cvars.AddChangeCallback("gc_language", function(cnv, old, new)
+	if Languages[new] then
             GAMEMODE.Language = new 
-            CheckFontByLanguage()
+	else 
+	    GAMEMODE.Language = "English"
         end
-    end)
+	    CheckFontByLanguage()
+end)
 
     surface.CreateFont("PopupFontReplace", {
         font = "Roboto", 
@@ -94,7 +96,7 @@ if CLIENT then
 
     function GetCurLanguage()
         local G = GM or GAMEMODE 
-        return Languages[G.Language or "english"]
+        return Languages[G.Language or "English"]
     end
 
     function SetCurLanguage(id)
@@ -111,7 +113,7 @@ if CLIENT then
     if Languages[lang:GetString()] then
         SetCurLanguage(lang:GetString())
     else 
-        SetCurLanguage("english")
+        SetCurLanguage("English")
     end
 
 end

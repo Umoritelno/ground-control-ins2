@@ -1,5 +1,5 @@
 Language = {
-    id = "Русский",
+    id = "Russian",
     match_start = "Новый матч начинается",
     round_prepare = "Приготовьтесь к новому раунду",
     round_start = "Раунд начнется через %s секунд",
