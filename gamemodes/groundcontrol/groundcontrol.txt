@@ -1,7 +1,0 @@
-"sandbox"
-{
-	"base"		"base"
-	"title"		"Ground Kontrol"
-	"maps"		"^rp_"
-	"menusystem"	"1"
-}

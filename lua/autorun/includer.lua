@@ -1,4 +1,4 @@
-if engine.ActiveGamemode() == "groundcontrol" then -- dont change gamemode folder name pls :(
+if engine.ActiveGamemode() == "groundkontrol" then -- dont change gamemode folder name pls :(
     AddCSLuaFile("includes/circles.lua")
     local files,dirs = file.Find("gc_lua/*","LUA")
     for _,file in pairs(files) do
