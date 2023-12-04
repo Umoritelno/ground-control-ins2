@@ -236,21 +236,21 @@ function GM:PlayerSetHandsModel( ply, ent )
 end
 
 function GM:DoPlayerDeath(ply, attacker, dmgInfo)
-	if ply != attacker and ply:Team() == attacker:Team() then
+	if IsValid(attacker) and ply != attacker and attacker:IsPlayer() and ply:Team() == attacker:Team() then
 		if ply.Ability and ply.Ability.name == "Disquise" and ply.Ability.active then
 			return
 		end
 		local role
 		if ply.plclass and ply.plclass.DisplayName then
-			rolestr = ply.plclass.DisplayName
+			role = ply.plclass.DisplayName
 		else 
-			rolestr = "Unknown"
+			role = "Unknown"
 		end
 
 		local nick = ply:Nick()
 
 		net.Start("killnotification")
-		net.WriteString(rolestr)
+		net.WriteString(role)
 		net.WriteString(nick)
 		net.Send(attacker)
 	end

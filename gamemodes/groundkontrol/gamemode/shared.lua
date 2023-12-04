@@ -35,17 +35,17 @@ GM.VoteTime = GM.VotePrepTime + 30
 GM.HeavyLandingVelocity = 500
 GM.HeavyLandingVelocityToWeight = 0.03 -- multiply velocity by this much, if the final value exceeds our weight, then it is considered a heavy landing and will make extra noise
 GM.CurMap = string.lower(game.GetMap())
-GM.DefBase = 2
+GM.DefBase = "cw"
 GM.WepBases = {
-  [1] = {
+  ["cw"] = {
 	class = "cw_base",
 	name = "CW 2.0 Default",
   },
-  [2] = {
+  ["cwkk"] = {
 	class = "cw_kk",
 	name = "CW 2.0 Insurgency",
   },
-  [3] = {
+  ["tfa"] = {
 	class = "tfa",
 	name = "TFA",
   },
@@ -56,14 +56,14 @@ function GM:GetBaseClassByID(id)
 end 
 
 function GM:GetIDByName(name)
-	local id = 1
+	local id
 	for k,v in pairs(self.WepBases) do
 		if v.name == name then
 			id = k 
 			break 
 		end
 	end
-	return id
+	return id or "cw"
 end
 
 --[[function GM:SetWeaponBaseID(id)

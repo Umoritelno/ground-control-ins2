@@ -37,7 +37,7 @@ SWEP.Base = "cw_melee_base"
 SWEP.Category = "CW 2.0"
 
 SWEP.UseHands = true
-SWEP.selectSortWeight = 3
+SWEP.selectSortWeight = GAMEMODE.CurWepBase != "tfa" and 4 or 5
 
 SWEP.Author			= "Spy"
 SWEP.Contact		= ""

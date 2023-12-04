@@ -328,17 +328,17 @@ if GetGlobalBool("SpecRoundEnabled") then
 	self.GlobalSpecRound = self.GlobalSpecRound - 1
 
 	if self.GlobalSpecRound <= -1 then
-		local randomround = math.random(1,#self.SpecRounds)
+		local randomround = table.Random(self.SpecRounds).id
 		self.GlobalSpecRound = self.DefaultSpecRoundDelay
-		self.CurSpecRound = self.SpecRounds[randomround]
+		self.CurSpecRound = randomround
 		net.Start("SpecRoundUpdate")
-		net.WriteInt(randomround,32)
+		net.WriteString(randomround)
 		net.WriteInt(self.GlobalSpecRound,31)
 		net.Broadcast()
 	else
 		self.CurSpecRound = nil 
 		net.Start("SpecRoundUpdate")
-		net.WriteInt(-1,32)
+		net.WriteString("None")
 		net.WriteInt(self.GlobalSpecRound,31)
 		net.Broadcast()
 	end
@@ -346,7 +346,7 @@ if GetGlobalBool("SpecRoundEnabled") then
 else 
 	self.CurSpecRound = nil 
 	net.Start("SpecRoundUpdate")
-	net.WriteInt(-1,32)
+	net.WriteString("None")
 	net.WriteInt(self.GlobalSpecRound,31)
 	net.Broadcast()
 end 

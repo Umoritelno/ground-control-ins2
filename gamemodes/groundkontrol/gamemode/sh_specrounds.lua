@@ -9,7 +9,7 @@ GM.GlobalSpecRound = GM.DefaultSpecRoundDelay
 GM.SpecRounds = {}
 
 function GM:AddSpecRound(data)
-    self.SpecRounds[table.Count(GM.SpecRounds) + 1] = data 
+    self.SpecRounds[data.id] = data 
 end 
 
 function GM:GetSpecRound()
@@ -18,6 +18,7 @@ end
 
 GM:AddSpecRound(
 	{
+		id = "perevorot",
 		name = "Перевертыш",
 		description = "Что за хуйня здесь происходит?",
 	}
@@ -25,6 +26,7 @@ GM:AddSpecRound(
 
 GM:AddSpecRound(
 	{
+		id = "balance",
 		name = "Баланс",
 		description = "Что с уроном?",
 	}

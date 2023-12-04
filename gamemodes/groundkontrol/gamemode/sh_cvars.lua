@@ -19,43 +19,32 @@ end
 
 local sharedCVar = FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED
 
-CreateConVar("gc_lean_enable",1,sharedCVar,"Enable leaning?")
-CreateConVar("gc_lean_delay",1.75,sharedCVar,"Delay after leaning",0)
-CreateConVar("gc_ammotextOverride_enable",1,sharedCVar,"Override ammo text for CW 2.0 weapons?")
-CreateConVar("gc_ammotextHide_enable",0,sharedCVar,"Hide ammo text for weapons?")
-CreateConVar("gc_crosshair_sv_enable",0,sharedCVar,"Draw crosshair for CW 2.0 Default & TFA weapons?")
-CreateConVar("gc_specround_enable",1,sharedCVar,"Will special rounds work?")
-CreateConVar("gc_crippling", 1, sharedCVar, "is the crippling gameplay mechanic enabled?")
-CreateConVar("gc_round_prep_time", GM.RoundPreparationTime, sharedCVar, "how much time players spend in the preparation stage of the new round")
-CreateConVar("gc_round_restart_time", GM.RoundRestartTime, sharedCVar, "amount of time before the next round starts")
-CreateConVar("gc_walkspeedmult", GM.BaseWalkSpeedMult, sharedCVar, "player walk speed mult (ONLY ON NEXT SPAWN)",0)
-CreateConVar("gc_runspeedmult", GM.BaseRunSpeedMult, sharedCVar, "player run speed mult (ONLY ON NEXT SPAWN)",0)
-CreateConVar("gc_damagemult", GM.DamageMultiplier, sharedCVar, "multiplier for dealt weapon damage")
-CreateConVar("gc_damage_scale", GM.DefaultDamageScale, sharedCVar, "multiplier for all weapon damage")
-CreateConVar("gc_wepbase",GM.DefBase,sharedCVar,"What weapon base we will use?")
-CreateConVar("gc_roles_enable",1,sharedCVar,"Will roles and work?")
-CreateConVar("gc_abil_enable",1,sharedCVar,"Will abilities work?")
-CreateConVar("gc_nvg_enable",1,sharedCVar,"Will NVG work?")
-CreateConVar("gc_stun_enable",1,sharedCVar,"Will stun work?")
-CreateConVar("gc_commander_visibility",0,sharedCVar,"Give only the commander the opportunity to distinguish allies?")
-CreateConVar("gc_vmanip_enable",1,sharedCVar,"Enable VManip animations?")
-
---GM.CurWepBase = GetConVar("gc_wepbase"):GetInt() or 1
-if GM.WepBases[GetConVar("gc_wepbase"):GetInt()] then
-	GM.CurWepBase = GetConVar("gc_wepbase"):GetInt()
-else
-	print("invalid weapon base. Using default")
-	if SERVER then
-		game.ConsoleCommand("gc_wepbase 2\n")
-	end
-	GM.CurWepBase = 2
-end
-
 local function getCvarNumber(new, old)
 	return tonumber(new) and new or old
 end
 
 if SERVER then
+
+	CreateConVar("gc_lean_enable",1,sharedCVar,"Enable leaning?")
+	CreateConVar("gc_lean_delay",1.75,sharedCVar,"Delay after leaning",0)
+	CreateConVar("gc_ammotextOverride_enable",1,sharedCVar,"Override ammo text for CW 2.0 weapons?")
+	CreateConVar("gc_ammotextHide_enable",0,sharedCVar,"Hide ammo text for weapons?")
+	CreateConVar("gc_crosshair_sv_enable",0,sharedCVar,"Draw crosshair for CW 2.0 Default & TFA weapons?")
+	CreateConVar("gc_specround_enable",1,sharedCVar,"Will special rounds work?")
+	CreateConVar("gc_crippling", 1, sharedCVar, "is the crippling gameplay mechanic enabled?")
+	CreateConVar("gc_round_prep_time", GM.RoundPreparationTime, sharedCVar, "how much time players spend in the preparation stage of the new round")
+	CreateConVar("gc_round_restart_time", GM.RoundRestartTime, sharedCVar, "amount of time before the next round starts")
+	CreateConVar("gc_walkspeedmult", GM.BaseWalkSpeedMult, sharedCVar, "player walk speed mult (ONLY ON NEXT SPAWN)",0)
+	CreateConVar("gc_runspeedmult", GM.BaseRunSpeedMult, sharedCVar, "player run speed mult (ONLY ON NEXT SPAWN)",0)
+	CreateConVar("gc_damagemult", GM.DamageMultiplier, sharedCVar, "multiplier for dealt weapon damage")
+	CreateConVar("gc_damage_scale", GM.DefaultDamageScale, sharedCVar, "multiplier for all weapon damage")
+	CreateConVar("gc_wepbase",GM.DefBase,sharedCVar,"What weapon base we will use?")
+	CreateConVar("gc_roles_enable",1,sharedCVar,"Will roles and work?")
+	CreateConVar("gc_abil_enable",1,sharedCVar,"Will abilities work?")
+	CreateConVar("gc_nvg_enable",1,sharedCVar,"Will NVG work?")
+	CreateConVar("gc_stun_enable",1,sharedCVar,"Will stun work?")
+	CreateConVar("gc_commander_visibility",0,sharedCVar,"Give only the commander the opportunity to distinguish allies?")
+	CreateConVar("gc_vmanip_enable",1,sharedCVar,"Enable VManip animations?")
 
 	GM:registerAutoUpdateConVar("gc_vmanip_enable", function(name, old, new,isAuto)
 		local bool = tonumber(new) and tonumber(new) > 0
@@ -156,9 +145,7 @@ if SERVER then
 	GM:registerAutoUpdateConVar("gc_damage_scale", function(cvarName, old, new)	
 		GAMEMODE.DamageMultiplier = getCvarNumber(new, GAMEMODE.defaultDamageScale)
 	end)
-end
 
-if SERVER then
     GM.defaultAFKTimerValue = 240 -- default amount of time to wait before kicking someone out for AFK
     GM.defaultTeamDamageScale = 0.6 -- mult for team damage
     CreateConVar("gc_proximity_voicechat", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- if set to 1, nearby enemies will be able to hear other enemies speak
@@ -211,4 +198,14 @@ if SERVER then
         
         GAMEMODE.afkTime = newValue
     end)
+end
+
+if GM.WepBases[GetConVar("gc_wepbase"):GetString()] then
+	GM.CurWepBase = GetConVar("gc_wepbase"):GetString()
+else
+	print("invalid weapon base. Using default")
+	if SERVER then
+		game.ConsoleCommand("gc_wepbase cw\n")
+	end
+	GM.CurWepBase = GM.DefBase
 end

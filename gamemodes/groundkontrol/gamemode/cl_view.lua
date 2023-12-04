@@ -53,7 +53,7 @@ function GM:CalcView(ply, eyePos, eyeAng, fov, nearZ, farZ)
 		self.DeadState = 0
 	end
 
-	return self.BaseClass:CalcView(ply, eyePos, eyeAng, fov, nearZ, farZ)
+	return self:SpecRoundCalcView(ply, eyePos, eyeAng, fov, nearZ, farZ) or self.BaseClass:CalcView(ply, eyePos, eyeAng, fov, nearZ, farZ)
 end
 
 function GM:CreateMove(cmd)

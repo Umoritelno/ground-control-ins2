@@ -215,12 +215,10 @@ function GM:HUDPaint()
 			end
 		    local SpecCountText = string_format(lang.specRoundCount,self.GlobalSpecRound)
 
-            local CurSpecRound
+            local CurSpecRound = "None"
 
 		    if self.CurSpecRound then
 			 CurSpecRound = self.SpecRounds[self.CurSpecRound].name
-		    else 
-			 CurSpecRound = "None"
 		    end
 
 		    local CurSpecRoundText = string_format(lang.curSpecRound,CurSpecRound)

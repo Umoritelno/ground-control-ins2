@@ -144,7 +144,7 @@ function GM:registerPrimaryWeapon(weaponData)
 	if not weaponData.maxAmmo then
 		weaponData.maxAmmo = math.huge
 	end
-	if not string.find(weapons.Get(weaponData.weaponClass).Base,self:GetBaseClassByID(GetConVar("gc_wepbase"):GetInt())) then 
+	if not string.find(weapons.Get(weaponData.weaponClass).Base,self:GetBaseClassByID(GetConVar("gc_wepbase"):GetString())) then 
 		return 
 	end
 	
@@ -166,7 +166,7 @@ function GM:registerSecondaryWeapon(weaponData)
 	if not weaponData.maxAmmo then
 		weaponData.maxAmmo = math.huge
 	end
-	if not string.find(weapons.Get(weaponData.weaponClass).Base,self:GetBaseClassByID(GetConVar("gc_wepbase"):GetInt())) then 
+	if not string.find(weapons.Get(weaponData.weaponClass).Base,self:GetBaseClassByID(GetConVar("gc_wepbase"):GetString())) then 
 		--ErrorNoHalt("[Ground Control] ERROR/nReason: Trying to register invalid weapon")
 		return 
 	end
@@ -184,14 +184,18 @@ function GM:registerTertiaryWeapon(weaponData)
 	weaponData.id = weaponData.id or weaponData.weaponClass
 	self.RegisteredWeaponData[weaponData.id] = weaponData
 	
-	weaponData.selectSortWeight = 3
+	if self.CurWepBase == "tfa" then
+		if weaponData.isFrag then
+			weaponData.selectSortWeight = 3
+		else 
+			weaponData.selectSortWeight = 4
+		end
+	else 
+		weaponData.selectSortWeight = 3
+	end
 	
 	if not weaponData.maxAmmo then
 		weaponData.maxAmmo = math.huge
-	end
-
-	if self.CurWepBase == 3 then
-		weaponData.skipWeaponGive = nil -- also can be false, no difference
 	end
 	
 	self:applyWeaponDataToWeaponClass(weaponData, false, 2)
@@ -967,6 +971,7 @@ function GM:postInitEntity()
 	f1gren.weaponClass = "cw_kk_ins2_nade_m67"
 	f1gren.weight = 0.5
 	f1gren.amountToGive = 2
+	f1gren.isFrag = true
 	f1gren.hideMagIcon = true
 	f1gren.skipWeaponGive = true
 	f1gren.description = {{t = "Spare Grenade", font = "CW_HUD24", c = Color(255, 255, 255, 255)},
@@ -1052,20 +1057,20 @@ function GM:postInitEntity()
 	wepObj.weight = 0
 	wepObj.dropsDisabled = true
 	wepObj.isKnife = true
-	wepObj.selectSortWeight = 4
+	wepObj.selectSortWeight = self.CurWepBase != "tfa" and 4 or 5
 	
 	local wepObj = weapons.GetStored("cw_kk_ins2_rpg")
 	wepObj.noResupply = true 
 	wepObj.weight = 10
 	wepObj.dropsDisabled = true
 	wepObj.isKnife = false
-	wepObj.selectSortWeight = 6
+	wepObj.selectSortWeight = self.CurWepBase != "tfa" and 6 or 7
     
 	local wepObj = weapons.GetStored(self.MedkitClass)
 	wepObj.weight = 0.5
 	wepObj.dropsDisabled = true
 	wepObj.isKnife = false
-	wepObj.selectSortWeight = 5
+	wepObj.selectSortWeight = self.CurWepBase != "tfa" and 5 or 6
 	
 	-- MP9, remove the meme ammo type
 	local mp9Wep = weapons.GetStored("cw_mp9_official")

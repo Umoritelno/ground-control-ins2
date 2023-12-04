@@ -410,12 +410,13 @@ hook.Add("TFA_InspectVGUI_Start", "Kill TFA customization", function()
     return CurTime() < GAMEMODE.PreparationTime
 end)
 
-hook.Add("TFA_DrawCrosshair", "TFA_Crosshair", function()
+-- not working
+--[[hook.Add("TFA_DrawCrosshair", "TFA_Crosshair_override", function(wep,x,y)
     return GetGlobalBool("CrosshairEnabled") == true
-end)
+end)--]]
 
 hook.Add("TFA_DrawHUDAmmo", "TFA_3D2D", function()
-    return GetGlobalBool("AmmoTextDisabled") == true
+    return GetGlobalBool("AmmoTextDisabled") == false
 end)
 
 CustomizableWeaponry.callbacks:addNew("adjustViewmodelPosition", "GroundControl_adjustViewmodelPosition2", function(self, targetPos, targetAng)

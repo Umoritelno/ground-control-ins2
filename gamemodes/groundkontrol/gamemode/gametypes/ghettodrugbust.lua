@@ -43,18 +43,18 @@ ghettoDrugBust.invertedSpawnpoints = {
 }
 
 ghettoDrugBust.redteamweaponslist = {
-	[1] = {
+	["cw"] = {
 		[1] = {weapon = "cw_ak74", chance = 3, mags = 1},
 		[2] = {weapon = "cw_shorty", chance = 8, mags = 12},
 		[3] = {weapon = "cw_mac11", chance = 10, mags = 1},
         [4] = {weapon = "cw_deagle", chance = 15, mags = 2},
 		[5] = {weapon = "cw_mr96", chance = 17, mags = 3},
 		[6] = {weapon = "cw_fiveseven", chance = 35, mags = 2},
-		[7] = {weapon = "cw_m1911", chance = 40, mags = 4},
+		[7] = {weapon = "cw_m1911", chance = 40, mags = 4}, --
 		[8] = {weapon = "cw_p99", chance = 66, mags = 3},
 		[9] = {weapon = "cw_makarov", chance = 100, mags = 7},
 		},
-	[2] = {
+	["cwkk"] = {
 		[1] = {weapon = "cw_kk_ins2_mosin",chance = 5,mags = 2},
 		[2] = {weapon = "cw_kk_ins2_sks",chance = 7,mags = 2},
 		[3] = {weapon = "cw_kk_ins2_rpk",chance = 2.5,mags = 1},
@@ -64,21 +64,14 @@ ghettoDrugBust.redteamweaponslist = {
 		[7] = {weapon = "cw_kk_ins2_mp5k",chance = 25,mags = 2},
 
 	},
-	[3] = {
-		[1] = {weapon = "devl_kalashnikov_alpha",chance = 5,mags = 2,},
-		[2] = {weapon = "devl_sr1mp",chance = 50,mags = 2,},
-		[3] = {weapon = "devl_rook",chance = 45,mags = 2,},
-		[4] = {weapon = "eft_m9a3",chance = 42.5,mags = 3,},
-		[5] = {weapon = "tfa_eft_mp7a1",chance = 25,mags = 2,},
-		[6] = {weapon = "tfa_eft_mp5",chance = 27.5,mags = 2,},
+	["tfa"] = {
+		[1] = {weapon = "tfa_ins2_ak103",chance = 5,mags = 2,},
+		[2] = {weapon = "tfa_ins2_colt_m45",chance = 50,mags = 2,},
+		[3] = {weapon = "tfa_ins2_fnp45",chance = 45,mags = 2,},
+		[4] = {weapon = "tfa_ins2_mr96",chance = 32,mags = 3,},
+		[5] = {weapon = "tfa_ins2_sr2m_veresk",chance = 25,mags = 2,},
+		[6] = {weapon = "tfa_ins2_ots_33_pernach",chance = 27.5,mags = 2,},
 	},
-	--[[[4] = {
-		[1] = {weapon = "arc9_eft_saiga12k",chance = 3.5,mags = 1,},
-		[2] = {weapon = "arc9_eft_glock18c",chance = 35,mags = 3,},
-		[3] = {weapon = "arc9_eft_ak74m",chance = 2.5,mags = 2,},
-		[4] = {weapon = "arc9_eft_glock17",chance = 70,mags = 3,},
-		[5] = {weapon = "arc9_eft_glock19x",chance = 42.5,mags = 3,},
-	},]]
 
 		     
 	--[[weapon = "cw_kk_ins2_toz", chance = 8, mags = 1,
@@ -92,7 +85,7 @@ ghettoDrugBust.redteamweaponslist = {
 	weapon = "cw_kk_ins2_makarov", chance = 100, mags = 7,
 	--]]
 }
-ghettoDrugBust.redTeamWeapons = ghettoDrugBust.redteamweaponslist[GM.CurWepBase]
+ghettoDrugBust.redTeamWeapons = ghettoDrugBust.redteamweaponslist[GM.CurWepBase] or ghettoDrugBust.redteamweaponslist["cw"]
 
 ghettoDrugBust.redTeamWeaponsWeight = 1
 
@@ -336,7 +329,11 @@ function ghettoDrugBust:playerSpawn(ply)
 			--]]
 			
 			if math.random(1, 100) <= ghettoDrugBust.grenadeChance then
-				ply:GiveAmmo(1, "Frag Grenades")
+				if GAMEMODE.CurWepBase == "tfa" then
+					ply:Give("cw_kk_ins2_nade_m67",true)
+				else 
+					ply:GiveAmmo(1, "Frag Grenades")
+				end
 			end
 		end
 		

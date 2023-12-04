@@ -1,24 +1,25 @@
-hook.Add( "CalcView", "PerevertishCalcView", function( ply, pos, angles, fov )
-    if GAMEMODE.CurSpecRound == 1 then
+function GM:SpecRoundCalcView(ply, eyePos, eyeAng, fov, nearZ, farZ)
+    if GAMEMODE.CurSpecRound == "perevorot" then
         local view = {
-            origin = origin,
-            angles = angles,
+            origin = eyePos,
+            angles = eyeAng,
             fov = fov,
             drawviewer = false
         }
-        angles.r = 180 -- hehe
+        view.angles.r = 180 -- hehe
     
         return view
     end
-end )
+    return false
+end
 
 net.Receive("SpecRoundUpdate",function()
-    local roundid = net.ReadInt(32)
+    local roundid = net.ReadString()
     local roundcount = net.ReadInt(31)
 
     GAMEMODE.GlobalSpecRound = roundcount
 
-    if roundid != -1 then
+    if roundid != "None" then
         print("Spec Round Time")
         GAMEMODE.CurSpecRound = roundid
     else 
