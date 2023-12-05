@@ -51,9 +51,6 @@ function GM:addAutoRemoveEntity(class)
 	self.RemoveEntities[class] = true
 end
 
-CreateConVar("gc_trashprop_mass_threshold", 20, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- props with a weight <= this much move on to the AABB check step
-CreateConVar("gc_trashprop_aabb_size_threshold", 55, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- props with an AABB size <= this much will have their collision set to debris
-
 
 function GM:addAutoRemoveEntityIndex(map, index)
 	self.RemoveEntitiesByIndex[map] = GM.RemoveEntitiesByIndex[map] or {}

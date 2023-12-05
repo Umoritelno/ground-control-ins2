@@ -8,6 +8,7 @@ Language = {
     round_win = "%s has won round!",
     round_new_team_title = "You are now on %s",
     round_new_team_subtitle = "Acknowledge your new objectives.",
+    round_players_require = "This gametype requires at least 2 players, waiting for more people...",
     spectating = "Spectating %s",
     binds = {
         Medkit = {

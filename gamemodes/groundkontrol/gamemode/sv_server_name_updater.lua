@@ -2,10 +2,6 @@
 	this small script can be used for automatically updating your server name based on the circumstances (gametype being played, round number)
 ]]--
 
-CreateConVar("gc_auto_adjust_server_name", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
-CreateConVar("gc_base_server_name", "", {FCVAR_ARCHIVE, FCVAR_NOTIFY})
-CreateConVar("gc_insert_to_front", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
-
 GM.BaseGameInfoString = "GAMETYPE R[CURRENT_ROUND/MAX_ROUND]"
 GM.DefaultServerName = "Ground Control"
 

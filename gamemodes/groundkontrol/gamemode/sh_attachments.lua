@@ -93,8 +93,14 @@ end
 
 function GM:registerAttachment(data)
 	local attData = CustomizableWeaponry.registeredAttachmentsSKey[data.attachmentName]
+	if !attData then return end
 	attData.price = data.price
 	attData.unlockedByDefault = data.unlockedByDefault
+end
+
+for _,v in pairs(file.Find(engine.ActiveGamemode().."/gamemode/wepatts/*.lua", "LUA")) do
+	AddCSLuaFile("wepatts/"..v)
+	include("wepatts/"..v)
 end
 
 function GM:setAttachmentPrice(attachmentName, desiredPrice)

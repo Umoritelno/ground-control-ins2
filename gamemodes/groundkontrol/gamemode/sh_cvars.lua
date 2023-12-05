@@ -27,8 +27,8 @@ if SERVER then
 
 	CreateConVar("gc_lean_enable",1,sharedCVar,"Enable leaning?")
 	CreateConVar("gc_lean_delay",1.75,sharedCVar,"Delay after leaning",0)
-	CreateConVar("gc_ammotextOverride_enable",1,sharedCVar,"Override ammo text for CW 2.0 weapons?")
-	CreateConVar("gc_ammotextHide_enable",0,sharedCVar,"Hide ammo text for weapons?")
+	CreateConVar("gc_ammotextoverride_enable",1,sharedCVar,"Override ammo text for CW 2.0 weapons?")
+	CreateConVar("gc_ammotexthide_enable",0,sharedCVar,"Hide ammo text for weapons?")
 	CreateConVar("gc_crosshair_sv_enable",0,sharedCVar,"Draw crosshair for CW 2.0 Default & TFA weapons?")
 	CreateConVar("gc_specround_enable",1,sharedCVar,"Will special rounds work?")
 	CreateConVar("gc_crippling", 1, sharedCVar, "is the crippling gameplay mechanic enabled?")
@@ -38,7 +38,6 @@ if SERVER then
 	CreateConVar("gc_runspeedmult", GM.BaseRunSpeedMult, sharedCVar, "player run speed mult (ONLY ON NEXT SPAWN)",0)
 	CreateConVar("gc_damagemult", GM.DamageMultiplier, sharedCVar, "multiplier for dealt weapon damage")
 	CreateConVar("gc_damage_scale", GM.DefaultDamageScale, sharedCVar, "multiplier for all weapon damage")
-	CreateConVar("gc_wepbase",GM.DefBase,sharedCVar,"What weapon base we will use?")
 	CreateConVar("gc_roles_enable",1,sharedCVar,"Will roles and work?")
 	CreateConVar("gc_abil_enable",1,sharedCVar,"Will abilities work?")
 	CreateConVar("gc_nvg_enable",1,sharedCVar,"Will NVG work?")
@@ -68,12 +67,12 @@ if SERVER then
 		end
 	end)
 	
-	GM:registerAutoUpdateConVar("gc_ammotextOverride_enable", function(name, old, new,isAuto)
+	GM:registerAutoUpdateConVar("gc_ammotextoverride_enable", function(name, old, new,isAuto)
 		local bool = tonumber(new) and tonumber(new) > 0
 		SetGlobalBool("AmmoTextChanged",bool)
 	end)
 
-	GM:registerAutoUpdateConVar("gc_ammotextHide_enable", function(name, old, new,isAuto)
+	GM:registerAutoUpdateConVar("gc_ammotexthide_enable", function(name, old, new,isAuto)
 		local bool = tonumber(new) and tonumber(new) > 0
 		SetGlobalBool("AmmoTextDisabled",bool)
 	end)
@@ -198,14 +197,30 @@ if SERVER then
         
         GAMEMODE.afkTime = newValue
     end)
+
+	GM.MemeRadio = true -- hehe, set to true for very funny memes
+	CreateConVar("gc_meme_radio_chance", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- in 1000
+
+	GM.defaultDoorMoveSpeed = 350 -- the default door move speed to set
+	GM.defaultRounds = 10 -- how many rounds to play per map?
+	CreateConVar("gc_door_move_speed", GM.defaultDoorMoveSpeed, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "time in seconds that a player can remain without any input before we kick him out")
+	CreateConVar("gc_rounds", GM.defaultRounds, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "rounds per level before map change")
+	CreateConVar("gc_ghetto_cum_chance", 10, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "chance that a defender in Ghetto Drug Bust will receive the Bukkake Blaster weapon")
+	CreateConVar("gc_ghetto_fists_only_chance", 20, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "chance that a round in Ghetto Drug Bust will start with \"Fists only\" for the defenders, with vastly reduced attackers count")
+	CreateConVar("gc_ghetto_knife_chance", 30, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "chance that a defender in Ghetto Drug Bust will receive a knife instead of fists")
+	CreateConVar("gc_block_wepbase_vote",0,{FCVAR_ARCHIVE, FCVAR_NOTIFY},"Block weapon base vote?")
+	CreateConVar("gc_auto_adjust_server_name", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
+	CreateConVar("gc_base_server_name", "", {FCVAR_ARCHIVE, FCVAR_NOTIFY})
+	CreateConVar("gc_insert_to_front", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
+	CreateConVar("gc_ghetto_backcompat_maps", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "enabling this will add all cs_ and de_ maps to Ghetto Drug Bust's map rotation (requires level change to come into effect after changing)")
+	CreateConVar("gc_autopunish_teamdamage", 300, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- how much damage we will tolerate to teammates until an automatic votekick begins
+	CreateConVar("gc_randomly_pick_gametype_and_map", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
+	CreateConVar("gc_gametype", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
+	CreateConVar("gc_trashprop_mass_threshold", 20, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- props with a weight <= this much move on to the AABB check step
+	CreateConVar("gc_trashprop_aabb_size_threshold", 55, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- props with an AABB size <= this much will have their collision set to debris
+	CreateConVar("gc_allow_gametype_votes", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
 end
 
-if GM.WepBases[GetConVar("gc_wepbase"):GetString()] then
-	GM.CurWepBase = GetConVar("gc_wepbase"):GetString()
-else
-	print("invalid weapon base. Using default")
-	if SERVER then
-		game.ConsoleCommand("gc_wepbase cw\n")
-	end
-	GM.CurWepBase = GM.DefBase
+if CLIENT then
+	CreateConVar("gc_crosshair_enable", 1, {FCVAR_ARCHIVE}, "Enable crosshair for CW 2.0?")
 end

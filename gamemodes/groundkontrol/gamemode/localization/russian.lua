@@ -8,6 +8,7 @@ Language = {
     round_win = "%s выиграли раунд!",
     round_new_team_title = "Вы теперь в команде %s",
     round_new_team_subtitle = "Ознакомьтесь с новыми задачами.",
+    round_players_require = "Для игры требуется минимум 2 игрока...",
     spectating = "Наблюдение за %s",
     binds = {
         Medkit = {

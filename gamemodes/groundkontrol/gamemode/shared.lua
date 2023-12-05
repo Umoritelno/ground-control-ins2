@@ -50,9 +50,10 @@ GM.WepBases = {
 	name = "TFA",
   },
 }
+CreateConVar("gc_wepbase",GM.DefBase,FCVAR_ARCHIVE + FCVAR_NOTIFY + FCVAR_REPLICATED,"What weapon base we will use?")
 
 function GM:GetBaseClassByID(id)
-   return self.WepBases[id].class
+   return self.WepBases[id].class --
 end 
 
 function GM:GetIDByName(name)
@@ -64,6 +65,16 @@ function GM:GetIDByName(name)
 		end
 	end
 	return id or "cw"
+end
+
+if GM.WepBases[GetConVar("gc_wepbase"):GetString()] then
+	GM.CurWepBase = GetConVar("gc_wepbase"):GetString()
+else
+	print("invalid weapon base. Using default")
+	if SERVER then
+		game.ConsoleCommand("gc_wepbase cw\n")
+	end
+	GM.CurWepBase = GM.DefBase
 end
 
 --[[function GM:SetWeaponBaseID(id)

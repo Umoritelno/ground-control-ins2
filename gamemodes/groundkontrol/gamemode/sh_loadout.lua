@@ -144,7 +144,7 @@ function GM:registerPrimaryWeapon(weaponData)
 	if not weaponData.maxAmmo then
 		weaponData.maxAmmo = math.huge
 	end
-	if not string.find(weapons.Get(weaponData.weaponClass).Base,self:GetBaseClassByID(GetConVar("gc_wepbase"):GetString())) then 
+	if not string.find(weapons.Get(weaponData.weaponClass).Base,self:GetBaseClassByID(self.CurWepBase)) then 
 		return 
 	end
 	
@@ -166,7 +166,7 @@ function GM:registerSecondaryWeapon(weaponData)
 	if not weaponData.maxAmmo then
 		weaponData.maxAmmo = math.huge
 	end
-	if not string.find(weapons.Get(weaponData.weaponClass).Base,self:GetBaseClassByID(GetConVar("gc_wepbase"):GetString())) then 
+	if not string.find(weapons.Get(weaponData.weaponClass).Base,self:GetBaseClassByID(self.CurWepBase)) then 
 		--ErrorNoHalt("[Ground Control] ERROR/nReason: Trying to register invalid weapon")
 		return 
 	end
@@ -184,7 +184,7 @@ function GM:registerTertiaryWeapon(weaponData)
 	weaponData.id = weaponData.id or weaponData.weaponClass
 	self.RegisteredWeaponData[weaponData.id] = weaponData
 	
-	if self.CurWepBase == "tfa" then
+	if self.CurWepBase != "cw" then
 		if weaponData.isFrag then
 			weaponData.selectSortWeight = 3
 		else 
@@ -1057,20 +1057,20 @@ function GM:postInitEntity()
 	wepObj.weight = 0
 	wepObj.dropsDisabled = true
 	wepObj.isKnife = true
-	wepObj.selectSortWeight = self.CurWepBase != "tfa" and 4 or 5
+	wepObj.selectSortWeight = self.CurWepBase == "cw" and 4 or 5
 	
 	local wepObj = weapons.GetStored("cw_kk_ins2_rpg")
 	wepObj.noResupply = true 
 	wepObj.weight = 10
 	wepObj.dropsDisabled = true
 	wepObj.isKnife = false
-	wepObj.selectSortWeight = self.CurWepBase != "tfa" and 6 or 7
+	wepObj.selectSortWeight = self.CurWepBase == "cw" and 6 or 7
     
 	local wepObj = weapons.GetStored(self.MedkitClass)
 	wepObj.weight = 0.5
 	wepObj.dropsDisabled = true
 	wepObj.isKnife = false
-	wepObj.selectSortWeight = self.CurWepBase != "tfa" and 5 or 6
+	wepObj.selectSortWeight = self.CurWepBase == "cw" and 5 or 6
 	
 	-- MP9, remove the meme ammo type
 	local mp9Wep = weapons.GetStored("cw_mp9_official")
@@ -1289,7 +1289,7 @@ concommand.Add(concommandName, function(ply, com, args)
 	
 	local wep = ply:GetActiveWeapon()
 	
-	if IsValid(wep) and wep.CW20Weapon then
+	if IsValid(wep) and wep.CW20Weapon and !wep.KKINS2Wep then
 		if CustomizableWeaponry.quickGrenade.canThrow(wep) then
 			CustomizableWeaponry.quickGrenade.throw(wep, true)
 			

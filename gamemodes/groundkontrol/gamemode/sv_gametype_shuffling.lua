@@ -1,6 +1,5 @@
 -- the following module, when enabled, disables map and gametype votes, and will pick a random valid gametype (one that has maps valid for it) and will change to a random map within that gametype)
 -- this module will assume that you have at least 1 map for at least 1 gametype (ie. a minimum of 1 valid gametype)
-CreateConVar("gc_randomly_pick_gametype_and_map", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY})
 
 function GM:randomlyPickGametypeAndMap()
 	local validGametypes = {}

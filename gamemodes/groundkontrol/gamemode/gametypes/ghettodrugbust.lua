@@ -329,7 +329,7 @@ function ghettoDrugBust:playerSpawn(ply)
 			--]]
 			
 			if math.random(1, 100) <= ghettoDrugBust.grenadeChance then
-				if GAMEMODE.CurWepBase == "tfa" then
+				if GAMEMODE.CurWepBase != "cw" then
 					ply:Give("cw_kk_ins2_nade_m67",true)
 				else 
 					ply:GiveAmmo(1, "Frag Grenades")
@@ -589,7 +589,8 @@ end
 
 function ghettoDrugBust:deadDraw(w, h)
 	if GAMEMODE:getActivePlayerAmount() < 2 then
-		draw.ShadowText("This gametype requires at least 2 players, waiting for more people...", GAMEMODE.SpectateFont, w * 0.5, _S(15), GAMEMODE.HUDColors.white, GAMEMODE.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		local lang = GetCurLanguage()
+		draw.ShadowText(lang.round_players_require, GAMEMODE.SpectateFont, w * 0.5, _S(15), GAMEMODE.HUDColors.white, GAMEMODE.HUDColors.black, 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 end
 

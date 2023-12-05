@@ -3,7 +3,7 @@ Languages = {}
 local correctLanguage
 local correctLanguageId = "english.lua" -- language we will use as example for fixing others
 
-local languagesTable = file.Find("localization/*.lua","LUA")
+local languagesTable = file.Find(engine.ActiveGamemode().."/gamemode/localization/*.lua","LUA")
 
 function table.InheritLoop(t,base,filter,keepfilteronchildren)
     if !filter then
@@ -63,14 +63,14 @@ if CLIENT then
 
     local lang = CreateClientConVar("gc_language","English",true,false,"Current language")
 
-cvars.AddChangeCallback("gc_language", function(cnv, old, new)
-	if Languages[new] then
-            GAMEMODE.Language = new 
-	else 
-	    GAMEMODE.Language = "English"
-        end
-	    CheckFontByLanguage()
-end)
+    cvars.AddChangeCallback("gc_language", function(cnv, old, new)
+        if Languages[new] then
+                GAMEMODE.Language = new 
+        else 
+            GAMEMODE.Language = "English"
+            end
+            CheckFontByLanguage()
+    end)
 
     surface.CreateFont("PopupFontReplace", {
         font = "Roboto", 

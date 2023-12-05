@@ -5,19 +5,7 @@
 ]]--
 
 GM.currentPlayerList = {}
-GM.defaultDoorMoveSpeed = 350 -- the default door move speed to set
-GM.defaultRounds = 10 -- how many rounds to play per map?
-GM.nvgloadout = "Splinter Cell"
-
-CreateConVar("gc_door_move_speed", GM.defaultDoorMoveSpeed, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "time in seconds that a player can remain without any input before we kick him out")
-CreateConVar("gc_rounds", GM.defaultRounds, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "rounds per level before map change")
-CreateConVar("gc_ghetto_cum_chance", 10, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "chance that a defender in Ghetto Drug Bust will receive the Bukkake Blaster weapon")
-CreateConVar("gc_ghetto_fists_only_chance", 20, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "chance that a round in Ghetto Drug Bust will start with \"Fists only\" for the defenders, with vastly reduced attackers count")
-CreateConVar("gc_ghetto_knife_chance", 30, {FCVAR_ARCHIVE, FCVAR_NOTIFY}, "chance that a defender in Ghetto Drug Bust will receive a knife instead of fists")
-CreateConVar("gc_crippling", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "is the crippling gameplay mechanic enabled?")
-CreateConVar("gc_block_wepbase_vote",0,{FCVAR_ARCHIVE, FCVAR_NOTIFY},"Block weapon base vote?")
-
-CreateConVar("gc_ghetto_backcompat_maps", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED}, "enabling this will add all cs_ and de_ maps to Ghetto Drug Bust's map rotation (requires level change to come into effect after changing)")
+GM.nvgloadout = "Splinter Cell" --
 
 GM.doorClasses = {"func_door_rotating", "prop_door_rotating"}
 
@@ -145,8 +133,6 @@ AddCSLuaFile("vgui/dnewvote.lua")
 AddCSLuaFile("vgui/dcheckboxmanual.lua")
 -- VGUI End
 
-GM.MemeRadio = true -- hehe, set to true for very funny memes
-CreateConVar("gc_meme_radio_chance", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY}) -- in 1000
 GM.MVPTracker = mvpTracker.new()
 
 CustomizableWeaponry.canDropWeapon = false -- don't let the players be able to drop weapons using the cw_dropweapon console command

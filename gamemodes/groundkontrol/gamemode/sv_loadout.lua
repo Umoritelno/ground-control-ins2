@@ -127,7 +127,7 @@ function PLAYER:giveLoadout(forceGive)
 			
 		end
 		
-		if GAMEMODE.CurWepBase == "tfa" then
+		if GAMEMODE.CurWepBase != "cw" then
 			plyObj:Give("cw_kk_ins2_nade_m67",true)
 		else 
 			plyObj:GiveAmmo(1, "Frag Grenades")
