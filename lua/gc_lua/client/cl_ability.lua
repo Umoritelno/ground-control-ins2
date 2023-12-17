@@ -137,7 +137,7 @@ net.Receive("AbilityHUD",function()
     LocalPlayer().Ability.UsesCount = origAbility.UsesCount
     LocalPlayer().Ability.passive = origAbility.passive
     if abilityPanel != nil then abilityPanel:Remove() abilityPanel = nil end 
-    HudAbility(origAbility.name,origAbility.desc,origAbility.icon)
+    HudAbility(origAbility.name,origAbility.description,origAbility.icon)
 end)
 
 net.Receive("HUDRemove",function()
