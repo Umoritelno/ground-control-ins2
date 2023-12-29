@@ -1058,13 +1058,6 @@ function GM:postInitEntity()
 	wepObj.dropsDisabled = true
 	wepObj.isKnife = true
 	wepObj.selectSortWeight = self.CurWepBase == "cw" and 4 or 5
-	
-	local wepObj = weapons.GetStored("cw_kk_ins2_rpg_pro")
-	wepObj.noResupply = true 
-	wepObj.weight = 10
-	wepObj.dropsDisabled = true
-	wepObj.isKnife = false
-	wepObj.selectSortWeight = self.CurWepBase == "cw" and 6 or 7
     
 	local wepObj = weapons.GetStored(self.MedkitClass)
 	wepObj.weight = 0.5
