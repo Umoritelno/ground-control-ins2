@@ -132,6 +132,10 @@ function PLAYER:giveLoadout(forceGive)
 		else 
 			plyObj:GiveAmmo(1, "Frag Grenades")
 		end
+
+		if self.plclass and self.plclass.DisplayName == "Demoman" then
+			plyObj:GiveAmmo(15, "Frag Grenades")
+		end
 		
 		if primaryData then
 			plyObj:attemptGiveLoadoutAmmo(primaryData)
@@ -160,9 +164,6 @@ function PLAYER:giveLoadout(forceGive)
 	self:Give(GAMEMODE.KnifeWeaponClass)
 	self:Give(GAMEMODE.MedkitClass)
 	-- class postload start
-	if self.plclass and self.plclass.DisplayName == "Demoman" then
-		self:GiveAmmo(15, "Frag Grenades")
-	end
 	-- class postload end 
 	--[[if GAMEMODE.CurSpecRound then
 		if GAMEMODE.CurSpecRound.postloadout then
