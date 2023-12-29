@@ -161,7 +161,7 @@ function PLAYER:giveLoadout(forceGive)
 	self:Give(GAMEMODE.MedkitClass)
 	-- class postload start
 	if self.plclass and self.plclass.DisplayName == "Demoman" then
-		self:Give("cw_kk_ins2_rpg_pro")
+		self:GiveAmmo(15, "Frag Grenades")
 	end
 	-- class postload end 
 	--[[if GAMEMODE.CurSpecRound then
