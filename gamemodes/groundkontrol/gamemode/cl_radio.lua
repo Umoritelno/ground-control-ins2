@@ -246,11 +246,17 @@ end
 
 usermessage.Hook("GC_FRAGOUT", GC_FragOut)
 
+local delay_global_time = 0
+local time_to_delay = 0.5
+
 concommand.Add("gc_radio_menu", function(ply, com, args)
+	if delay_global_time > CurTime() then return end
 	GAMEMODE:toggleRadio()
+	delay_global_time = CurTime() + time_to_delay
 end)
 
 hook.Add("PlayerButtonDown","RadioToggle",function(ply,button)
-    if button != radiokey:GetInt() then return end
+    if button != radiokey:GetInt() or delay_global_time > CurTime() then return end
     GAMEMODE:toggleRadio()
+	delay_global_time = CurTime() + time_to_delay
 end)
