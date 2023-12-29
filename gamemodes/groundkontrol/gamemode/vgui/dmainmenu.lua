@@ -337,7 +337,7 @@ function tbl:Init()
                     self.settings.VisualCollap.Impact:SetConVar("cl_new_impact_effects")
                     self.settings.VisualCollap.list:AddItem( self.settings.VisualCollap.Impact )
 
-                    self.settings.VisualCollap.Dynlight = vgui.Create("DCheckBoxLabel",scroll)
+                    --[[self.settings.VisualCollap.Dynlight = vgui.Create("DCheckBoxLabel",scroll)
                     self.settings.VisualCollap.Dynlight:SetText(CurLanguage.settings.Dynlight)
                     self.settings.VisualCollap.Dynlight:SetConVar("cl_tfa_rms_muzzleflash_dynlight")
                     self.settings.VisualCollap.list:AddItem( self.settings.VisualCollap.Dynlight )
@@ -350,7 +350,7 @@ function tbl:Init()
                     self.settings.VisualCollap.EjectSmoke = vgui.Create("DCheckBoxLabel",scroll)
                     self.settings.VisualCollap.EjectSmoke:SetText(CurLanguage.settings.EjectSmoke)
                     self.settings.VisualCollap.EjectSmoke:SetConVar("cl_tfa_rms_default_eject_smoke")
-                    self.settings.VisualCollap.list:AddItem( self.settings.VisualCollap.EjectSmoke )
+                    self.settings.VisualCollap.list:AddItem( self.settings.VisualCollap.EjectSmoke ) --]]
 
                     self.settings.VisualCollap.XAxis = vgui.Create("DNumSlider",scroll)
                     self.settings.VisualCollap.XAxis:SetText(CurLanguage.settings.XAxis)
