@@ -120,10 +120,10 @@ hook.Add("PlayerAbilityUse","AchivsAbilityUse",function(ply)
     ply:GiveAchievementProgress("spec",1)
 end)
 
-hook.Add( "DoPlayerDeath", "GlobalDeathMessage", function(ply,attacker,dmginfo )
+--[[hook.Add( "DoPlayerDeath", "GlobalDeathMessage", function(ply,attacker,dmginfo )
     local infl = dmginfo:GetInflictor()
     if IsValid(infl) and IsValid(attacker) and attacker:IsPlayer() and ply != attacker and ply:Team() != attacker:Team() and infl:GetClass() == "cw_kk_ins2_projectile_rpg" then
         attacker:GiveAchievement("dlan")
     end
-end )
+end )--]]
 
