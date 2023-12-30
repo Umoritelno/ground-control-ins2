@@ -71,7 +71,7 @@ player_manager.RegisterClass("cmd",PLAYER,"gc_base")
 
 PLAYER = {}
 PLAYER.DisplayName = "Demoman"
-PLAYER.Desc = "You are demoman. Use your weapon to wipe enemies off the face of the earth"
+PLAYER.Desc = "You are demoman. You have more explosives than anyone else."
 PLAYER.SlowWalkSpeed		= 100		-- How fast to move when slow-walking (+WALK)
 PLAYER.WalkSpeed			= 120		-- How fast to move when not running
 PLAYER.RunSpeed				= 250	-- How fast to move when running
