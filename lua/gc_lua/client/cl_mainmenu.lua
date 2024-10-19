@@ -57,13 +57,20 @@ function OpenMainMenu()
     end
 end
 
-hook.Add("Think", "MainMenuThink", function() -- Спасибо Той
+--[[hook.Add("Think", "MainMenuThink", function() -- Спасибо Той
     if input.IsKeyDown(KEY_ESCAPE) and gui.IsGameUIVisible() then
         if MainMenu and MainMenu:IsValid() then return end
         gui.HideGameUI()
         OpenMainMenu()
     end
-end)
+end)--]]
+
+hook.Add( "OnPauseMenuShow", "MainMenuOpen", function()
+	if ( !MainMenu || !MainMenu:IsValid() ) then 
+	    OpenMainMenu()
+	end
+	return false
+end )
 
 net.Receive( "SpawnMainMenu", function()
 	OpenMainMenu()
